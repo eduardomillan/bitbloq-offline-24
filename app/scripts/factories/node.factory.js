@@ -1,9 +1,9 @@
 'use strict';
 
 angular.module('bitbloqOffline').factory('nodeRemote', function() {
-    return require('remote');
+    return require('electron').remote;
 }).factory('nodeDialog', function(nodeRemote) {
-    return nodeRemote.require('dialog');
+    return require('electron').remote.dialog;
 }).factory('nodeFs', function() {
     return require('fs');
 });
