@@ -12,7 +12,8 @@
     "jquery": "2.2.0",
     "q": "^1.5.0",
     "universal-analytics": "^0.3.11",
-    "ws": "1.0.1"
+    "ws": "1.0.1",
+    "bower": "1.8.13"
   },
   "devDependencies": {
     "electron-prebuilt": "0.36.7",
