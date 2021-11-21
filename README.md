@@ -93,10 +93,15 @@ Get into the directory:
 
        cd bitbloq-offline/
 
+What you need:
+    nodejs version 7
+
 Install npm and Bower components:
 
     npm install
     bower install
+    npm install -g electron-prebuilt
+
 Launch the app:
 
     electron .
