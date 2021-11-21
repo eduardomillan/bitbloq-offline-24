@@ -7,6 +7,7 @@ const app = electron.app; // Module to control application life.
 const BrowserWindow = electron.BrowserWindow; // Module to create native browser window.
 
 // Report crashes to our server.
+
 electron.crashReporter.start({
     productName: PRODUCT_NAME,
     companyName: 'BQ',
