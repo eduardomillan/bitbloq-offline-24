@@ -85,29 +85,33 @@ You can find binaries here:
 
 ## Getting Started ##
 
-Clone the repo:
+### Clone the repo:
+```
+git clone https://github.com/bq/bitbloq-offline.git
+```
+### Get into the directory:
+```
+cd bitbloq-offline/
+```
+### What you need:
 
-    git clone https://github.com/bq/bitbloq-offline.git
+Tested with:
 
-Get into the directory:
++ nodejs versions: 8.0.0
++ npm versions: 5.0.0
 
-       cd bitbloq-offline/
+### Install npm and Bower components:
+```
+npm install
+```
 
-What you need:
-    nodejs version 7
-
-Install npm and Bower components:
-
-    npm install
-    bower install
-    npm install -g electron-prebuilt
-
-Launch the app:
-
-    electron .
-
+### Launch the app:
+```
+npm start
+```
 
 ## Packaging ##
+
 Just build for all Operating systems:
 
     grunt dist
