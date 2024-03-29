@@ -5,3 +5,4 @@ app/images/sprite.svg
 bower_components/
 app/res/config.json
 i18n/
+package-lock.json
