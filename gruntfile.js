@@ -7,13 +7,15 @@ module.exports = function(grunt) {
     function getCopySrc(os) {
         var array = ['app/**',
             'bower_components/**',
-            'node_modules/jquery/**',
-            'node_modules/Q/**',
+            'node_modules/**',
             'node_modules/angular/**',
             'node_modules/universal-analytics/**',
             'node_modules/ws/**',
             'node_modules/ultron/**',
             'node_modules/options/**',
+            '!node_modules/electron*/**',
+            '!node_modules/grunt*/**',
+            '!node_modules/@*/**',
             'LICENSE',
             'main.js',
             'package.json',
@@ -90,7 +92,7 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: '',
                     src: getCopySrc("win32").concat(['!app/res/web2board/linux/**', '!app/res/web2board/darwin/**', '!app/res/web2board/linux32/**']),
-                    dest: 'dist/BitbloqOffline-windows/data/resources/app/'
+                    dest: 'dist/BitbloqOfflineWin/data/resources/app/'
                 }]
             },
             linux: {
@@ -98,7 +100,7 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: '',
                     src: getCopySrc("linux").concat(['!app/res/web2board/win32/**', '!app/res/web2board/darwin/**', '!app/res/web2board/linux32/**']),
-                    dest: 'dist/BitbloqOffline-linux/resources/app/'
+                    dest: 'dist/BitbloqOfflineLinux/resources/app/'
                 }]
             },
             linux32: {
@@ -106,7 +108,7 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: '',
                     src: getCopySrc("linux32").concat(['!app/res/web2board/win32/**', '!app/res/web2board/darwin/**', '!app/res/web2board/linux/**']),
-                    dest: 'dist/BitbloqOffline-linux32/resources/app/'
+                    dest: 'dist/BitbloqOfflineLinux32/resources/app/'
                 }]
             },
             linuxArm: {
@@ -114,7 +116,7 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: '',
                     src: getCopySrc("linuxArm").concat(['!app/res/web2board/win32/**', '!app/res/web2board/darwin/**', '!app/res/web2board/linux/**']),
-                    dest: 'dist/BitbloqOffline-linuxArm/resources/app/'
+                    dest: 'dist/BitbloqOfflineLinuxArm/resources/app/'
                 }]
             },
             mac: {
@@ -122,7 +124,7 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: '',
                     src: getCopySrc("darwin").concat(['!app/res/web2board/linux/**', '!app/res/web2board/win32/**', '!app/res/web2board/linux32/**']),
-                    dest: 'dist/BitbloqOffline-mac/Bitbloq.app/Contents/Resources/app/'
+                    dest: 'dist/BitbloqOfflineMac/Bitbloq.app/Contents/Resources/app/'
                 }]
             },
             prebuiltWindows: {
@@ -130,7 +132,7 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: 'res/windows32-prebuilt',
                     src: ['**'],
-                    dest: 'dist/BitbloqOffline-windows/'
+                    dest: 'dist/BitbloqOfflineWin/'
                 }]
             },
             prebuiltLinux: {
@@ -138,7 +140,7 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: 'res/linux-prebuilt',
                     src: ['**'],
-                    dest: 'dist/BitbloqOffline-linux/'
+                    dest: 'dist/BitbloqOfflineLinux/'
                 }]
             },
             prebuiltLinux32: {
@@ -146,7 +148,7 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: 'res/linux32-prebuilt',
                     src: ['**'],
-                    dest: 'dist/BitbloqOffline-linux32/'
+                    dest: 'dist/BitbloqOfflineLinux32/'
                 }]
             },
             prebuiltLinuxArm: {
@@ -154,7 +156,7 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: 'res/linuxArm-prebuilt',
                     src: ['**'],
-                    dest: 'dist/BitbloqOffline-linuxArm/'
+                    dest: 'dist/BitbloqOfflineLinuxArm/'
                 }]
             },
             prebuiltMac: {
@@ -162,23 +164,24 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: 'res/mac-prebuilt',
                     src: ['**'],
-                    dest: 'dist/BitbloqOffline-mac/'
+                    dest: 'dist/BitbloqOfflineMac/'
                 }]
             }
         },
         clean: {
-            windows: ['dist/BitbloqOffline-windows/'],
-            linux: ['dist/BitbloqOffline-linux/'],
-            linux32: ['dist/BitbloqOffline-linux32/'],
-            linuxArm: ['dist/BitbloqOffline-linuxArm/'],
-            mac: ['dist/BitbloqOffline-mac/'],
+            windows: ['dist/BitbloqOfflineWin/'],
+            linux: ['dist/BitbloqOfflineLinux/'],
+            linux32: ['dist/BitbloqOfflineLinux32/'],
+            linuxArm: ['dist/BitbloqOfflineLinuxArm/'],
+            mac: ['dist/BitbloqOfflineMac/'],
+            all: ['dist/'],
             i18n: 'i18n/*'
         },
         exec: {
             electron: 'electron .',
             stop_electron: 'killall electron || killall Electron || true',
-            mac_copy_python: 'cp -rp app/res/web2board/darwin/Web2Board.app/Contents/MacOS/python \'dist/BitbloqOffline-mac/Bitbloq.app/Contents/Resources/app/app/res/web2board/darwin/Web2Board.app/Contents/MacOS/python\'',
-            mac_python_symbolic_link: 'ln -sf /usr/bin/python \'dist/BitbloqOffline-mac/Bitbloq.app/Contents/Resources/app/app/res/web2board/darwin/Web2Board.app/Contents/MacOS/python\''
+            mac_copy_python: 'cp -rp app/res/web2board/darwin/Web2Board.app/Contents/MacOS/python \'dist/BitbloqOfflineMac/Bitbloq.app/Contents/Resources/app/app/res/web2board/darwin/Web2Board.app/Contents/MacOS/python\'',
+            mac_python_symbolic_link: 'ln -sf /usr/bin/python \'dist/BitbloqOfflineMac/Bitbloq.app/Contents/Resources/app/app/res/web2board/darwin/Web2Board.app/Contents/MacOS/python\''
         },
         watch: {
             sass: {
