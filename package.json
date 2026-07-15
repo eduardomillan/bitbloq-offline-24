@@ -4,12 +4,11 @@
   "main": "main.js",
   "license": "GPL-3.0",
   "dependencies": {
-    "angular": "^1.6.7",
+    "angular": "1.4.9",
     "async": "^1.5.2",
     "bower": "^1.7.10",
     "electron": "^4.1.5",
     "grunt": "^1.0.4",
-    "grunt-sass": "^1.1.0",
     "grunt-svgstore": "^1.0.0",
     "jquery": "^2.2.0",
     "q": "^1.5.0",
@@ -25,7 +24,8 @@
     "grunt-shell": "1.1.2",
     "grunt-wiredep": "2.0.0",
     "jshint-stylish": "^2.1.0",
-    "load-grunt-tasks": "3.4.0"
+    "load-grunt-tasks": "3.4.0",
+    "sass": "^1.101.0"
   },
   "repository": {
     "type": "git",

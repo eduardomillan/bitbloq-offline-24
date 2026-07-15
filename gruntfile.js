@@ -76,16 +76,7 @@ module.exports = function(grunt) {
                 }]
             }
         },
-        sass: {
-            options: {
-                sourceMap: false
-            },
-            all: {
-                files: {
-                    'app/styles/main.css': 'app/styles/main.scss'
-                }
-            }
-        },
+
         copy: {
             windows: {
                 files: [{
@@ -127,6 +118,14 @@ module.exports = function(grunt) {
                     dest: 'dist/BitbloqOfflineMac/Bitbloq.app/Contents/Resources/app/'
                 }]
             },
+            windows: {
+                files: [{
+                    expand: true,
+                    cwd: '',
+                    src: getCopySrc("win32").concat(['!app/res/web2board/linux/**', '!app/res/web2board/darwin/**', '!app/res/web2board/linux32/**']),
+                    dest: 'dist/BitbloqOfflineWin/data/resources/app/'
+                }]
+            },
             prebuiltWindows: {
                 files: [{
                     expand: true,
@@ -139,7 +138,7 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     cwd: 'res/linux-prebuilt',
-                    src: ['**'],
+                    src: ['**', '!pango/**'],
                     dest: 'dist/BitbloqOfflineLinux/'
                 }]
             },
@@ -213,6 +212,31 @@ module.exports = function(grunt) {
             'jshint:all',
             'dist'
         ]);
+    });
+
+    // Tarea 'sass' propia (Dart Sass puro JS, sin node-sass nativo) para
+    // mantener las referencias existentes en 'watch' y 'build'.
+    grunt.registerTask('sass', 'Compila SCSS con Dart Sass', function() {
+        var done = this.async();
+        var sass = require('sass');
+        var fs = require('fs');
+        var path = require('path');
+        var src = 'app/styles/main.scss';
+        var dest = 'app/styles/main.css';
+        try {
+            var result = sass.renderSync({
+                file: src,
+                outputStyle: 'expanded',
+                sourceMap: false
+            });
+            fs.mkdirSync(path.dirname(dest), {recursive: true});
+            fs.writeFileSync(dest, result.css);
+            grunt.log.writeln('Generado ' + dest + ' (' + result.css.length + ' bytes)');
+            done();
+        } catch (e) {
+            grunt.log.error(e.message);
+            done(false);
+        }
     });
 
     grunt.registerTask('i18n', 'get all file of i18n', function() {

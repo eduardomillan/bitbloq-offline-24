@@ -46,12 +46,23 @@ angular.module('bitbloqOffline')
         function startWeb2board() {
             console.log('starting Web2board...');
             var spawn = require('child_process'),
-                web2boardProcess = spawn.execFile(getWeb2boardCommand(),
-                    ["--port", web2board.config.wsPort], function (err, stdout, stderr) {
-                        console.log(stdout);
-                        console.log(stderr);
-                        console.log(err);
-                    });
+                path = require('path'),
+                web2boardCommand = getWeb2boardCommand(),
+                web2boardDir = path.dirname(web2boardCommand),
+                env = Object.assign({}, process.env);
+            // web2board es Python 2.7/PySide y necesita libncurses.so.5 (y otras
+            // librerías empaquetadas) que ya no existen en el sistema moderno
+            // (glibc 2.35+ / Lliurex 23-25). Forzamos la búsqueda en su propia
+            // carpeta para que el binario sea autocontenido.
+            env.LD_LIBRARY_PATH = web2boardDir + (process.env.LD_LIBRARY_PATH ? ':' + process.env.LD_LIBRARY_PATH : '');
+            var web2boardProcess = spawn.execFile(web2boardCommand,
+                ["--port", web2board.config.wsPort],
+                {env: env},
+                function (err, stdout, stderr) {
+                    console.log(stdout);
+                    console.log(stderr);
+                    console.log(err);
+                });
             web2boardProcess.on("close", function (code) {
                 console.log("Web2board closed with code: " + code);
             });

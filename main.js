@@ -6,14 +6,10 @@ const PRODUCT_NAME_WITH_VERSION = PRODUCT_NAME + ' v' + pjson.version;
 const app = electron.app; // Module to control application life.
 const BrowserWindow = electron.BrowserWindow; // Module to create native browser window.
 
-// Report crashes to our server.
-
-electron.crashReporter.start({
-    productName: PRODUCT_NAME,
-    companyName: 'BQ',
-    submitURL: 'https://bitbloq.bq.com/bitbloq-offline',
-    autoSubmit: false
-});
+// En distros modernas (glibc 2.35 / kernels 5.x) Electron 0.36 necesita
+// estos switches para arrancar sin privilegios de sandbox y sin /dev/shm.
+app.commandLine.appendSwitch('no-sandbox');
+app.commandLine.appendSwitch('disable-dev-shm-usage');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
