@@ -1,0 +1,17 @@
+{
+    "version": "2.1.3",
+    "releaseTag": "web2board-v2.1.3",
+    "baseUrl": "https://github.com/eduardomillan/bitbloq-offline-24/releases/download/web2board-v2.1.3/",
+    "platforms": {
+        "win32": {
+            "file": "web2board-win32.zip",
+            "rootDir": "win32",
+            "sha256": "0b5b62ac18fb7425f6f4f173da4f9e63e594f89832cd38d1eeae7ebf60248d14"
+        },
+        "linux": {
+            "file": "web2board-linux-x64.zip",
+            "rootDir": "linux",
+            "sha256": "2711cc2ae74ac6274d7845df944e7bc0c91cf3c419de69a7e59b643e13320253"
+        }
+    }
+}

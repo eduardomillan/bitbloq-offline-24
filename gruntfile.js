@@ -4,7 +4,8 @@ module.exports = function(grunt) {
 
     grunt.loadTasks('tasks');
 
-    function getCopySrc(os) {
+    function getCopySrc(os, includeWeb2board) {
+        includeWeb2board = includeWeb2board !== false;
         var array = ['app/**',
             'bower_components/**',
             'node_modules/**',
@@ -19,14 +20,22 @@ module.exports = function(grunt) {
             'LICENSE',
             'main.js',
             'package.json',
-            'bower.json',
-            '!app/res/web2board/{osValue}/**/info.log',
-            '!app/res/web2board/{osValue}/**/info.log.*',
-            '!app/res/web2board/{osValue}/**/config.json',
-            '!app/res/web2board/{osValue}/**/web2boardLauncher.log',
-            '!app/res/web2board/{osValue}/**/platformioWS*/**',
-            '!app/res/web2board/web2board-config.json'
+            'bower.json'
         ];
+        if (includeWeb2board) {
+            array = array.concat([
+                '!app/res/web2board/{osValue}/**/info.log',
+                '!app/res/web2board/{osValue}/**/info.log.*',
+                '!app/res/web2board/{osValue}/**/config.json',
+                '!app/res/web2board/{osValue}/**/web2boardLauncher.log',
+                '!app/res/web2board/{osValue}/**/platformioWS*/**',
+                '!app/res/web2board/web2board-config.json'
+            ]);
+        } else {
+            array = array.concat([
+                '!app/res/web2board/**'
+            ]);
+        }
         array = array.map(function(src) {
             return src.replace("{osValue}", os);
         });
@@ -118,6 +127,22 @@ module.exports = function(grunt) {
                     dest: 'dist/BitbloqOfflineMac/Bitbloq.app/Contents/Resources/app/'
                 }]
             },
+            windowsSlim: {
+                files: [{
+                    expand: true,
+                    cwd: '',
+                    src: getCopySrc("win32", false),
+                    dest: 'dist/BitbloqOfflineWinSlim/data/resources/app/'
+                }]
+            },
+            linuxSlim: {
+                files: [{
+                    expand: true,
+                    cwd: '',
+                    src: getCopySrc("linux", false),
+                    dest: 'dist/BitbloqOfflineLinuxSlim/resources/app/'
+                }]
+            },
             windows: {
                 files: [{
                     expand: true,
@@ -165,6 +190,22 @@ module.exports = function(grunt) {
                     src: ['**'],
                     dest: 'dist/BitbloqOfflineMac/'
                 }]
+            },
+            prebuiltWindowsSlim: {
+                files: [{
+                    expand: true,
+                    cwd: 'res/windows32-prebuilt',
+                    src: ['**'],
+                    dest: 'dist/BitbloqOfflineWinSlim/'
+                }]
+            },
+            prebuiltLinuxSlim: {
+                files: [{
+                    expand: true,
+                    cwd: 'res/linux-prebuilt',
+                    src: ['**', '!pango/**'],
+                    dest: 'dist/BitbloqOfflineLinuxSlim/'
+                }]
             }
         },
         clean: {
@@ -173,6 +214,9 @@ module.exports = function(grunt) {
             linux32: ['dist/BitbloqOfflineLinux32/'],
             linuxArm: ['dist/BitbloqOfflineLinuxArm/'],
             mac: ['dist/BitbloqOfflineMac/'],
+            windowsSlim: ['dist/BitbloqOfflineWinSlim/'],
+            linuxSlim: ['dist/BitbloqOfflineLinuxSlim/'],
+            web2board: ['dist/web2board/'],
             all: ['dist/'],
             i18n: 'i18n/*'
         },
@@ -202,6 +246,17 @@ module.exports = function(grunt) {
             },
             target: {
                 command: 'chmod -R 755 dist/'
+            },
+            'zip-web2board-linux': {
+                command: 'mkdir -p dist/web2board && cd app/res/web2board && zip -r -q -X ../../../dist/web2board/web2board-linux-x64.zip linux ' +
+                    '-x "linux/**/info.log" "linux/**/info.log.*" "linux/**/config.json" "linux/**/web2boardLauncher.log" "linux/**/platformioWS*/*"'
+            },
+            'zip-web2board-win': {
+                command: 'mkdir -p dist/web2board && cd app/res/web2board && zip -r -q -X ../../../dist/web2board/web2board-win32.zip win32 ' +
+                    '-x "win32/**/info.log" "win32/**/info.log.*" "win32/**/config.json" "win32/**/web2boardLauncher.log" "win32/**/platformioWS*/*"'
+            },
+            'gen-web2board-manifest': {
+                command: 'node tasks/lib/web2board-manifest.js'
             }
         }
     });
@@ -251,11 +306,27 @@ module.exports = function(grunt) {
         grunt.task.run([
             'build:windows',
             'build:mac',
-            'build:linux',
-            'build:linux32',
-            'build:linuxArm'
+            'build:linux'
         ]);
     });
+
+    // Build de la app SIN web2board empaquetado (este se descarga bajo demanda).
+    grunt.registerTask('dist-slim', function() {
+        grunt.task.run([
+            'build:windows-slim',
+            'build:linux-slim'
+        ]);
+    });
+
+    // Empaqueta web2board por separado en dist/web2board/*.zip + manifest.
+    // Se publican como assets en GitHub Releases de eduardomillan/bitbloq-offline-24.
+    grunt.registerTask('package-web2board', [
+        'clean:web2board',
+        'shell:zip-web2board-linux',
+        'shell:zip-web2board-win',
+        'shell:gen-web2board-manifest'
+    ]);
+
     // Default task(s).
     grunt.registerTask('build', function(os) {
         switch (os) {
@@ -265,7 +336,18 @@ module.exports = function(grunt) {
                     'svgstore',
                     'clean:windows',
                     'copy:prebuiltWindows',
-                    'copy:windows'
+                    'copy:windows',
+                    'shell:target'
+                ]);
+                break;
+            case 'windows-slim':
+                grunt.task.run([
+                    'sass',
+                    'svgstore',
+                    'clean:windowsSlim',
+                    'copy:prebuiltWindowsSlim',
+                    'copy:windowsSlim',
+                    'shell:target'
                 ]);
                 break;
             case 'mac':
@@ -276,7 +358,7 @@ module.exports = function(grunt) {
                     'copy:prebuiltMac',
                     'copy:mac',
                     'exec:mac_python_symbolic_link',
-                    'shell'
+                    'shell:target'
                 ]);
                 break;
             case 'linux':
@@ -286,31 +368,21 @@ module.exports = function(grunt) {
                     'clean:linux',
                     'copy:prebuiltLinux',
                     'copy:linux',
-                    'shell'
+                    'shell:target'
                 ]);
                 break;
-            case 'linux32':
+            case 'linux-slim':
                 grunt.task.run([
                     'sass',
                     'svgstore',
-                    'clean:linux32',
-                    'copy:prebuiltLinux32',
-                    'copy:linux32',
-                    'shell'
-                ]);
-                break;
-            case 'linuxArm':
-                grunt.task.run([
-                    'sass',
-                    'svgstore',
-                    'clean:linuxArm',
-                    'copy:prebuiltLinuxArm',
-                    'copy:linuxArm',
-                    'shell'
+                    'clean:linuxSlim',
+                    'copy:prebuiltLinuxSlim',
+                    'copy:linuxSlim',
+                    'shell:target'
                 ]);
                 break;
             default:
-                grunt.log.error('No OS selected, usage: grunt build:[mac|linux|windows]');
+                grunt.log.error('No OS selected, usage: grunt build:[mac|linux|windows|linux-slim|windows-slim]');
         }
     });
 };

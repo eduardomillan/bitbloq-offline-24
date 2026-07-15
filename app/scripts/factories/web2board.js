@@ -8,7 +8,7 @@
  * Service in the bitbloqOffline.
  */
 angular.module('bitbloqOffline')
-    .factory('web2board', function ($rootScope, $log, $q, _, $timeout, common, alertsService, WSHubsAPI, OpenWindow, $location) {
+    .factory('web2board', function ($rootScope, $log, $q, _, $timeout, common, alertsService, WSHubsAPI, OpenWindow, $location, web2boardInstaller) {
 
         /** Variables */
         var web2board = this,
@@ -25,7 +25,7 @@ angular.module('bitbloqOffline')
             serialPort: ''
         };
 
-        function getWeb2boardCommand() {
+        function getBundledWeb2boardCommand() {
             var platformOs = process.platform;
             if (platformOs === 'win32') {
                 return common.appPath + "/app/res/web2board/win32/web2boardLauncher.exe";
@@ -37,6 +37,46 @@ angular.module('bitbloqOffline')
                 return common.appPath + "/app/res/web2board/linux/web2boardLauncher";
             }
             return common.appPath + "/app/res/web2board/linux32/web2boardLauncher";
+        }
+
+        function getWeb2boardCommand() {
+            var fs = require('fs'),
+                bundled = getBundledWeb2boardCommand();
+            // Build normal: web2board viene empaquetado dentro de la app.
+            if (bundled && fs.existsSync(bundled)) {
+                return bundled;
+            }
+            // Build "slim": web2board se descarga bajo demanda en userData.
+            return web2boardInstaller.getLauncherPath();
+        }
+
+        function isWeb2boardAvailable() {
+            var fs = require('fs'),
+                bundled = getBundledWeb2boardCommand();
+            return (bundled && fs.existsSync(bundled)) || web2boardInstaller.isInstalled();
+        }
+
+        function ensureWeb2boardDownloaded() {
+            if (isWeb2boardAvailable()) {
+                return $q.when(true);
+            }
+            var lastPercent = -1;
+            alertsService.add('web2board_toast_downloading', 'web2board', 'loading', undefined, 0);
+            return web2boardInstaller.ensureInstalled(function (received, total) {
+                var percent = Math.round((received / total) * 100);
+                if (percent !== lastPercent) {
+                    lastPercent = percent;
+                    $rootScope.$applyAsync(function () {
+                        alertsService.add('web2board_toast_downloading', 'web2board', 'loading', undefined, percent);
+                    });
+                }
+            }).then(function () {
+                alertsService.add('web2board_toast_downloadFinished', 'web2board', 'ok', 3000);
+                return true;
+            }, function (error) {
+                alertsService.add('alert-web2board-download-error', 'web2board', 'warning', undefined, error && error.message);
+                return $q.reject(error);
+            });
         }
 
         function showUpdateModal() {
@@ -69,6 +109,20 @@ angular.module('bitbloqOffline')
         }
 
         function openCommunication(callback, showUpdateModalFlag, tryCount) {
+            // En la primera invocación garantizamos que web2board esté disponible
+            // (en builds "slim" esto dispara la descarga bajo demanda).
+            if (!tryCount && !isWeb2boardAvailable()) {
+                ensureWeb2boardDownloaded().then(function () {
+                    doOpenCommunication(callback, showUpdateModalFlag, tryCount);
+                }, function () {
+                    inProgress = false;
+                });
+                return;
+            }
+            doOpenCommunication(callback, showUpdateModalFlag, tryCount);
+        }
+
+        function doOpenCommunication(callback, showUpdateModalFlag, tryCount) {
             tryCount = tryCount || 0;
             tryCount++;
             if (tryCount === 1) {

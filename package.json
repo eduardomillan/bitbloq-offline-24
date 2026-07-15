@@ -8,6 +8,7 @@
     "async": "^1.5.2",
     "bower": "^1.7.10",
     "electron": "^4.1.5",
+    "extract-zip": "^1.7.0",
     "grunt": "^1.0.4",
     "grunt-svgstore": "^1.0.0",
     "jquery": "^2.2.0",
