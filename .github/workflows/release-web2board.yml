@@ -27,7 +27,7 @@ jobs:
           node-version: '16'
 
       - name: Install build dependencies (skip bower postinstall)
-        run: npm install --ignore-scripts
+        run: npm install --ignore-scripts --legacy-peer-deps
 
       - name: Package web2board
         run: npx grunt package-web2board
