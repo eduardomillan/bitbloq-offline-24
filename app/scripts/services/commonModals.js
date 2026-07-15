@@ -73,7 +73,7 @@ angular.module('bitbloqOffline')
             modalButtons: true,
             modalCommonDropdown: true,
             headingOptions: $translate.use(),
-            modaloptions: ['es-ES','en-GB','nl-NL','ru-RU','it-IT','eu-ES','ca-ES','fr-FR','de-DE','pt-PT','gl','zh-CN'],
+            modaloptions: ['bg-BG','ca-ES','de-DE','en-GB','es-ES','eu-ES','fr-FR','gl','it-IT','nl-NL','pt-PT','ru-RU','zh-CN'],
             optionsClick: translateLanguage,
             dropdown: {
                 options: 'languages',

@@ -12,7 +12,8 @@ module.exports = function(grunt) {
         'pt': 'pt-PT',
         'ru': 'ru-RU',
         'zh-CN': 'zh-CN',
-        'gl': 'gl'
+        'gl': 'gl',
+        'bg': 'bg-BG'
     };
 
     var callPoEditorApi = function(params, callback) {
