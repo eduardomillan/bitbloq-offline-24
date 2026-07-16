@@ -5,7 +5,7 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-Current version: **1.4.0**
+Current version: **1.4.2**
 
 ### Changed
 - **Electron binary is now generated at build time.** The `build` task copies
@@ -15,6 +15,17 @@ Current version: **1.4.0**
   generated binary is git-ignored.
 
 ## [Unreleased]
+
+## [1.4.2] - 2026-07-16
+
+- **Fix upload on Linux.** Bitbloq now adds web2board's `res/` and
+  `res/pp/packages/toolchain-atmelavr/lib` folders to `LD_LIBRARY_PATH` when
+  launching Web2Board, so `avrdude64` can find `libusb-0.1.so.4` and the board
+  port is detected (fixes `alert-web2board-no-port-found`).
+
+## [1.4.1] - 2026-07-16
+
+- Bump version to 1.4.1.
 
 ## [1.4.0] - 2026-07-16
 

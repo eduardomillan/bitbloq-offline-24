@@ -151,7 +151,15 @@ angular.module('bitbloqOffline')
             // librerías empaquetadas) que ya no existen en el sistema moderno
             // (glibc 2.35+ / Lliurex 23-25). Forzamos la búsqueda en su propia
             // carpeta para que el binario sea autocontenido.
-            env.LD_LIBRARY_PATH = web2boardDir + (process.env.LD_LIBRARY_PATH ? ':' + process.env.LD_LIBRARY_PATH : '');
+            // Además, avrdude64 (en res/) precisa libusb-0.1.so.4, que web2board
+            // descarga dentro de res/pp/packages/toolchain-atmelavr/lib; sin esa
+            // ruta en LD_LIBRARY_PATH el upload falla con "no port found".
+            var ldPaths = [
+                web2boardDir,
+                path.join(web2boardDir, 'res'),
+                path.join(web2boardDir, 'res', 'pp', 'packages', 'toolchain-atmelavr', 'lib')
+            ];
+            env.LD_LIBRARY_PATH = ldPaths.join(':') + (process.env.LD_LIBRARY_PATH ? ':' + process.env.LD_LIBRARY_PATH : '');
             var web2boardProcess = spawn.execFile(web2boardCommand,
                 ["--port", web2board.config.wsPort],
                 {env: env, cwd: web2boardDir},
