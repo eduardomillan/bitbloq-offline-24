@@ -4,8 +4,11 @@ module.exports = function(grunt) {
 
     grunt.loadTasks('tasks');
 
-    function getCopySrc(os, includeWeb2board) {
-        includeWeb2board = includeWeb2board !== false;
+    // Web2Board is developed and released in its own repository
+    // (https://github.com/eduardomillan/web2board) and is no longer bundled
+    // inside Bitbloq Offline; it is downloaded on demand by web2boardInstaller.
+    // Therefore the build always excludes app/res/web2board.
+    function getCopySrc(os) {
         var array = ['app/**',
             'bower_components/**',
             'node_modules/**',
@@ -17,25 +20,12 @@ module.exports = function(grunt) {
             '!node_modules/electron*/**',
             '!node_modules/grunt*/**',
             '!node_modules/@*/**',
+            '!app/res/web2board/**',
             'LICENSE',
             'main.js',
             'package.json',
             'bower.json'
         ];
-        if (includeWeb2board) {
-            array = array.concat([
-                '!app/res/web2board/{osValue}/**/info.log',
-                '!app/res/web2board/{osValue}/**/info.log.*',
-                '!app/res/web2board/{osValue}/**/config.json',
-                '!app/res/web2board/{osValue}/**/web2boardLauncher.log',
-                '!app/res/web2board/{osValue}/**/platformioWS*/**',
-                '!app/res/web2board/web2board-config.json'
-            ]);
-        } else {
-            array = array.concat([
-                '!app/res/web2board/**'
-            ]);
-        }
         array = array.map(function(src) {
             return src.replace("{osValue}", os);
         });
@@ -91,7 +81,7 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     cwd: '',
-                    src: getCopySrc("win32").concat(['!app/res/web2board/linux/**', '!app/res/web2board/darwin/**']),
+                    src: getCopySrc("win32"),
                     dest: 'dist/BitbloqOfflineWin/data/resources/app/'
                 }]
             },
@@ -99,7 +89,7 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     cwd: '',
-                    src: getCopySrc("linux").concat(['!app/res/web2board/win32/**', '!app/res/web2board/darwin/**']),
+                    src: getCopySrc("linux"),
                     dest: 'dist/BitbloqOfflineLinux/resources/app/'
                 }]
             },
@@ -107,7 +97,7 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     cwd: '',
-                    src: getCopySrc("darwin").concat(['!app/res/web2board/linux/**', '!app/res/web2board/win32/**']),
+                    src: getCopySrc("darwin"),
                     dest: 'dist/BitbloqOfflineMac/Bitbloq.app/Contents/Resources/app/'
                 }]
             },
@@ -115,7 +105,7 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     cwd: '',
-                    src: getCopySrc("win32", false),
+                    src: getCopySrc("win32"),
                     dest: 'dist/BitbloqOfflineWinSlim/data/resources/app/'
                 }]
             },
@@ -123,16 +113,8 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     cwd: '',
-                    src: getCopySrc("linux", false),
+                    src: getCopySrc("linux"),
                     dest: 'dist/BitbloqOfflineLinuxSlim/resources/app/'
-                }]
-            },
-            windows: {
-                files: [{
-                    expand: true,
-                    cwd: '',
-                    src: getCopySrc("win32").concat(['!app/res/web2board/linux/**', '!app/res/web2board/darwin/**']),
-                    dest: 'dist/BitbloqOfflineWin/data/resources/app/'
                 }]
             },
             prebuiltWindows: {
@@ -214,15 +196,12 @@ module.exports = function(grunt) {
             mac: ['dist/BitbloqOfflineMac/'],
             windowsSlim: ['dist/BitbloqOfflineWinSlim/'],
             linuxSlim: ['dist/BitbloqOfflineLinuxSlim/'],
-            web2board: ['dist/web2board/'],
             all: ['dist/'],
             i18n: 'i18n/*'
         },
         exec: {
             electron: 'electron .',
-            stop_electron: 'killall electron || killall Electron || true',
-            mac_copy_python: 'cp -rp app/res/web2board/darwin/Web2Board.app/Contents/MacOS/python \'dist/BitbloqOfflineMac/Bitbloq.app/Contents/Resources/app/app/res/web2board/darwin/Web2Board.app/Contents/MacOS/python\'',
-            mac_python_symbolic_link: 'ln -sf /usr/bin/python \'dist/BitbloqOfflineMac/Bitbloq.app/Contents/Resources/app/app/res/web2board/darwin/Web2Board.app/Contents/MacOS/python\''
+            stop_electron: 'killall electron || killall Electron || true'
         },
         watch: {
             sass: {
@@ -245,29 +224,12 @@ module.exports = function(grunt) {
             target: {
                 command: 'chmod -R 755 dist/'
             },
-            'zip-web2board-linux': {
-                command: 'mkdir -p dist/web2board && cd app/res/web2board && zip -r -q -X ../../../dist/web2board/web2board-linux-x64.zip linux ' +
-                    '-x "linux/**/info.log" "linux/**/info.log.*" "linux/**/config.json" "linux/**/web2boardLauncher.log" "linux/**/platformioWS*/*"'
-            },
-            'zip-web2board-win': {
-                command: 'mkdir -p dist/web2board && cd app/res/web2board && zip -r -q -X ../../../dist/web2board/web2board-win32.zip win32 ' +
-                    '-x "win32/**/info.log" "win32/**/info.log.*" "win32/**/config.json" "win32/**/web2boardLauncher.log" "win32/**/platformioWS*/*"'
-            },
-            'gen-web2board-manifest': {
-                command: 'node tasks/lib/web2board-manifest.js'
-            },
             // --- Native packages (.deb / AppImage / NSIS) ---
             'pkg-deb-bitbloq': {
                 command: 'node tasks/lib/pkg-deb.js bitbloq'
             },
             'pkg-appimage-bitbloq': {
                 command: 'node tasks/lib/pkg-appimage.js bitbloq'
-            },
-            'pkg-deb-web2board': {
-                command: 'node tasks/lib/pkg-deb.js web2board'
-            },
-            'pkg-appimage-web2board': {
-                command: 'node tasks/lib/pkg-appimage.js web2board'
             },
             'pkg-nsis-win': {
                 command: 'makensis pkg/windows/bitbloq-offline.nsi'
@@ -375,7 +337,8 @@ module.exports = function(grunt) {
         ]);
     });
 
-    // Build de la app SIN web2board empaquetado (este se descarga bajo demanda).
+    // Build de la app sin web2board empaquetado (este se descarga bajo demanda
+    // desde el repositorio de web2board: https://github.com/eduardomillan/web2board).
     grunt.registerTask('dist-slim', function() {
         grunt.task.run([
             'build:windows-slim',
@@ -383,31 +346,18 @@ module.exports = function(grunt) {
         ]);
     });
 
-    // Empaqueta web2board por separado en dist/web2board/*.zip + manifest.
-    // Se publican como assets en GitHub Releases de eduardomillan/bitbloq-offline-24.
-    grunt.registerTask('package-web2board', [
-        'clean:web2board',
-        'shell:zip-web2board-linux',
-        'shell:zip-web2board-win',
-        'shell:gen-web2board-manifest'
-    ]);
-
     // --- Native packages: .deb, AppImage and Windows installer ---
     // These produce installable artifacts from the already-built dist/ folders.
     //   - bitbloq .deb / AppImage    -> from dist/BitbloqOfflineLinux
-    //   - web2board .deb / AppImage  -> from app/res/web2board/linux
     //   - windows installer (.exe)   -> from dist/BitbloqOfflineWin (via NSIS)
+    // Web2Board is packaged in its own repository (eduardomillan/web2board).
     grunt.registerTask('pkg-deb-bitbloq', ['shell:pkg-deb-bitbloq']);
     grunt.registerTask('pkg-appimage-bitbloq', ['shell:pkg-appimage-bitbloq']);
-    grunt.registerTask('pkg-deb-web2board', ['shell:pkg-deb-web2board']);
-    grunt.registerTask('pkg-appimage-web2board', ['shell:pkg-appimage-web2board']);
     grunt.registerTask('pkg-nsis-win', ['shell:pkg-nsis-win']);
 
     grunt.registerTask('package-linux', [
         'pkg-deb-bitbloq',
-        'pkg-appimage-bitbloq',
-        'pkg-deb-web2board',
-        'pkg-appimage-web2board'
+        'pkg-appimage-bitbloq'
     ]);
 
     grunt.registerTask('package-all', [

@@ -25,17 +25,12 @@ angular.module('bitbloqOffline')
             serialPort: ''
         };
 
+        // Web2Board is developed and released in its own repository
+        // (https://github.com/eduardomillan/web2board). It is no longer bundled
+        // inside Bitbloq Offline; it is downloaded on demand by web2boardInstaller.
+        // This function therefore always returns null so the app falls back to the
+        // on-demand download.
         function getBundledWeb2boardCommand() {
-            var platformOs = process.platform;
-            if (platformOs === 'win32') {
-                return common.appPath + "/app/res/web2board/win32/web2boardLauncher.exe";
-            }
-            if (platformOs === 'darwin') {
-                return common.appPath + "/app/res/web2board/darwin/Web2Board.app/Contents/MacOS/web2boardLauncher";
-            }
-            if (process.arch === "x64") {
-                return common.appPath + "/app/res/web2board/linux/web2boardLauncher";
-            }
             return null;
         }
 

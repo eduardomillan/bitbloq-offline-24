@@ -5,7 +5,7 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-Current version: **1.3.0-rc.1**
+Current version: **1.4.0**
 
 ### Changed
 - **Electron binary is now generated at build time.** The `build` task copies
@@ -15,6 +15,21 @@ Current version: **1.3.0-rc.1**
   generated binary is git-ignored.
 
 ## [Unreleased]
+
+## [1.4.0] - 2026-07-16
+
+- **Web2Board split into its own repository.** Bitbloq Offline no longer bundles
+  Web2Board (the ~976 MB `app/res/web2board` tree was removed). Web2Board is now
+  developed and released at https://github.com/eduardomillan/web2board (bumped to
+  **3.0.0**). On first use Bitbloq downloads the matching Web2Board package from
+  that repository, verifies its SHA-256 (see `web2board-download.json`) and runs
+  it.
+- **Slim release artifacts.** All release builds are now slim: no bundled
+  Web2Board, no separate Web2Board `.deb`/AppImage. Only Bitbloq Offline zips,
+  `.deb`, AppImage and Windows installer are published.
+- `grunt package-web2board`, `web2board-manifest.js`, the `release-web2board.yml`
+  workflow and the `pkg/linux/web2board` metadata were removed; `pkg-deb.js` and
+  `pkg-appimage.js` now build only Bitbloq Offline.
 
 ## [1.2.3] - Deprecated / Obsolete
 

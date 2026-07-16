@@ -5,9 +5,10 @@ how Web2Board is installed, and how to make Bitbloq and Web2Board talk to each
 other so you can compile and upload programs to your board (Arduino, Zowi,
 PrintBot, etc.).
 
-> **Versions covered:** Bitbloq Offline `1.3.0-rc.1` and the separate
-> Web2Board `2.1.3`. These two versions are matched: do not mix other versions
-> unless you know what you are doing.
+> **Versions covered:** Bitbloq Offline `1.4.0`. Web2Board `3.0.0` is a
+> **separate** project (https://github.com/eduardomillan/web2board) and is
+> downloaded automatically by Bitbloq on first use — you do not install it
+> manually.
 
 ---
 
@@ -18,24 +19,25 @@ Get the build for your platform from the
 
 | Platform | File |
 |----------|------|
-| Linux (64-bit) | `bitbloq-offline-linux-1.3.0-rc.1.zip` |
-| Windows (64/32-bit) | `bitbloq-offline-windows-1.3.0-rc.1.zip` |
+| Linux (64-bit) | `bitbloq-offline-linux-1.4.0.zip` |
+| Windows (64/32-bit) | `bitbloq-offline-windows-1.4.0.zip` |
 
 In addition to the zips, the following **native installers** are published for
 this release:
 
-| Format | Bitbloq Offline | Web2Board (standalone) |
-|--------|-----------------|------------------------|
-| Linux `.deb` | `bitbloq_1.3.0-rc.1_amd64.deb` | `web2board_2.1.3_amd64.deb` |
-| Linux AppImage | `BitbloqOffline-1.3.0-rc.1.AppImage` | `Web2Board-2.1.3.AppImage` |
-| Windows installer | `bitbloq-offline-setup-1.3.0-rc.1.exe` | (bundled inside Bitbloq) |
+| Format | Bitbloq Offline |
+|--------|-----------------|
+| Linux `.deb` | `bitbloq_1.4.0_amd64.deb` |
+| Linux AppImage | `BitbloqOffline-1.4.0.AppImage` |
+| Windows installer | `bitbloq-offline-setup-1.4.0.exe` |
 
 - **Bitbloq `.deb`** installs to `/opt/bitbloq-offline` and adds
-  `/usr/bin/bitbloq-offline` plus a menu entry. The `.deb` already bundles
-  Web2Board, so no separate download is needed for normal use.
-- **Web2Board `.deb` / AppImage** are provided as a *standalone* service package
-  (for repairing or running Web2Board on its own). Bitbloq normally launches its
-  own bundled Web2Board automatically.
+  `/usr/bin/bitbloq-offline` plus a menu entry. Web2Board is **not** bundled;
+  it is downloaded on demand.
+- **Web2Board** is handled by Bitbloq itself: when you first connect a board,
+  Bitbloq downloads the matching Web2Board package from
+  [eduardomillan/web2board](https://github.com/eduardomillan/web2board),
+  verifies its SHA-256 and launches it. No manual Web2Board install required.
 - The **Windows installer** puts Bitbloq in `C:\Program Files\BitbloqOffline`,
   creates Start Menu and Desktop shortcuts, and leaves the board drivers in the
   `drivers\` folder for manual install.
@@ -87,8 +89,8 @@ sudo apt-get install -f   # only if dpkg reports missing dependencies
 
 This installs the app under `/opt/bitbloq-offline` and a launcher at
 `/usr/bin/bitbloq-offline`. After that you can start it from the applications
-menu or by running `bitbloq-offline` in a terminal. Web2Board is bundled inside
-the package and starts automatically.
+menu or by running `bitbloq-offline` in a terminal. Web2Board is downloaded
+automatically on first use.
 
 To remove it:
 
@@ -101,12 +103,12 @@ sudo dpkg -r bitbloq-offline
 The AppImage is a single self-contained file — no installation needed:
 
 ```bash
-chmod +x BitbloqOffline-1.3.0-rc.1.AppImage
-./BitbloqOffline-1.3.0-rc.1.AppImage
+chmod +x BitbloqOffline-1.4.0.AppImage
+./BitbloqOffline-1.4.0.AppImage
 ```
 
 It needs FUSE to mount itself; on a normal desktop that is already available.
-Web2Board is bundled and starts automatically.
+Web2Board is downloaded automatically the first time you flash a program.
 
 ### 2.5 Give your user access to the board (serial port)
 
@@ -174,29 +176,19 @@ the driver automatically when you plug the board in.
 uploads it to the board over USB. The Bitbloq app talks to Web2Board through a
 local WebSocket on **`127.0.0.1:9877`**.
 
-There are two ways Web2Board gets installed, and **you normally do not have to
-do anything** — Bitbloq handles it:
+Web2Board is a **separate project** (https://github.com/eduardomillan/web2board)
+and is **no longer bundled** inside Bitbloq. Instead, on first use Bitbloq
+**downloads it on demand**:
 
-1. **Bundled (default full build).** Web2Board is already inside the app at
-   `resources/app/app/res/web2board/<platform>/web2boardLauncher`. Bitbloq
-   starts it automatically on launch. This is the recommended setup.
+- When you flash a program for the first time, Bitbloq downloads the correct
+  Web2Board package for your platform from the
+  [eduardomillan/web2board releases](https://github.com/eduardomillan/web2board/releases),
+  verifies its SHA-256 checksum (see `web2board-download.json`), unpacks it to
+  the user data folder and launches it. An internet connection is needed only
+  for this one-time download; afterwards Web2Board starts from the local copy.
 
-2. **Downloaded on demand (slim build).** If you used a "slim" build (no
-   bundled Web2Board), the first time you flash a program Bitbloq downloads the
-   correct Web2Board package for your platform from the GitHub release, verifies
-   its SHA-256 checksum (see `web2board-download.json`), and runs it. An
-   internet connection is needed only for this one-time download.
-
-### 4.1 Manual Web2Board install (advanced)
-
-You only need this if you want to run Web2Board standalone or repair it.
-Download the matching zip from the release:
-
-- Linux 64-bit: `web2board-linux-x64-2.1.3.zip`
-- Windows: `web2board-win32-2.1.3.zip`
-
-Unzip it and run `web2boardLauncher` (Linux) or `web2boardLauncher.exe`
-(Windows). It will listen on port `9877`.
+> **No manual install required.** The download/verify/launch is fully automatic.
+> You only ever run Web2Board through Bitbloq.
 
 ---
 
@@ -245,7 +237,7 @@ If they are not communicating, check the following:
 | Symptom | Likely cause | Fix |
 |---------|--------------|-----|
 | App does not start (Linux) | missing libs / old pango | use `./bitbloq.sh`; ensure a modern distro |
-| "Web2Board not found" | slim build, no download yet / offline | connect to internet once, or use full build |
+| "Web2Board not found" | first download pending / offline | connect to internet once so Bitbloq can fetch Web2Board |
 | Port 9877 closed | Web2Board not running | restart from Bitbloq; check §5.1 |
 | Board not listed | no serial permission | Linux: add user to `dialout`; Windows: install drivers |
 | Upload fails / board unrecognized | wrong board selected or driver missing | select correct board in Bitbloq; install drivers |
@@ -260,8 +252,10 @@ BitbloqOffline<OS>/
 ├── bitbloq.sh                # Linux launcher
 ├── zowi_samples/             # example projects at the build root
 ├── drivers/                  # Windows board drivers
-└── resources/app/app/res/web2board/<platform>/   # bundled Web2Board (full build)
+└── resources/app/app/res/web2board-download.json   # Web2Board download descriptor
 ```
 
-Web2Board download descriptor: `resources/app/app/res/web2board-download.json`
-(records the version, release tag, per-platform file and SHA-256).
+Web2Board is **not** bundled inside the app. Its download descriptor
+`web2board-download.json` records the version, release tag, per-platform file
+and SHA-256; once downloaded, Web2Board lives in the user data folder
+(`~/.config/bitbloq-offline/web2board/` on Linux).

@@ -118,15 +118,14 @@ The build is driven by `grunt`. Available high-level targets:
 
 | Command                              | What it produces                                              |
 |--------------------------------------|---------------------------------------------------------------|
-| `grunt dist`                         | Full app for Windows, macOS and Linux (with bundled Web2Board). |
-| `grunt dist-slim`                    | App **without** bundled Web2Board (it is downloaded on demand). |
+| `grunt dist`                         | App for Windows, macOS and Linux. Web2Board is **not** bundled — it is downloaded on demand from its own repository. |
+| `grunt dist-slim`                    | Alias for the same on-demand behavior (no bundled Web2Board). |
 | `grunt build:windows`                | Windows build only.                                           |
 | `grunt build:linux`                  | Linux build only.                                             |
 | `grunt build:mac`                    | macOS build only.                                             |
 | `grunt build:windows-slim`           | Slim Windows build.                                           |
 | `grunt build:linux-slim`             | Slim Linux build.                                             |
-| `grunt package-web2board`            | Packages Web2Board zips + manifest into `dist/web2board/`.     |
-| `grunt package-linux`                | Builds `.deb` + AppImage for Bitbloq and Web2Board.           |
+| `grunt package-linux`                | Builds `.deb` + AppImage for Bitbloq Offline.                 |
 | `grunt pkg-nsis-win`                 | Builds the Windows installer `.exe` (needs `makensis`).       |
 | `grunt package-all`                  | `package-linux` + `pkg-nsis-win`.                             |
 | `grunt jshint`                       | Lint `Gruntfile.js` and `app/**/*.js`.                        |
@@ -142,6 +141,12 @@ Each build writes to `dist/BitbloqOffline{OS}/`, ready to run or package.
 > See [`INSTALL.md`](INSTALL.md) for what each artifact contains and how end
 > users install them.
 
+> **Web2Board is a separate project.** Bitbloq Offline no longer bundles
+> Web2Board. On first use it downloads the correct Web2Board package from
+> [eduardomillan/web2board](https://github.com/eduardomillan/web2board) and
+> verifies its SHA-256 (see `app/res/web2board-download.json`). Web2Board
+> development (including the system tray feature) happens in that repository.
+
 > **Electron binary is generated automatically.** The `build` task copies the
 > Electron executable from the local `node_modules/electron/dist` into the
 > matching `res/*-prebuilt` directory (as `Bitbloq` / `Bitbloq.exe` /
@@ -155,24 +160,22 @@ Each build writes to `dist/BitbloqOffline{OS}/`, ready to run or package.
 
 ---
 
-## Web2Board and the "slim" build
+## Web2Board and on-demand download
 
 **Web2Board** is the service that compiles Bitbloq programs and flashes them to
-the board. Historically it was bundled inside every distributable; because it
-is large and platform-specific, it is now:
+the board. It is a **separate project**
+(https://github.com/eduardomillan/web2board) and is **no longer bundled** in
+Bitbloq Offline. Instead:
 
-- **Packaged separately** via `grunt package-web2board`, producing
-  `web2board-linux-x64.zip` and `web2board-win32.zip` plus a `web2board-download.json`
-  manifest (with SHA-256 checksums).
-- **Downloaded on demand**: the "slim" builds (`dist-slim`) omit Web2Board; the
-  first time the user flashes a program, the app fetches the correct package
-  from the configured GitHub release and verifies its checksum.
+- Bitbloq Offline ships **without** Web2Board. The first time the user flashes a
+  program, the app fetches the correct package for the platform from the
+  `eduardomillan/web2board` GitHub releases, verifies its SHA-256 checksum and
+  runs it. An internet connection is needed only for that one-time download.
 
 The download descriptor lives at `app/res/web2board-download.json` and records
 the Web2Board `version`, the `releaseTag`, the `baseUrl` and per-platform
 `file` / `rootDir` / `sha256`. Update this file (and republish the
-`web2board-vX.Y.Z` release) when Web2Board changes. The CI workflow
-`.github/workflows/release-web2board.yml` automates that packaging and release.
+`web2board-vX.Y.Z` release in the web2board repo) when Web2Board changes.
 
 ---
 
@@ -281,8 +284,9 @@ tasks                # Custom grunt tasks (e.g. web2board manifest generator)
 - **Theming:** styles are SCSS compiled to `app/styles/main.css` via
   `grunt sass` (Dart Sass).
 - **SVG icons:** `grunt svgstore` builds a sprite from `app/images/icons`.
-- **Web2Board manifest:** `tasks/lib/web2board-manifest.js` generates
-  `app/res/web2board-download.json` from the packaged zips.
+- **Web2Board releases:** Web2Board is built and published in its own repo
+  (https://github.com/eduardomillan/web2board). `app/res/web2board-download.json`
+  points to those releases; update it when Web2Board is bumped.
 - **Contributing:** pull requests that add board/robot definitions or fix
   platform issues are welcome. Please run `grunt jshint` before submitting.
 - **Versioning:** this project follows [Semantic Versioning](https://semver.org/)
