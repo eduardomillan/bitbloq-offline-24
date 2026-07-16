@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 General discussion
+    url: https://github.com/eduardomillan/bitbloq-offline-24/discussions
+    about: Ask questions and discuss with the community (if Discussions is enabled).
+  - name: 📖 Documentation
+    url: https://github.com/eduardomillan/bitbloq-offline-24#readme
+    about: Read the README and CHANGELOG before opening an issue.

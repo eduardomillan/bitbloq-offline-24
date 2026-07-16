@@ -1,0 +1,39 @@
+name: 🧪 RC test feedback
+description: Report results from testing a Release Candidate (works / broken / partial) — lightweight template
+title: "[RC-test] <what you tested>"
+labels: ["rc-test"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: RC version tested
+      placeholder: "1.3.0-rc.1"
+    validations:
+      required: true
+  - type: dropdown
+    id: result
+    attributes:
+      label: Overall result
+      options:
+        - "Works as expected"
+        - "Partially works (see notes)"
+        - "Broken (see notes)"
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Platform
+      options:
+        - "Linux (64-bit)"
+        - "Windows (32/64-bit)"
+        - "macOS (build from source)"
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes
+      description: What you tested (board, upload, language...), what worked, what failed.
+    validations:
+      required: false
