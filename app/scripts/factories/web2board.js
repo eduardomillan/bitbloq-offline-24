@@ -154,7 +154,7 @@ angular.module('bitbloqOffline')
             env.LD_LIBRARY_PATH = web2boardDir + (process.env.LD_LIBRARY_PATH ? ':' + process.env.LD_LIBRARY_PATH : '');
             var web2boardProcess = spawn.execFile(web2boardCommand,
                 ["--port", web2board.config.wsPort],
-                {env: env},
+                {env: env, cwd: web2boardDir},
                 function (err, stdout, stderr) {
                     console.log(stdout);
                     console.log(stderr);
