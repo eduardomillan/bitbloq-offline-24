@@ -5,7 +5,7 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-Current version: **1.4.2**
+Current version: **1.4.3**
 
 ### Changed
 - **Electron binary is now generated at build time.** The `build` task copies
@@ -15,6 +15,18 @@ Current version: **1.4.2**
   generated binary is git-ignored.
 
 ## [Unreleased]
+
+## [1.4.3] - 2026-07-16
+
+- **Fix upload: replace bundled libtinfo.so.5 with system version.** web2board
+  bundles `libncurses.so.5` that requires `NCURSES_TINFO_6.2.20211010` from
+  `libtinfo.so.5`, but the bundled `libtinfo.so.5` is too old and lacks that
+  symbol. Bitbloq now automatically replaces the bundled `libtinfo.so.5` with
+  the system version before launching web2board.
+- Create system-level symlink for `libusb-0.1.so.4` (needed by avrdude64)
+  in `.deb` postinst, AppImage AppRun, and zip launcher.
+- Fix `LD_LIBRARY_PATH` when spawning web2board to include `res/` and
+  `toolchain-atmelavr/lib` paths (for avrdude64 / libusb).
 
 ## [1.4.2] - 2026-07-16
 

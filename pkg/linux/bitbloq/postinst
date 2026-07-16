@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+# Create symlink for libusb-0.1.so.4 needed by avrdude64 in web2board.
+# The library is bundled inside /opt/bitbloq-offline/libusb/.
+LIBUSB_SRC="/opt/bitbloq-offline/libusb/libusb-0.1.so.4"
+LIBUSB_DST="/usr/lib/x86_64-linux-gnu/libusb-0.1.so.4"
+
+if [ -f "$LIBUSB_SRC" ] && [ ! -e "$LIBUSB_DST" ]; then
+    ln -s "$LIBUSB_SRC" "$LIBUSB_DST"
+    ldconfig || true
+fi

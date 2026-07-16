@@ -1,0 +1,10 @@
+#!/bin/sh
+set -e
+
+# Remove libusb symlink created by postinst.
+LIBUSB_DST="/usr/lib/x86_64-linux-gnu/libusb-0.1.so.4"
+
+if [ -L "$LIBUSB_DST" ] && [ "$(readlink "$LIBUSB_DST")" = "/opt/bitbloq-offline/libusb/libusb-0.1.so.4" ]; then
+    rm -f "$LIBUSB_DST"
+    ldconfig || true
+fi

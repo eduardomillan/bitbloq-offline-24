@@ -144,6 +144,7 @@ angular.module('bitbloqOffline')
             console.log('starting Web2board...');
             var spawn = require('child_process'),
                 path = require('path'),
+                fs = require('fs'),
                 web2boardCommand = getWeb2boardCommand(),
                 web2boardDir = path.dirname(web2boardCommand),
                 env = Object.assign({}, process.env);
@@ -160,6 +161,26 @@ angular.module('bitbloqOffline')
                 path.join(web2boardDir, 'res', 'pp', 'packages', 'toolchain-atmelavr', 'lib')
             ];
             env.LD_LIBRARY_PATH = ldPaths.join(':') + (process.env.LD_LIBRARY_PATH ? ':' + process.env.LD_LIBRARY_PATH : '');
+
+            // Fix: bundled libncurses.so.5 may need NCURSES_TINFO_6.2.20211010
+            // from libtinfo.so.5, but the bundled libtinfo.so.5 is too old.
+            // Replace it with the system's libtinfo.so.5 so avrdude can load.
+            try {
+                var bundledTinfo = path.join(web2boardDir, 'libtinfo.so.5');
+                var systemTinfo = '/lib/x86_64-linux-gnu/libtinfo.so.5';
+                if (fs.existsSync(bundledTinfo) && fs.existsSync(systemTinfo)) {
+                    var bundledStat = fs.statSync(bundledTinfo);
+                    var systemStat = fs.statSync(systemTinfo);
+                    // If sizes differ, the bundled one is likely the wrong version
+                    if (bundledStat.size !== systemStat.size) {
+                        fs.copyFileSync(systemTinfo, bundledTinfo);
+                        console.log('Fixed libtinfo.so.5: replaced bundled version with system version');
+                    }
+                }
+            } catch (e) {
+                console.log('Could not fix libtinfo.so.5: ' + e.message);
+            }
+
             var web2boardProcess = spawn.execFile(web2boardCommand,
                 ["--port", web2board.config.wsPort],
                 {env: env, cwd: web2boardDir},

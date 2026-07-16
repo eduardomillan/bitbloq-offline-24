@@ -38,6 +38,16 @@ fs.mkdirSync(outBase, { recursive: true });
 fs.mkdirSync(path.join(outBase, 'DEBIAN'), { recursive: true });
 fs.copyFileSync(path.join(pkg, 'control'), path.join(outBase, 'DEBIAN', 'control'));
 
+// DEBIAN/postinst & postrm (create/remove libusb symlink for avrdude64)
+['postinst', 'postrm'].forEach(function(script) {
+    var src = path.join(pkg, script);
+    var dst = path.join(outBase, 'DEBIAN', script);
+    if (fs.existsSync(src)) {
+        fs.copyFileSync(src, dst);
+        cp.execSync('chmod 755 "' + dst + '"');
+    }
+});
+
 var srcBuild = path.join(dist, 'BitbloqOfflineLinux');
 if (!fs.existsSync(srcBuild)) {
     console.error('Missing build: ' + srcBuild + ' (run `grunt build:linux` first)');
