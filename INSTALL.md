@@ -273,6 +273,31 @@ If they are not communicating, check the following:
 
 ---
 
+## 6. Logs (when something goes wrong)
+
+When Web2Board cannot be reached (e.g. "board not found", port 9877 closed),
+the most useful diagnostics are in two log files:
+
+- **Bitbloq Offline log** — written by the app itself:
+  `~/.config/bitbloq-offline/logs/bitbloq-offline.log` (Linux) /
+  `%APPDATA%\bitbloq-offline\logs\bitbloq-offline.log` (Windows).
+  It records WebSocket/compile/upload errors and the `W2B_NOT_DETECTED` event.
+- **Web2Board launcher log** — written by the downloaded Web2Board process:
+  `~/.config/bitbloq-offline/web2board/linux/web2boardLauncher.log` (Linux) /
+  `%APPDATA%\bitbloq-offline\web2board\win32\web2boardLauncher.log` (Windows).
+
+**To open them from the UI:** in the top menu, go to **Ver → Abrir carpeta de
+logs** ("Open logs folder"). This opens the logs folder in your file manager so
+you can inspect `bitbloq-offline.log` (and the Web2Board folder alongside it).
+If the launcher log is empty, Web2Board did not even start — check that the
+downloaded binary can run on your system (missing libraries, `LD_LIBRARY_PATH`,
+etc.).
+
+If a toast error appears without enough detail, use its **Copiar** button to
+copy the message and paste it when asking for support.
+
+---
+
 ## 7. Where things live (reference)
 
 ```

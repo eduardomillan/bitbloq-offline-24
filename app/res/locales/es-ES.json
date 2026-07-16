@@ -448,13 +448,15 @@
     "alert-web2board-compiling": "Compilando el proyecto ...",
     "alert-web2board-compile-verified": "Proyecto compilado con éxito.",
     "alert-web2board-compile-error": "Error al compilar: {{value}}",
+    "alert-web2board-error-detail": "Error: {{value}}",
+    "alert-copy-error": "Copiar",
     "alert-web2board-code-uploaded": "Proyecto subido con éxito",
     "alert-web2board-upload-error": "Error al cargar el programa: {{value}}",
     "alert-web2board-settingBoard": "Detectando placa...",
     "alert-web2board-uploading": "Cargando programa a la placa...",
     "alert-web2board-boardReady": "Placa detectada en el puerto: {{value}}",
     "alert-web2board-boardNotReady": "Placa no detectada. Conecta una placa",
-    "alert-web2board-no-port-found": "No se ha encontrado la placa. Comprueba que la placa seleccionada en Bitbloq es la misma que tienes físicamente y que está conectada.",
+    "alert-web2board-no-port-found": "No se ha encontrado la placa. Comprueba que la placa seleccionada en Bitbloq es la misma que tienes físicamente y que está conectada. En Linux, verifica que tu usuario pertenece al grupo 'dialout' y que el puerto /dev/ttyACM* o /dev/ttyUSB* tiene permisos de lectura/escritura (p.ej. 'sudo adduser $USER dialout').",
     "alert-web2board-no-board-serial": "No se ha encontrado una placa con la que comunicarse por puerto serie. Comprueba que la placa en la pestaña de Hardware es la misma que tienes y que está conectada.",
     "tour-step-one": "Paso 1 de 7",
     "tour-step-one-text": "Abre el menú de \"Placas\"",
@@ -1425,5 +1427,7 @@
     "bigger-bloqs-version-detected": "La versión de bloques del proyecto que está cargando es superior a la del programa, los bloques más nuevos pueden no mostrarse correctamente.",
     "web2board_toast_downloading": "Descargando Web2Board... {{value}}%",
     "web2board_toast_downloadFinished": "Web2Board descargado correctamente",
-    "alert-web2board-download-error": "Error al descargar Web2Board: {{value}}"
+    "alert-web2board-download-error": "Error al descargar Web2Board: {{value}}",
+    "open-logs": "Abrir carpeta de logs",
+    "alert-open-logs-failed": "No se pudo abrir la carpeta de logs."
 }

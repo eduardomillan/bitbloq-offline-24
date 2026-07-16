@@ -8,7 +8,7 @@
  * Service in the bitbloqOffline.
  */
 angular.module('bitbloqOffline')
-    .factory('web2board', function ($rootScope, $log, $q, _, $timeout, common, alertsService, WSHubsAPI, OpenWindow, $location, web2boardInstaller) {
+    .factory('web2board', function ($rootScope, $log, $q, _, $timeout, common, alertsService, WSHubsAPI, OpenWindow, $location, web2boardInstaller, nodeFs, nodeRemote) {
 
         /** Variables */
         var web2board = this,
@@ -17,7 +17,68 @@ angular.module('bitbloqOffline')
             usingPort = null,
             TIME_FOR_WEB2BOARD_TO_START = 700,
             w2bToast = null,
-            plotterWin = null; //ms
+            plotterWin = null, //ms
+            nodePath = require('path'),
+            nodeClipboard = require('electron').clipboard,
+            LOG_DIR = nodePath.join(nodeRemote.app.getPath('userData'), 'logs'),
+            LOG_FILE = nodePath.join(LOG_DIR, 'bitbloq-offline.log');
+
+        /**
+         * Persist compile/upload/websocket errors to a file so they can be
+         * inspected later. The full payload (including Arduino stdErr) is saved.
+         */
+        function logError(tag, payload) {
+            try {
+                if (!nodeFs.existsSync(LOG_DIR)) {
+                    nodeFs.mkdirSync(LOG_DIR);
+                }
+                var line = new Date().toISOString() + ' [' + tag + '] ' +
+                    (typeof payload === 'string' ? payload : JSON.stringify(payload, null, 2)) + '\n';
+                nodeFs.appendFileSync(LOG_FILE, line);
+            } catch (e) {
+                // Never break the UI because of a logging failure
+            }
+        }
+
+        /**
+         * Show an error toast that only displays the first part of the message
+         * (with scrollbars via the alert--error-detail CSS class) while keeping
+         * the complete text available to copy through the "Copiar" button.
+         */
+        function showErrorWithCopy(tag, fullError) {
+            logError(tag, fullError);
+            var text = (fullError && fullError.stdErr) ? fullError.stdErr
+                : (typeof fullError === 'string' ? fullError : JSON.stringify(fullError));
+            var preview = text.split('\n')[0].slice(0, 200);
+            alertsService.add('alert-web2board-error-detail', 'alert-web2board-error-detail', 'warning', undefined, preview, false, false,
+                'alert-copy-error', function () {
+                    try {
+                        if (nodeClipboard && nodeClipboard.writeText) {
+                            nodeClipboard.writeText(text);
+                        }
+                    } catch (e) {
+                        // clipboard may be unavailable in some contexts
+                    }
+                });
+        }
+
+        /**
+         * Show a board-related error toast (e.g. "board not found") that also
+         * offers a "Copiar" button so the user can copy the message when asking
+         * for support. `key` is the locale key; `message` is the text copied.
+         */
+        function showBoardErrorWithCopy(key, message) {
+            alertsService.add(key, 'web2board', 'warning', undefined, undefined, false, false,
+                'alert-copy-error', function () {
+                    try {
+                        if (nodeClipboard && nodeClipboard.writeText) {
+                            nodeClipboard.writeText(message || key);
+                        }
+                    } catch (e) {
+                        // clipboard may be unavailable in some contexts
+                    }
+                });
+        }
 
         web2board.config = {
             wsHost: '127.0.0.1',
@@ -75,6 +136,7 @@ angular.module('bitbloqOffline')
         }
 
         function showUpdateModal() {
+            logError('W2B_NOT_DETECTED', 'W2b not detected');
             alert("W2b not detected");
         }
 
@@ -97,6 +159,7 @@ angular.module('bitbloqOffline')
                     console.log(stdout);
                     console.log(stderr);
                     console.log(err);
+                    logError('W2B_START', 'stdout: ' + stdout + '\nstdout: ' + stderr + '\nerr: ' + err);
                 });
             web2boardProcess.on("close", function (code) {
                 console.log("Web2board closed with code: " + code);
@@ -160,12 +223,11 @@ angular.module('bitbloqOffline')
 
         function handleUploadError(error) {
             if (error.title === 'COMPILE_ERROR') {
-                alertsService.add('alert-web2board-compile-error', 'web2board', 'warning', undefined, error.stdErr);
+                showErrorWithCopy('UPLOAD', error.stdErr);
             } else if (error.title === 'BOARD_NOT_READY') {
-                alertsService.add('alert-web2board-no-port-found', 'web2board', 'warning');
+                showBoardErrorWithCopy('alert-web2board-no-port-found');
             } else {
-                var errorTag = 'alert-web2board-upload-error';
-                alertsService.add(errorTag, 'web2board', 'warning', undefined, error);
+                showErrorWithCopy('UPLOAD', error);
             }
         }
 
@@ -177,7 +239,7 @@ angular.module('bitbloqOffline')
 
         function isBoardReady(board) {
             if (!board) {
-                alertsService.add('alert-web2board-boardNotReady', 'web2board', 'warning');
+                showBoardErrorWithCopy('alert-web2board-boardNotReady');
             }
             return board;
         }
@@ -224,10 +286,12 @@ angular.module('bitbloqOffline')
 
         api.defaultErrorHandler = function (error) {
             $log.error('Error receiving message: ' + error);
+            logError('WS', error);
         };
 
         api.callbacks.onClose = function (error) {
             $log.error('web2board disconnected with error: ' + error.reason);
+            logError('WS_CLOSE', error && error.reason);
             api.clearTriggers();
             inProgress = false;
             if (api.wsClient.couldSuccessfullyConnect) {
@@ -237,6 +301,7 @@ angular.module('bitbloqOffline')
 
         api.callbacks.onMessageError = function (error) {
             $log.error('Error receiving message: ' + error);
+            logError('WS_MESSAGE', error);
             api.wsClient.close();
         };
 
@@ -261,7 +326,7 @@ angular.module('bitbloqOffline')
                     api.CodeHub.server.compile(code).done(function () {
                         alertsService.add('alert-web2board-compile-verified', 'web2board', 'ok', 5000);
                     }, function (error) {
-                        alertsService.add('alert-web2board-compile-error', 'web2board', 'warning', undefined, error);
+                        showErrorWithCopy('VERIFY', error);
                     }).finally(removeInProgressFlag);
                 });
             }
@@ -271,7 +336,7 @@ angular.module('bitbloqOffline')
             if (!inProgress) {
                 closePlotter();
                 if (!code || !board) {
-                    alertsService.add('alert-web2board-boardNotReady', 'web2board', 'warning');
+                    showBoardErrorWithCopy('alert-web2board-boardNotReady');
                     return;
                 }
                 inProgress = true;
@@ -295,10 +360,10 @@ angular.module('bitbloqOffline')
                             api.SerialMonitorHub.server.startApp(port, board.mcu).done(function () {
                                 alertsService.close(serialMonitorAlert);
                             }, function () {
-                                alertsService.add('alert-web2board-no-port-found', 'web2board', 'warning');
+                                showBoardErrorWithCopy('alert-web2board-no-port-found');
                             }).finally(removeInProgressFlag);
                         }, function () {
-                            alertsService.add('alert-web2board-no-port-found', 'web2board', 'warning');
+                            showBoardErrorWithCopy('alert-web2board-no-port-found');
                         }).finally(removeInProgressFlag);
                     });
                 });
@@ -339,7 +404,7 @@ angular.module('bitbloqOffline')
                             openPlotter(board, port);
                         }, function () {
                             alertsService.close(chartMonitorAlert);
-                            alertsService.add('alert-web2board-no-port-found', 'web2board', 'warning');
+                            showBoardErrorWithCopy('alert-web2board-no-port-found');
                         }).finally(removeInProgressFlag);
                     });
                 });

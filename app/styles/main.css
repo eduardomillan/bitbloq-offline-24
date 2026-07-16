@@ -1099,6 +1099,12 @@ dropdown .btn--dropdown--active {
   fill: #dadada;
   cursor: pointer;
 }
+.alert[data-id=alert-web2board-error-detail] span {
+  max-height: 8em;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
 
 .scrollbar {
   position: absolute;

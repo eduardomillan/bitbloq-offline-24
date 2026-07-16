@@ -448,6 +448,8 @@
     "alert-web2board-compiling": "Das Projekt wird kompiliert ...",
     "alert-web2board-compile-verified": "Das Projekt wurde erfolgreich kompiliert.",
     "alert-web2board-compile-error": "Fehler beim Kompilieren: {{value}}",
+    "alert-web2board-error-detail": "Error: {{value}}",
+    "alert-copy-error": "Copiar",
     "alert-web2board-code-uploaded": "Das Projekt wurde erfolgreich geladen",
     "alert-web2board-upload-error": "Fehler beim Laden des Projekts: {{value}}",
     "alert-web2board-settingBoard": "Erkennen der Platine...",
@@ -1405,5 +1407,7 @@
     "button_delete_in_class": "Aus der Klasse löschen",
     "web2board_toast_downloading": "Downloading Web2Board... {{value}}%",
     "web2board_toast_downloadFinished": "Web2Board downloaded successfully",
-    "alert-web2board-download-error": "Error downloading Web2Board: {{value}}"
+    "alert-web2board-download-error": "Error downloading Web2Board: {{value}}",
+    "open-logs": "Open logs folder",
+    "alert-open-logs-failed": "Could not open the logs folder."
 }

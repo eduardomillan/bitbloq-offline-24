@@ -448,6 +448,8 @@
     "alert-web2board-compiling": "S'està compilant el projecte...",
     "alert-web2board-compile-verified": "El projecte s'ha compilat correctament",
     "alert-web2board-compile-error": "Error en compilar: {{value}}",
+    "alert-web2board-error-detail": "Error: {{value}}",
+    "alert-copy-error": "Copiar",
     "alert-web2board-code-uploaded": "Projecte pujat amb èxit",
     "alert-web2board-upload-error": "Error en carregar el programa: {{value}}",
     "alert-web2board-settingBoard": "S'està detectant la placa...",
@@ -1405,5 +1407,7 @@
     "button_delete_in_class": "Elimina de la classe",
     "web2board_toast_downloading": "Downloading Web2Board... {{value}}%",
     "web2board_toast_downloadFinished": "Web2Board downloaded successfully",
-    "alert-web2board-download-error": "Error downloading Web2Board: {{value}}"
+    "alert-web2board-download-error": "Error downloading Web2Board: {{value}}",
+    "open-logs": "Open logs folder",
+    "alert-open-logs-failed": "Could not open the logs folder."
 }

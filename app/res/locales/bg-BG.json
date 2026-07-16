@@ -447,6 +447,8 @@
     "alert-web2board-compiling": "Компилиране на проекта...",
     "alert-web2board-compile-verified": "Проектът е компилиран успешно.",
     "alert-web2board-compile-error": "Грешка при компилиране: {{value}}",
+    "alert-web2board-error-detail": "Error: {{value}}",
+    "alert-copy-error": "Copiar",
     "alert-web2board-code-uploaded": "Проектът е качен успешно",
     "alert-web2board-upload-error": "Грешка при зареждане на програмата: {{value}}",
     "alert-web2board-settingBoard": "Засичане на платката...",
@@ -1425,5 +1427,7 @@
     "web2board_toast_downloading": "Изтегляне на Web2Board... {{value}}%",
     "web2board_toast_downloadFinished": "Web2Board е изтеглен успешно",
     "alert-web2board-download-error": "Грешка при изтегляне на Web2Board: {{value}}",
-    "bg-BG": "Български"
+    "bg-BG": "Български",
+    "open-logs": "Open logs folder",
+    "alert-open-logs-failed": "Could not open the logs folder."
 }

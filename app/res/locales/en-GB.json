@@ -448,13 +448,15 @@
     "alert-web2board-compiling": "Compiling the project...",
     "alert-web2board-compile-verified": "Project compiled correctly.",
     "alert-web2board-compile-error": "Error on compiling: {{value}}",
+    "alert-web2board-error-detail": "Error: {{value}}",
+    "alert-copy-error": "Copiar",
     "alert-web2board-code-uploaded": "Project uploaded correctly.",
     "alert-web2board-upload-error": "Error on loading program: {{value}}",
     "alert-web2board-settingBoard": "Detecting board...",
     "alert-web2board-uploading": "Loading project onto board...",
     "alert-web2board-boardReady": "Board detected on port: {{value}}",
     "alert-web2board-boardNotReady": "Board not detected. Connect a board",
-    "alert-web2board-no-port-found": "No board was detected. Check that you selected the correct board in the Hardware tab and that it is connected.",
+    "alert-web2board-no-port-found": "No board was detected. Check that you selected the correct board in the Hardware tab and that it is connected. On Linux, make sure your user belongs to the 'dialout' group and that /dev/ttyACM* or /dev/ttyUSB* has read/write permissions (e.g. 'sudo adduser $USER dialout').",
     "alert-web2board-no-board-serial": "No board was detected for communication via serial port. No board was detected. Check that you selected the correct board in the Hardware tab and that it is connected.",
     "tour-step-one": "Step 1 of 7",
     "tour-step-one-text": "Open the \"Boards\" menu",
@@ -1414,5 +1416,7 @@
     "default-var-name-mkb_RGBLed": "RGB_led",
     "web2board_toast_downloading": "Downloading Web2Board... {{value}}%",
     "web2board_toast_downloadFinished": "Web2Board downloaded successfully",
-    "alert-web2board-download-error": "Error downloading Web2Board: {{value}}"
+    "alert-web2board-download-error": "Error downloading Web2Board: {{value}}",
+    "open-logs": "Open logs folder",
+    "alert-open-logs-failed": "Could not open the logs folder."
 }

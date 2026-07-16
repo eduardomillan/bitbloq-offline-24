@@ -228,6 +228,25 @@ factory firmware is preserved as-is in the embedded `code`.
 
 ---
 
+## Debug logs (compile / upload errors)
+
+When code is compiled or uploaded to a board, any error returned by Web2Board
+(including the Arduino `stdErr`) is:
+
+1. **Written to a log file** at:
+   - Linux: `~/.config/BitbloqOffline/logs/bitbloq-offline.log`
+   - macOS: `~/Library/Application Support/BitbloqOffline/logs/bitbloq-offline.log`
+   - Windows: `%APPDATA%/BitbloqOffline/logs/bitbloq-offline.log`
+2. **Shown in a toast** that displays only the **first line** of the error (with
+   scrollbars if it is long) and a **"Copiar"** (Copy) button. Clicking the
+   button copies the **complete** error text to the clipboard, so you can paste
+   it into an issue or debugger.
+
+WebSocket and Web2Board launch/connection errors are also appended to the same
+log file (they are not shown as toasts to avoid being intrusive).
+
+---
+
 ## Internationalization
 
 UI strings live under `app/res/locales/*.json` (one file per language code).

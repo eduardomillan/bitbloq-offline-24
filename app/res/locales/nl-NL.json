@@ -448,6 +448,8 @@
     "alert-web2board-compiling": "Compilando el proyecto ...",
     "alert-web2board-compile-verified": "Proyecto compilado con éxito.",
     "alert-web2board-compile-error": "Error al compilar: {{value}}",
+    "alert-web2board-error-detail": "Error: {{value}}",
+    "alert-copy-error": "Copiar",
     "alert-web2board-code-uploaded": "Proyecto subido con éxito",
     "alert-web2board-upload-error": "Error al cargar el programa: {{value}} ",
     "alert-web2board-settingBoard": "Detectando placa...",
@@ -710,5 +712,7 @@
     "reject": "Weiger",
     "web2board_toast_downloading": "Downloading Web2Board... {{value}}%",
     "web2board_toast_downloadFinished": "Web2Board downloaded successfully",
-    "alert-web2board-download-error": "Error downloading Web2Board: {{value}}"
+    "alert-web2board-download-error": "Error downloading Web2Board: {{value}}",
+    "open-logs": "Open logs folder",
+    "alert-open-logs-failed": "Could not open the logs folder."
 }

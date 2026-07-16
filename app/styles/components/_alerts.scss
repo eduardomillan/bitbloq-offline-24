@@ -148,4 +148,15 @@
       }
     }
   }
+
+  // Error toasts: keep the preview short and add scrollbars so the
+  // (already truncated) message can still be scrolled if needed.
+  &[data-id="alert-web2board-error-detail"] {
+    span {
+      max-height    : 8em;
+      overflow-y    : auto;
+      white-space   : pre-wrap;
+      word-break    : break-word;
+    }
+  }
 }

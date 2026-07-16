@@ -448,6 +448,8 @@
     "alert-web2board-compiling": "项目编译中...",
     "alert-web2board-compile-verified": "项目编译成功",
     "alert-web2board-compile-error": "无法编译:{{value}} ",
+    "alert-web2board-error-detail": "Error: {{value}}",
+    "alert-copy-error": "Copiar",
     "alert-web2board-code-uploaded": "项目成功上传",
     "alert-web2board-upload-error": "错误加载程序：{{value}} ",
     "alert-web2board-settingBoard": "检测平板...",
@@ -1162,5 +1164,7 @@
     "show-product": "查看产品",
     "web2board_toast_downloading": "Downloading Web2Board... {{value}}%",
     "web2board_toast_downloadFinished": "Web2Board downloaded successfully",
-    "alert-web2board-download-error": "Error downloading Web2Board: {{value}}"
+    "alert-web2board-download-error": "Error downloading Web2Board: {{value}}",
+    "open-logs": "Open logs folder",
+    "alert-open-logs-failed": "Could not open the logs folder."
 }

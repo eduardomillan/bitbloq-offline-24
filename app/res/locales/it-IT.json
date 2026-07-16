@@ -448,6 +448,8 @@
     "alert-web2board-compiling": "Creazione del progetto in corso ...",
     "alert-web2board-compile-verified": "Progetto creato correttamente.",
     "alert-web2board-compile-error": "Errore durante la creazione: {{value}}",
+    "alert-web2board-error-detail": "Error: {{value}}",
+    "alert-copy-error": "Copiar",
     "alert-web2board-code-uploaded": "Progetto caricato correttamente.",
     "alert-web2board-upload-error": "Errore durante il caricamento del programma: {{value}}",
     "alert-web2board-settingBoard": "Rilevamento scheda in corso...",
@@ -1405,5 +1407,7 @@
     "button_delete_in_class": "Elimina classe",
     "web2board_toast_downloading": "Downloading Web2Board... {{value}}%",
     "web2board_toast_downloadFinished": "Web2Board downloaded successfully",
-    "alert-web2board-download-error": "Error downloading Web2Board: {{value}}"
+    "alert-web2board-download-error": "Error downloading Web2Board: {{value}}",
+    "open-logs": "Open logs folder",
+    "alert-open-logs-failed": "Could not open the logs folder."
 }

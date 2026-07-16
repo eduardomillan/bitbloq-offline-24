@@ -8,7 +8,7 @@
  * Controller of the bitbloqOffline
  */
 angular.module('bitbloqOffline')
-    .controller('ActionBarCtrl', function($rootScope, $scope, $route, bloqs, $log, web2board, _, clipboard, bloqsUtils, utils, hw2Bloqs, projectApi, nodeDialog, nodeFs, nodeUtils, common, commonModals, alertsService) {
+    .controller('ActionBarCtrl', function($rootScope, $scope, $route, bloqs, $log, web2board, _, clipboard, bloqsUtils, utils, hw2Bloqs, projectApi, nodeDialog, nodeFs, nodeUtils, common, commonModals, alertsService, nodeRemote) {
         $log.debug('ActionBarCtrl', $scope.$parent.$id);
 
         $scope.actions = {
@@ -165,6 +165,25 @@ angular.module('bitbloqOffline')
             web2board.showPlotter(boardReference);
         }
 
+        /**
+         * Open the folder that holds the Bitbloq Offline log and the Web2Board
+         * log, so the user can inspect them when something goes wrong (e.g. the
+         * board is not detected). Uses the OS file manager via Electron's shell.
+         */
+        function openLogsFolder() {
+            try {
+                var userData = nodeRemote.app.getPath('userData');
+                var logsDir = nodeFs.join(userData, 'logs');
+                var web2boardLogsDir = nodeFs.join(userData, 'web2board');
+                // Show the bitbloq-offline log directory, falling back to the
+                // web2board directory if the logs folder does not exist yet.
+                var target = nodeFs.existsSync(logsDir) ? logsDir : web2boardLogsDir;
+                nodeRemote.shell.showItemInFolder(nodeFs.join(target, 'bitbloq-offline.log'));
+            } catch (e) {
+                alertsService.add('alert-open-logs-failed', 'web2board', 'warning');
+            }
+        }
+
         require('electron').webFrame.setZoomFactor(common.settings.zoomFactor);
 
         function zoomIn() {
@@ -255,6 +274,11 @@ angular.module('bitbloqOffline')
                     name: 'Ver plotter',
                     icon: '#Ver_verSerialMonitor',
                     action: showPlotter,
+                    disabled: false
+                }, {
+                    name: 'open-logs',
+                    icon: '#web2board',
+                    action: openLogsFolder,
                     disabled: false
                 }]
             },

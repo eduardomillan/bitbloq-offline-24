@@ -448,6 +448,8 @@
     "alert-web2board-compiling": "Proiektua metatzen ...",
     "alert-web2board-compile-verified": "Proiektua ongi konpilatu ta.",
     "alert-web2board-compile-error": "Errorea konpilatzean: {{value}}",
+    "alert-web2board-error-detail": "Error: {{value}}",
+    "alert-copy-error": "Copiar",
     "alert-web2board-code-uploaded": "Proiektua ongi igota",
     "alert-web2board-upload-error": "Errorea programa kargatzean: {{value}}",
     "alert-web2board-settingBoard": "Plaka detektatzen...",
@@ -1405,5 +1407,7 @@
     "button_delete_in_class": "Ezabatu klasetik",
     "web2board_toast_downloading": "Downloading Web2Board... {{value}}%",
     "web2board_toast_downloadFinished": "Web2Board downloaded successfully",
-    "alert-web2board-download-error": "Error downloading Web2Board: {{value}}"
+    "alert-web2board-download-error": "Error downloading Web2Board: {{value}}",
+    "open-logs": "Open logs folder",
+    "alert-open-logs-failed": "Could not open the logs folder."
 }
