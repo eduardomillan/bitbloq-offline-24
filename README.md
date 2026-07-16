@@ -75,6 +75,8 @@ on first use (see [Web2Board and the "slim" build](#web2board-and-the-slim-build
 The Web2Board packages are published as release assets tagged
 `web2board-vX.Y.Z`.
 
+- **Installation & Web2Board setup:** see [`INSTALL.md`](INSTALL.md).
+
 ---
 
 ## Quick start (run from source)
