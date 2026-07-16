@@ -20,7 +20,8 @@ module.exports = function(grunt) {
             'LICENSE',
             'main.js',
             'package.json',
-            'bower.json'
+            'bower.json',
+            'zowi_samples/**'
         ];
         if (includeWeb2board) {
             array = array.concat([
