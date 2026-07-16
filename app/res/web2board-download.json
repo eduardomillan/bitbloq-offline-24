@@ -1,17 +1,12 @@
 {
-    "version": "3.0.1",
-    "releaseTag": "web2board-v3.0.1",
-    "baseUrl": "https://github.com/eduardomillan/web2board/releases/download/web2board-v3.0.1/",
+    "version": "3.1.0",
+    "releaseTag": "v3.1.0",
+    "baseUrl": "https://github.com/eduardomillan/web2board/releases/download/v3.1.0/",
     "platforms": {
-        "win32": {
-            "file": "web2board-win32.zip",
-            "rootDir": "win32",
-            "sha256": "0b5b62ac18fb7425f6f4f173da4f9e63e594f89832cd38d1eeae7ebf60248d14"
-        },
         "linux": {
-            "file": "web2board-linux-x64.zip",
+            "file": "web2board-3.1.0-linux.zip",
             "rootDir": "linux",
-            "sha256": "ecce998c6d8b21a802b92a22e80735601ea272efe9d7a6b85bc6531e7fa61a84"
+            "sha256": "2a5908279db604def636f94608007573591cb0d3286538fbe363d8b07e178d64"
         }
     }
 }
