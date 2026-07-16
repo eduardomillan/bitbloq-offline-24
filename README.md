@@ -128,6 +128,12 @@ The build is driven by `grunt`. Available high-level targets:
 
 Each build writes to `dist/BitbloqOffline{OS}/`, ready to run or package.
 
+> **Electron binary is generated automatically.** The `build` task copies the
+> Electron executable from the local `node_modules/electron/dist` into the
+> matching `res/*-prebuilt` directory (as `Bitbloq` / `Bitbloq.exe` /
+> `Bitbloq.app`) before packaging. You do **not** need to download or commit the
+> binary: a plain `npm install` provides it. The generated binary is git-ignored.
+
 > **Linux note:** modern distributions use glibc 2.35+ / kernel 5.x. `main.js`
 > launches Electron with `--no-sandbox` and `--disable-dev-shm-usage` so the app
 > starts without root and without a large `/dev/shm`. A helper script to launch

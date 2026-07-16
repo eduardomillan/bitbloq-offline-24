@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Current version: **1.3.0-rc.1**
 
+### Changed
+- **Electron binary is now generated at build time.** The `build` task copies
+  the Electron executable from `node_modules/electron/dist` into
+  `res/*-prebuilt` (as `Bitbloq` / `Bitbloq.exe` / `Bitbloq.app`), so the ~114 MB
+  binary is no longer versioned or uploaded. `npm install` provides it. The
+  generated binary is git-ignored.
+
 ## [Unreleased]
 
 ## [1.2.3] - Deprecated / Obsolete

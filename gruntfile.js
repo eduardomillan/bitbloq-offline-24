@@ -260,6 +260,57 @@ module.exports = function(grunt) {
         }
     });
 
+    // Copia el ejecutable de Electron (node_modules/electron/dist) al prebuilt
+    // de cada SO con el nombre que espera el empaquetado (Bitbloq / Bitbloq.exe /
+    // Bitbloq.app). Así el binario NO se versiona ni se sube: se regenera en cada
+    // build desde la instalación local de Electron (presente tras `npm install`).
+    grunt.registerTask('electron-bin', 'Copy Electron binary into res/*-prebuilt', function(os) {
+        var fs = require('fs');
+        var path = require('path');
+        var electronDist = path.join('node_modules', 'electron', 'dist');
+
+        if (!fs.existsSync(electronDist)) {
+            grunt.log.error('node_modules/electron/dist not found. Run `npm install` first.');
+            return false;
+        }
+
+        if (os === 'linux' || os === 'linux-slim' || os === undefined) {
+            var srcLinux = path.join(electronDist, 'electron');
+            var dstLinux = path.join('res', 'linux-prebuilt', 'Bitbloq');
+            if (!fs.existsSync(srcLinux)) {
+                grunt.log.error('Electron binary not found at ' + srcLinux);
+                return false;
+            }
+            fs.writeFileSync(dstLinux, fs.readFileSync(srcLinux));
+            fs.chmodSync(dstLinux, 0o755);
+            grunt.log.writeln('Electron -> ' + dstLinux);
+        }
+
+        if (os === 'win' || os === 'windows' || os === 'windows-slim' || os === undefined) {
+            var srcWin = path.join(electronDist, 'electron.exe');
+            var dstWin = path.join('res', 'windows32-prebuilt', 'Bitbloq.exe');
+            if (!fs.existsSync(srcWin)) {
+                grunt.log.writeln('Skipping Windows binary (electron.exe not found in this platform).');
+            } else {
+                fs.writeFileSync(dstWin, fs.readFileSync(srcWin));
+                grunt.log.writeln('Electron -> ' + dstWin);
+            }
+        }
+
+        if (os === 'mac' || os === undefined) {
+            var srcMac = path.join(electronDist, 'Electron.app');
+            var dstMac = path.join('res', 'mac-prebuilt', 'Bitbloq.app');
+            if (!fs.existsSync(srcMac)) {
+                grunt.log.writeln('Skipping macOS binary (Electron.app not found in this platform).');
+            } else {
+                // Electron.app es un bundle; cópialo completo.
+                grunt.file.delete(dstMac, { force: true });
+                grunt.file.copy(srcMac, dstMac);
+                grunt.log.writeln('Electron -> ' + dstMac);
+            }
+        }
+    });
+
     grunt.registerTask('i18n', 'get all file of i18n', function() {
         grunt.task.run([
             'clean:i18n',
@@ -301,6 +352,7 @@ module.exports = function(grunt) {
                     'sass',
                     'svgstore',
                     'clean:windows',
+                    'electron-bin:win',
                     'copy:prebuiltWindows',
                     'copy:windows',
                     'shell:target'
@@ -311,6 +363,7 @@ module.exports = function(grunt) {
                     'sass',
                     'svgstore',
                     'clean:windowsSlim',
+                    'electron-bin:win',
                     'copy:prebuiltWindowsSlim',
                     'copy:windowsSlim',
                     'shell:target'
@@ -321,6 +374,7 @@ module.exports = function(grunt) {
                     'sass',
                     'svgstore',
                     'clean:mac',
+                    'electron-bin:mac',
                     'copy:prebuiltMac',
                     'copy:mac',
                     'exec:mac_python_symbolic_link',
@@ -332,6 +386,7 @@ module.exports = function(grunt) {
                     'sass',
                     'svgstore',
                     'clean:linux',
+                    'electron-bin:linux',
                     'copy:prebuiltLinux',
                     'copy:linux',
                     'shell:target'
@@ -342,6 +397,7 @@ module.exports = function(grunt) {
                     'sass',
                     'svgstore',
                     'clean:linuxSlim',
+                    'electron-bin:linux',
                     'copy:prebuiltLinuxSlim',
                     'copy:linuxSlim',
                     'shell:target'
