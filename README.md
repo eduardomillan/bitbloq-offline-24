@@ -1,171 +1,241 @@
-# Bitbloq Offline 
-
-[es_ES]
-
-ESTE PROYECTO ESTÁ DISCONTINUADO Y NO RECIBIRÁ SOPORTE
-
-Esta es la versión offline oficial del proyecto Bitbloq, una [herramienta de programación visual](https://es.wikipedia.org/wiki/Programaci%C3%B3n_visual) de [Arduino](https://www.arduino.cc/).
-
-Puedes utilizar la versión online [aquí](http://bitbloq.bq.com).
-
-En la versión actual soportamos las siguientes placas:
-
- - Arduino UNO
- - Freaduino UNO
- - BQ ZUM
-
-Y los siguientes robots:
-
- - ZOWI
-
-¿Utilizas otra placa o robot y quieres que la añadamos en Bitbloq? Escríbenos a soporte.bitbloq@bq.com e intentaremos hablar con el fabricante para que nos permita introducirlo en Bitbloq. 
-Por supuesto es un proyecto Open Source y también aceptamos contribuciones de cualquier persona siempre que sean correctas.
-
-Actualmente Bitbloq offline funciona en las siguientes plataformas:
-
- - Linux (Ubuntu 12.04 y superior, Fedora 21, Debian 8)
- - Mac OS X 10.9 o superior
- - Windows 7 y posterior, ambos 32 y 64 (la versión ARM de Windows no está soportada por ahora).
-
-Puedes encontrar los instaladores de la aplicación aquí:
-
- - [Linux](https://github.com/bq/bitbloq-offline/releases/download/latest/linux.zip)
- - [Mac](https://github.com/bq/bitbloq-offline/releases/download/latest/mac.zip)
- - [Windows 32 y 64](https://github.com/bq/bitbloq-offline/releases/download/latest/windows.zip)
-
-
-Notas:
- 
- - Es una aplicación portable, no requiere instalación ni permisos de administrador para ejecutarse, pero tu placa es posible que requiera drivers, hemos añadido algunos en la carpeta drivers de la aplicación. ¡ Acuérdate de instalarlos !
- 
- - Acuérdate de descomprimir el fichero que te descargas en una carpeta en la que luego el usuario que lo utilice tenga permisos, por ejemplo, en windows no la descomprimas directamente en "c:", o en la carpeta de "c:/Archivos de programa", ejemplos válidos son la carpeta "Documentos" del usuario o en el escritorio.
- 
- - ¿No te detecta la placa y está conectada el ordenador? Revisa [este documento](docs/motherboard_troubleshooting.pdf) y si sigues teniendo incidencias, no dudes en escríbirnos a soporte.bitbloq@bq.com.
-
-Recuerda que al ser una aplicación offline, no tendrás todas las ventajas ni novedades de la web. Te recomendamos que la uses solo cuando no tienes conexión estable a internet.
-
-![alt tag](docs/onlineVSoffline.jpg) 
-
 # Bitbloq Offline
 
-[en_GB]
+**Bitbloq Offline** is the desktop (Electron) build of [Bitbloq](https://bitbloq.bq.com), a
+visual programming environment for Arduino and a wide range of educational
+maker boards and robots (Zowi, mBot, Makeblock, BQ ZUM, eBotics, and many more).
 
-THIS PROJECT IS DISCONTINUED AND WILL NO RECEIVE FURTHER SUPPORT
+It bundles the **Bitbloq editor** (Angular + Blockly-based "bloqs" blocks)
+together with **Web2Board**, the companion service that flashes compiled
+programs to the physical boards over USB.
 
-This is the offline version of the Bitbloq project, a [visual programming tool](https://en.wikipedia.org/wiki/Visual_programming_language) for [Arduino](https://www.arduino.cc/).
+This repository is a maintained fork (originally from bq) adapted for modern
+Linux distributions (Ubuntu 22.04 / Lliurex 23-25 and similar) and for
+offline, air-gapped deployments.
 
-You can visit the online version [here](http://bitbloq.bq.com)
+> **Note on status:** the upstream `bq/bitbloq-offline` project is no longer
+> actively developed. This fork keeps the application working on current
+> operating systems and fixes board-flashing issues. It is **not** a
+> reimplementation and does not track the online bitbloq.bq.com service.
 
-The current version supports the following boards:
+---
 
- - Arduino UNO
- - Freaduino UNO
- - BQ ZUM
+## Table of contents
 
-And the following robots:
+- [Supported platforms](#supported-platforms)
+- [Downloads](#downloads)
+- [Quick start (run from source)](#quick-start-run-from-source)
+- [Building distributables](#building-distributables)
+- [Web2Board and the "slim" build](#web2board-and-the-slim-build)
+- [Internationalization](#internationalization)
+- [Project structure](#project-structure)
+- [Developer notes](#developer-notes)
+- [Troubleshooting](#troubleshooting)
+- [License](#license)
 
- - ZOWI
+---
 
-Do you have a board or robot that is not in Bitbloq? Email us to support.bitbloq.en@bq.com, and we will reach the manufacturer to introduce it on Bitbloq.
-Bitbloq is an Open Source project so we will accept contributions adding new boards / robots if they are correct.
+## Supported platforms
 
-In this platforms:
+| Platform            | Architectures        | Notes                                              |
+|---------------------|----------------------|----------------------------------------------------|
+| Linux (64-bit)      | x86_64               | Tested on Ubuntu 22.04 / Lliurex 23-25.            |
+| Windows             | 32-bit and 64-bit    | ARM edition of Windows is **not** supported.       |
+| macOS               | 64-bit (Intel)       |                                                    |
 
- - Linux (Ubuntu 12.04 and later, Fedora 21, Debian 8)
- - Mac OS X 10.9 or greater
- - Windows 7 and later, both 32 and 64 (ARM version os Windows is not suported for now).
+**Linux 32-bit builds have been removed** (see `CHANGELOG.md`). Only 64-bit
+Linux is produced.
 
-You can find binaries here:
+### Supported hardware
 
- - [Linux](https://github.com/bq/bitbloq-offline/releases/download/latest/linux.zip)
- - [Mac](https://github.com/bq/bitbloq-offline/releases/download/latest/mac.zip)
- - [Windows 32 y 64](https://github.com/bq/bitbloq-offline/releases/download/latest/windows.zip)
+Bitbloq programs run on a large set of boards and robots. The editor supports,
+among others:
 
-## Getting Started ##
+- Arduino UNO / MEGA 2560 / Leonardo / Nano
+- Freaduino UNO, BQ ZUM, BQ ZUM Box
+- Makeblock: mBot, mCore, Me Auriga, Me Orion, mRanger, Elecfreak kits
+- eBotics 4in1, FreaksCar, Ranger kits, Arduino starter kits
+- Robots: Zowi, and many PrintBots
 
-### Clone the repo:
-```
-git clone https://github.com/bq/bitbloq-offline.git
-```
-### Get into the directory:
-```
-cd bitbloq-offline/
-```
-### What you need:
+Need a board or robot that is not listed? Contributions that add correct board
+definitions are welcome (see [Developer notes](#developer-notes)).
 
-Tested with:
+---
 
-+ nodejs versions: 8.0.0
-+ npm versions: 5.0.0
+## Downloads
 
-### Install npm and Bower components:
-```
+Pre-built binaries are published as GitHub Releases on
+[eduardomillan/bitbloq-offline-24](https://github.com/eduardomillan/bitbloq-offline-24/releases):
+
+- **Linux (64-bit)** — `linux.zip`
+- **Windows (32/64-bit)** — `windows.zip`
+- **macOS** — `mac.zip`
+
+Web2Board is shipped **separately** and downloaded on demand by the application
+on first use (see [Web2Board and the "slim" build](#web2board-and-the-slim-build)).
+The Web2Board packages are published as release assets tagged
+`web2board-vX.Y.Z`.
+
+---
+
+## Quick start (run from source)
+
+Requirements:
+
+- **Node.js 8.x** and the matching **npm 5.x** (the legacy `grunt` toolchain
+  and `bower` dependencies are not compatible with newer Node majors).
+- **Electron 4.x** (installed locally as a dev dependency).
+- On Linux, the system libraries pulled in by `bower install` / build
+  (e.g. `libusb`, `pango`) and the board USB drivers in `app/res/drivers`.
+
+```bash
+# 1. Clone
+git clone https://github.com/eduardomillan/bitbloq-offline-24.git
+cd bitbloq-offline-24
+
+# 2. Install npm + bower components (bower runs automatically via postinstall)
 npm install
-```
 
-### Launch the app:
-```
+# 3. Launch the app (Electron)
 npm start
 ```
 
-## Packaging ##
+`npm start` runs `electron .`. For development with live reload of styles:
 
-Just build for all Operating systems:
+```bash
+# regenerate the SVG sprite + compile SCSS, then watch
+grunt svgstore
+grunt sass
+grunt watch
+```
 
-    grunt dist
+---
 
-Or depending on the operating system:
+## Building distributables
 
+The build is driven by `grunt`. Available high-level targets:
 
-- Windows:
+| Command                              | What it produces                                              |
+|--------------------------------------|---------------------------------------------------------------|
+| `grunt dist`                         | Full app for Windows, macOS and Linux (with bundled Web2Board). |
+| `grunt dist-slim`                    | App **without** bundled Web2Board (it is downloaded on demand). |
+| `grunt build:windows`                | Windows build only.                                           |
+| `grunt build:linux`                  | Linux build only.                                             |
+| `grunt build:mac`                    | macOS build only.                                             |
+| `grunt build:windows-slim`           | Slim Windows build.                                           |
+| `grunt build:linux-slim`             | Slim Linux build.                                             |
+| `grunt package-web2board`            | Packages Web2Board zips + manifest into `dist/web2board/`.     |
+| `grunt jshint`                       | Lint `Gruntfile.js` and `app/**/*.js`.                        |
 
-        grunt build:windows
-- Linux:
+Each build writes to `dist/BitbloqOffline{OS}/`, ready to run or package.
 
-        grunt build:linux
-- Mac:
+> **Linux note:** modern distributions use glibc 2.35+ / kernel 5.x. `main.js`
+> launches Electron with `--no-sandbox` and `--disable-dev-shm-usage` so the app
+> starts without root and without a large `/dev/shm`. A helper script to launch
+> the app on Linux is provided as well.
 
-        grunt build:mac
+---
 
-This will generate a `/dist/{os}` folder with the app ready to be launched.
+## Web2Board and the "slim" build
 
+**Web2Board** is the service that compiles Bitbloq programs and flashes them to
+the board. Historically it was bundled inside every distributable; because it
+is large and platform-specific, it is now:
 
-## App Structure ##
+- **Packaged separately** via `grunt package-web2board`, producing
+  `web2board-linux-x64.zip` and `web2board-win32.zip` plus a `web2board-download.json`
+  manifest (with SHA-256 checksums).
+- **Downloaded on demand**: the "slim" builds (`dist-slim`) omit Web2Board; the
+  first time the user flashes a program, the app fetches the correct package
+  from the configured GitHub release and verifies its checksum.
+
+The download descriptor lives at `app/res/web2board-download.json` and records
+the Web2Board `version`, the `releaseTag`, the `baseUrl` and per-platform
+`file` / `rootDir` / `sha256`. Update this file (and republish the
+`web2board-vX.Y.Z` release) when Web2Board changes. The CI workflow
+`.github/workflows/release-web2board.yml` automates that packaging and release.
+
+---
+
+## Internationalization
+
+UI strings live under `app/res/locales/*.json` (one file per language code).
+Translation is handled by **angular-translate** with a static file loader
+(`res/locales/<code>.json`).
+
+Supported languages (selector order is alphabetical by language code):
+
+`bg-BG`, `ca-ES`, `de-DE`, `en-GB`, `es-ES`, `eu-ES`, `fr-FR`, `gl`, `it-IT`,
+`nl-NL`, `pt-PT`, `ru-RU`, `zh-CN`.
+
+To add a language:
+
+1. Copy `app/res/locales/en-GB.json` to `app/res/locales/<code>.json` and
+   translate the values.
+2. Add the language name entry (`"<code>": "<Native name>"`) to **every** existing
+   locale file so the selector shows the new language in all languages.
+3. Register the code in `app/scripts/services/commonModals.js`
+   (`modaloptions`) and in `tasks/poeditor.js` (`langKeys`).
+
+> **Block names are translated by a separate system.** The block editor ("bloqs")
+> keeps its own translation tables; adding a UI language does not automatically
+> translate block labels.
+
+---
+
+## Project structure
+
 ```
 app
-├── fonts // App fonts
-├── images // App images
-│   ├── boards // Images for boards
-│   ├── components // Images for components
-│   ├── icons // Icons for svgstore
-│   └── robots // Images for robots
-├── res // Common resources
-│   ├── locales // Language translations
-│   ├── menus // JSON files for generating menus
-│   └── web2board // web2board nested app
-├── scripts // Angular scripts
-│   ├── controllers // Angular controllers
-│   ├── directives // Angular directives
-│   ├── factories // Angular factories
-│   └── services // Angular services
-├── styles // App styles
-│   ├── components // Styles for components
-│   ├── vendor // Vendor styles
-│   └── views // Styles for views
-└── views // All views
-│   ├── components // Views for components
-│   └── view.html // App normal view
-└── main.js // Electron config
+├── fonts            # App fonts
+├── images           # App images (boards, components, robots, svgstore icons)
+├── res              # Common resources
+│   ├── locales      # Language translations (angular-translate)
+│   ├── menus        # JSON files for generating menus
+│   ├── web2board    # Web2Board nested app (per-OS launchers)
+│   └── drivers      # USB drivers for boards
+├── scripts          # Angular app (controllers, directives, factories, services)
+├── styles           # SCSS / compiled CSS
+└── views            # HTML views
+main.js              # Electron entry point / window + launch switches
+res                  # Per-OS prebuilt Electron runtimes (linux, mac, windows32, …)
+tasks                # Custom grunt tasks (e.g. web2board manifest generator)
 ```
 
+---
 
+## Developer notes
 
-## Developing ##
+- **Node toolchain:** the project targets **Node 8 / npm 5**. A `postinstall`
+  script runs `bower install`. Newer Node versions break the legacy `grunt`
+  plugins; if `npm install` fails on peer deps, install with
+  `npm install --legacy-peer-deps`.
+- **Theming:** styles are SCSS compiled to `app/styles/main.css` via
+  `grunt sass` (Dart Sass).
+- **SVG icons:** `grunt svgstore` builds a sprite from `app/images/icons`.
+- **Web2Board manifest:** `tasks/lib/web2board-manifest.js` generates
+  `app/res/web2board-download.json` from the packaged zips.
+- **Contributing:** pull requests that add board/robot definitions or fix
+  platform issues are welcome. Please run `grunt jshint` before submitting.
+- **Versioning:** this project follows [Semantic Versioning](https://semver.org/)
+  (see `package.json` `version` and `CHANGELOG.md`).
 
-You can set your own config in `main.js` file.  
+---
 
-Grunt tasks
+## Troubleshooting
 
-    grunt svgstore // Generates an svg sprite from icons folder.
-    grunt sass // Compiles scss files to a single main.css file.
-    grunt watch // Watches yout changes and reloads the app.
+- **Board not detected although it is connected?** Check the board
+  troubleshooting guide in `docs/` and make sure the USB drivers from
+  `app/res/drivers` are installed.
+- **App won't start on Linux:** ensure you are not running as root and that
+  `/dev/shm` is available; the app already passes `--no-sandbox` and
+  `--disable-dev-shm-usage`.
+- **Web2Board download fails:** verify internet access on first flash, or
+  pre-place the Web2Board package. The integrity of each download is verified
+  against the SHA-256 in `app/res/web2board-download.json`.
+
+---
+
+## License
+
+See the license file shipped with the repository. Bitbloq is free/open-source
+software; board definitions and assets may carry their own licenses.
