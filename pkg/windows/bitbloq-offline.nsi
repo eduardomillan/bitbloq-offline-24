@@ -3,7 +3,7 @@
 ; Run: makensis pkg/windows/bitbloq-offline.nsi
 
 !define APPNAME "Bitbloq Offline"
-!define APPVERSION "1.3.0-rc.1"
+!define APPVERSION "1.4.0"
 !define PUBLISHER "Eduardo Millán"
 !define WEBSITE "https://github.com/eduardomillan/bitbloq-offline-24"
 !define SRC "/home/eduardo/bitbloq-offline-24/dist/BitbloqOfflineWin"

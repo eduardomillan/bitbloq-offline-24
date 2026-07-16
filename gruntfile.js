@@ -401,7 +401,6 @@ module.exports = function(grunt) {
                     'copy:prebuiltMac',
                     'copy:mac',
                     'copy:zowiSamplesMac',
-                    'exec:mac_python_symbolic_link',
                     'shell:target'
                 ]);
                 break;
