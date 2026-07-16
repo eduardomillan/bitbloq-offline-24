@@ -30,7 +30,6 @@ Actualmente Bitbloq offline funciona en las siguientes plataformas:
 Puedes encontrar los instaladores de la aplicación aquí:
 
  - [Linux](https://github.com/bq/bitbloq-offline/releases/download/latest/linux.zip)
- - [Linux 32](https://github.com/bq/bitbloq-offline/releases/download/latest/linux32.zip)
  - [Mac](https://github.com/bq/bitbloq-offline/releases/download/latest/mac.zip)
  - [Windows 32 y 64](https://github.com/bq/bitbloq-offline/releases/download/latest/windows.zip)
 
@@ -79,7 +78,6 @@ In this platforms:
 You can find binaries here:
 
  - [Linux](https://github.com/bq/bitbloq-offline/releases/download/latest/linux.zip)
- - [Linux 32](https://github.com/bq/bitbloq-offline/releases/download/latest/linux32.zip)
  - [Mac](https://github.com/bq/bitbloq-offline/releases/download/latest/mac.zip)
  - [Windows 32 y 64](https://github.com/bq/bitbloq-offline/releases/download/latest/windows.zip)
 

@@ -91,7 +91,7 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     cwd: '',
-                    src: getCopySrc("win32").concat(['!app/res/web2board/linux/**', '!app/res/web2board/darwin/**', '!app/res/web2board/linux32/**']),
+                    src: getCopySrc("win32").concat(['!app/res/web2board/linux/**', '!app/res/web2board/darwin/**']),
                     dest: 'dist/BitbloqOfflineWin/data/resources/app/'
                 }]
             },
@@ -99,16 +99,8 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     cwd: '',
-                    src: getCopySrc("linux").concat(['!app/res/web2board/win32/**', '!app/res/web2board/darwin/**', '!app/res/web2board/linux32/**']),
+                    src: getCopySrc("linux").concat(['!app/res/web2board/win32/**', '!app/res/web2board/darwin/**']),
                     dest: 'dist/BitbloqOfflineLinux/resources/app/'
-                }]
-            },
-            linux32: {
-                files: [{
-                    expand: true,
-                    cwd: '',
-                    src: getCopySrc("linux32").concat(['!app/res/web2board/win32/**', '!app/res/web2board/darwin/**', '!app/res/web2board/linux/**']),
-                    dest: 'dist/BitbloqOfflineLinux32/resources/app/'
                 }]
             },
             linuxArm: {
@@ -123,7 +115,7 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     cwd: '',
-                    src: getCopySrc("darwin").concat(['!app/res/web2board/linux/**', '!app/res/web2board/win32/**', '!app/res/web2board/linux32/**']),
+                    src: getCopySrc("darwin").concat(['!app/res/web2board/linux/**', '!app/res/web2board/win32/**']),
                     dest: 'dist/BitbloqOfflineMac/Bitbloq.app/Contents/Resources/app/'
                 }]
             },
@@ -147,7 +139,7 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     cwd: '',
-                    src: getCopySrc("win32").concat(['!app/res/web2board/linux/**', '!app/res/web2board/darwin/**', '!app/res/web2board/linux32/**']),
+                    src: getCopySrc("win32").concat(['!app/res/web2board/linux/**', '!app/res/web2board/darwin/**']),
                     dest: 'dist/BitbloqOfflineWin/data/resources/app/'
                 }]
             },
@@ -165,14 +157,6 @@ module.exports = function(grunt) {
                     cwd: 'res/linux-prebuilt',
                     src: ['**', '!pango/**'],
                     dest: 'dist/BitbloqOfflineLinux/'
-                }]
-            },
-            prebuiltLinux32: {
-                files: [{
-                    expand: true,
-                    cwd: 'res/linux32-prebuilt',
-                    src: ['**'],
-                    dest: 'dist/BitbloqOfflineLinux32/'
                 }]
             },
             prebuiltLinuxArm: {
@@ -211,7 +195,6 @@ module.exports = function(grunt) {
         clean: {
             windows: ['dist/BitbloqOfflineWin/'],
             linux: ['dist/BitbloqOfflineLinux/'],
-            linux32: ['dist/BitbloqOfflineLinux32/'],
             linuxArm: ['dist/BitbloqOfflineLinuxArm/'],
             mac: ['dist/BitbloqOfflineMac/'],
             windowsSlim: ['dist/BitbloqOfflineWinSlim/'],

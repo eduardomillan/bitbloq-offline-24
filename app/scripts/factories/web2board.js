@@ -36,7 +36,7 @@ angular.module('bitbloqOffline')
             if (process.arch === "x64") {
                 return common.appPath + "/app/res/web2board/linux/web2boardLauncher";
             }
-            return common.appPath + "/app/res/web2board/linux32/web2boardLauncher";
+            return null;
         }
 
         function getWeb2boardCommand() {
