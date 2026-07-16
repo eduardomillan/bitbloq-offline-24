@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Bitbloq Offline
+GenericName=Visual programming
+Comment=Program Arduino, Zowi and PrintBot with blocks
+Exec=AppRun
+Icon=bitbloq-offline
+Terminal=false
+Categories=Education;Development;Electronics;
+Keywords=bitbloq;arduino;zowi;robotics;programming;
+StartupWMClass=Bitbloq

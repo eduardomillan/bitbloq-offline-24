@@ -255,6 +255,22 @@ module.exports = function(grunt) {
             },
             'gen-web2board-manifest': {
                 command: 'node tasks/lib/web2board-manifest.js'
+            },
+            // --- Native packages (.deb / AppImage / NSIS) ---
+            'pkg-deb-bitbloq': {
+                command: 'node tasks/lib/pkg-deb.js bitbloq'
+            },
+            'pkg-appimage-bitbloq': {
+                command: 'node tasks/lib/pkg-appimage.js bitbloq'
+            },
+            'pkg-deb-web2board': {
+                command: 'node tasks/lib/pkg-deb.js web2board'
+            },
+            'pkg-appimage-web2board': {
+                command: 'node tasks/lib/pkg-appimage.js web2board'
+            },
+            'pkg-nsis-win': {
+                command: 'makensis pkg/windows/bitbloq-offline.nsi'
             }
         }
     });
@@ -374,6 +390,29 @@ module.exports = function(grunt) {
         'shell:zip-web2board-linux',
         'shell:zip-web2board-win',
         'shell:gen-web2board-manifest'
+    ]);
+
+    // --- Native packages: .deb, AppImage and Windows installer ---
+    // These produce installable artifacts from the already-built dist/ folders.
+    //   - bitbloq .deb / AppImage    -> from dist/BitbloqOfflineLinux
+    //   - web2board .deb / AppImage  -> from app/res/web2board/linux
+    //   - windows installer (.exe)   -> from dist/BitbloqOfflineWin (via NSIS)
+    grunt.registerTask('pkg-deb-bitbloq', ['shell:pkg-deb-bitbloq']);
+    grunt.registerTask('pkg-appimage-bitbloq', ['shell:pkg-appimage-bitbloq']);
+    grunt.registerTask('pkg-deb-web2board', ['shell:pkg-deb-web2board']);
+    grunt.registerTask('pkg-appimage-web2board', ['shell:pkg-appimage-web2board']);
+    grunt.registerTask('pkg-nsis-win', ['shell:pkg-nsis-win']);
+
+    grunt.registerTask('package-linux', [
+        'pkg-deb-bitbloq',
+        'pkg-appimage-bitbloq',
+        'pkg-deb-web2board',
+        'pkg-appimage-web2board'
+    ]);
+
+    grunt.registerTask('package-all', [
+        'package-linux',
+        'pkg-nsis-win'
     ]);
 
     // Default task(s).

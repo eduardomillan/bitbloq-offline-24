@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Web2Board
+GenericName=Board flashing service
+Comment=Compile and flash Bitbloq programs to the board (port 9877)
+Exec=/usr/bin/web2board
+Icon=web2board
+Terminal=false
+Categories=Electronics;Development;
+Keywords=web2board;bitbloq;arduino;flash;

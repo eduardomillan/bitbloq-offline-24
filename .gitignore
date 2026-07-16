@@ -9,3 +9,6 @@ package-lock.json
 res/linux-prebuilt/Bitbloq
 res/windows32-prebuilt/Bitbloq.exe
 res/mac-prebuilt/Bitbloq.app
+
+# AppImage extract artifacts
+squashfs-root/

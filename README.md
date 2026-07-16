@@ -126,9 +126,21 @@ The build is driven by `grunt`. Available high-level targets:
 | `grunt build:windows-slim`           | Slim Windows build.                                           |
 | `grunt build:linux-slim`             | Slim Linux build.                                             |
 | `grunt package-web2board`            | Packages Web2Board zips + manifest into `dist/web2board/`.     |
+| `grunt package-linux`                | Builds `.deb` + AppImage for Bitbloq and Web2Board.           |
+| `grunt pkg-nsis-win`                 | Builds the Windows installer `.exe` (needs `makensis`).       |
+| `grunt package-all`                  | `package-linux` + `pkg-nsis-win`.                             |
 | `grunt jshint`                       | Lint `Gruntfile.js` and `app/**/*.js`.                        |
 
 Each build writes to `dist/BitbloqOffline{OS}/`, ready to run or package.
+
+> **Native packages** (`.deb`, AppImage, Windows installer) are produced from
+> those `dist/` folders by the `package-*` tasks. They require a few external
+> tools on the build machine: `dpkg-deb` + `fakeroot` (`.deb`), `appimagetool`
+> (AppImage), and `makensis` from NSIS (Windows `.exe`). The packaging scripts
+> live in `tasks/lib/pkg-deb.js`, `tasks/lib/pkg-appimage.js` and
+> `pkg/windows/bitbloq-offline.nsi`; metadata and launchers in `pkg/linux/*`.
+> See [`INSTALL.md`](INSTALL.md) for what each artifact contains and how end
+> users install them.
 
 > **Electron binary is generated automatically.** The `build` task copies the
 > Electron executable from the local `node_modules/electron/dist` into the
@@ -176,12 +188,40 @@ BitbloqOfflineLinux/
 ├── Bitbloq              # app launcher
 ├── bitbloq.sh           # Linux helper script
 ├── zowi_samples/        # ← Zowi examples, at the build root
-│   └── simple_smile.bitbloq
+│   ├── simple_smile.bitbloq        # Minimal Zowi blocks example (smile)
+│   ├── zowi_factory_base.bitbloq   # Factory firmware (ZOWI_BASE_v2)
+│   ├── zowi_factory_hello.bitbloq  # Factory/Hello config (factoryZowi)
+│   ├── zowi_game_alarm.bitbloq     # Game: Alarm v2
+│   └── zowi_game_adivinawi.bitbloq # Game: Adivinawi v2
 └── resources/...
 ```
 
 This keeps the examples easy to find for children: just open the unzipped
 folder and double-click any `.bitbloq` inside `zowi_samples/`.
+
+### Factory firmware samples (hybrid format)
+
+The samples named `zowi_*` contain the **real Zowi factory firmware** (the
+`.ino` programs shipped on the robot) embedded in the project's Arduino `code`
+field. They use a hybrid format: a minimal Zowi block model (`zowiHome` in
+`setup`, `zowiMouth` in `loop`) so the project opens as a valid Zowi project in
+bitbloq-offline, while the full factory firmware lives in the **Code** tab and
+is what gets flashed to the robot.
+
+These come from `../zowiLibs/code/`:
+
+| `.bitbloq`                   | Source `.ino`                                  |
+|------------------------------|-----------------------------------------------|
+| `zowi_factory_base.bitbloq`  | `base/ZOWI_BASE_v2.ino`                       |
+| `zowi_factory_hello.bitbloq` | `factoryZowi/factoryZowi.ino`                 |
+| `zowi_game_alarm.bitbloq`    | `games/ZOWI_Alarm_v2/ZOWI_Alarm_v2.ino`       |
+| `zowi_game_adivinawi.bitbloq`| `games/ZOWI_Adivinawi_v2/ZOWI_Adivinawi_v2.ino`|
+
+Note: the firmware requires the Zowi Arduino libraries (`Servo`, `Oscillator`,
+`EEPROM`, `BatReader`, `US`, `LedMatrix`, `EnableInterrupt`, `ZowiSerialCommand`,
+`Zowi`) to be available in the compile environment (Web2Board/Arduino). The
+blocks are illustrative only — editing them regenerates the `code` field, so the
+factory firmware is preserved as-is in the embedded `code`.
 
 ---
 

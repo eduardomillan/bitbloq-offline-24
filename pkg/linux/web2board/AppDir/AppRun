@@ -1,0 +1,4 @@
+#!/bin/sh
+# AppRun for the Web2Board AppImage (standalone service).
+HERE="$(dirname "$(readlink -f "${0}")")"
+exec "${HERE}/web2boardLauncher" --port 9877

@@ -21,6 +21,25 @@ Get the build for your platform from the
 | Linux (64-bit) | `bitbloq-offline-linux-1.3.0-rc.1.zip` |
 | Windows (64/32-bit) | `bitbloq-offline-windows-1.3.0-rc.1.zip` |
 
+In addition to the zips, the following **native installers** are published for
+this release:
+
+| Format | Bitbloq Offline | Web2Board (standalone) |
+|--------|-----------------|------------------------|
+| Linux `.deb` | `bitbloq_1.3.0-rc.1_amd64.deb` | `web2board_2.1.3_amd64.deb` |
+| Linux AppImage | `BitbloqOffline-1.3.0-rc.1.AppImage` | `Web2Board-2.1.3.AppImage` |
+| Windows installer | `bitbloq-offline-setup-1.3.0-rc.1.exe` | (bundled inside Bitbloq) |
+
+- **Bitbloq `.deb`** installs to `/opt/bitbloq-offline` and adds
+  `/usr/bin/bitbloq-offline` plus a menu entry. The `.deb` already bundles
+  Web2Board, so no separate download is needed for normal use.
+- **Web2Board `.deb` / AppImage** are provided as a *standalone* service package
+  (for repairing or running Web2Board on its own). Bitbloq normally launches its
+  own bundled Web2Board automatically.
+- The **Windows installer** puts Bitbloq in `C:\Program Files\BitbloqOffline`,
+  creates Start Menu and Desktop shortcuts, and leaves the board drivers in the
+  `drivers\` folder for manual install.
+
 Unzip it anywhere you like. You do **not** need administrator rights to run the
 app — just unzip and launch.
 
@@ -57,7 +76,39 @@ or just double-click `Bitbloq`. The `bitbloq.sh` script sets the environment
 variables needed on modern distributions (`NO_AT_BRIDGE=1`, no forced old
 `pango`) so the interface renders correctly.
 
-### 2.3 Give your user access to the board (serial port)
+### 2.3 Install from the `.deb` package (recommended on Debian/Ubuntu)
+
+Download `bitbloq_1.3.0-rc.1_amd64.deb` and install it:
+
+```bash
+sudo dpkg -i bitbloq_1.3.0-rc.1_amd64.deb
+sudo apt-get install -f   # only if dpkg reports missing dependencies
+```
+
+This installs the app under `/opt/bitbloq-offline` and a launcher at
+`/usr/bin/bitbloq-offline`. After that you can start it from the applications
+menu or by running `bitbloq-offline` in a terminal. Web2Board is bundled inside
+the package and starts automatically.
+
+To remove it:
+
+```bash
+sudo dpkg -r bitbloq-offline
+```
+
+### 2.4 Run from the AppImage
+
+The AppImage is a single self-contained file — no installation needed:
+
+```bash
+chmod +x BitbloqOffline-1.3.0-rc.1.AppImage
+./BitbloqOffline-1.3.0-rc.1.AppImage
+```
+
+It needs FUSE to mount itself; on a normal desktop that is already available.
+Web2Board is bundled and starts automatically.
+
+### 2.5 Give your user access to the board (serial port)
 
 If the board is not detected when you plug it in, add your user to the
 `dialout` group and log out/in (or reboot):
@@ -83,7 +134,21 @@ Then unplug and replug the board. No extra USB drivers are needed on Linux.
 - When you first flash a program, Windows may ask for administrator rights to
   install the board drivers. Allow it.
 
-### 3.2 Run
+### 3.2 Install from the setup executable (recommended)
+
+Download `bitbloq-offline-setup-1.3.0-rc.1.exe` and double-click it. The
+installer:
+
+- installs Bitbloq in `C:\Program Files\BitbloqOffline`,
+- creates **Start Menu** and **Desktop** shortcuts,
+- leaves the board drivers in the `drivers\` folder (install them if the board
+  is not detected),
+- adds an **Uninstall** entry in the Start Menu and in *Programs and Features*.
+
+On first launch Windows may show a SmartScreen / "unknown publisher" warning —
+choose **Run anyway** (the app is not code-signed).
+
+### 3.3 Run from the zip (portable)
 
 Unzip the file and double-click `Bitbloq.exe`. On first launch Windows might
 show a SmartScreen / "unknown publisher" warning — choose **Run anyway**
