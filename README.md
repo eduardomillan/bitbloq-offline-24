@@ -162,6 +162,27 @@ the Web2Board `version`, the `releaseTag`, the `baseUrl` and per-platform
 
 ---
 
+## Zowi example projects
+
+The `zowi_samples/` folder at the repository root contains ready-to-open
+Bitbloq project files for the **Zowi** robot (a starting point for kids). On
+every `build:*`, these files are copied to the **root of the unpacked build
+directory** (next to the `Bitbloq` launcher), e.g.:
+
+```
+BitbloqOfflineLinux/
+├── Bitbloq              # app launcher
+├── bitbloq.sh           # Linux helper script
+├── zowi_samples/        # ← Zowi examples, at the build root
+│   └── simple_smile.bitbloq
+└── resources/...
+```
+
+This keeps the examples easy to find for children: just open the unzipped
+folder and double-click any `.bitbloq` inside `zowi_samples/`.
+
+---
+
 ## Internationalization
 
 UI strings live under `app/res/locales/*.json` (one file per language code).

@@ -20,8 +20,7 @@ module.exports = function(grunt) {
             'LICENSE',
             'main.js',
             'package.json',
-            'bower.json',
-            'zowi_samples/**'
+            'bower.json'
         ];
         if (includeWeb2board) {
             array = array.concat([
@@ -174,6 +173,38 @@ module.exports = function(grunt) {
                     cwd: 'res/linux-prebuilt',
                     src: ['**', '!pango/**'],
                     dest: 'dist/BitbloqOfflineLinuxSlim/'
+                }]
+            },
+            zowiSamples: {
+                files: [{
+                    expand: true,
+                    cwd: 'zowi_samples',
+                    src: ['**'],
+                    dest: 'dist/BitbloqOfflineLinux/zowi_samples/'
+                }]
+            },
+            zowiSamplesWin: {
+                files: [{
+                    expand: true,
+                    cwd: 'zowi_samples',
+                    src: ['**'],
+                    dest: 'dist/BitbloqOfflineWin/zowi_samples/'
+                }]
+            },
+            zowiSamplesMac: {
+                files: [{
+                    expand: true,
+                    cwd: 'zowi_samples',
+                    src: ['**'],
+                    dest: 'dist/BitbloqOfflineMac/zowi_samples/'
+                }]
+            },
+            zowiSamplesSlim: {
+                files: [{
+                    expand: true,
+                    cwd: 'zowi_samples',
+                    src: ['**'],
+                    dest: 'dist/BitbloqOfflineLinuxSlim/zowi_samples/'
                 }]
             }
         },
@@ -356,6 +387,7 @@ module.exports = function(grunt) {
                     'electron-bin:win',
                     'copy:prebuiltWindows',
                     'copy:windows',
+                    'copy:zowiSamplesWin',
                     'shell:target'
                 ]);
                 break;
@@ -367,6 +399,7 @@ module.exports = function(grunt) {
                     'electron-bin:win',
                     'copy:prebuiltWindowsSlim',
                     'copy:windowsSlim',
+                    'copy:zowiSamplesWin',
                     'shell:target'
                 ]);
                 break;
@@ -378,6 +411,7 @@ module.exports = function(grunt) {
                     'electron-bin:mac',
                     'copy:prebuiltMac',
                     'copy:mac',
+                    'copy:zowiSamplesMac',
                     'exec:mac_python_symbolic_link',
                     'shell:target'
                 ]);
@@ -390,6 +424,7 @@ module.exports = function(grunt) {
                     'electron-bin:linux',
                     'copy:prebuiltLinux',
                     'copy:linux',
+                    'copy:zowiSamples',
                     'shell:target'
                 ]);
                 break;
@@ -401,6 +436,7 @@ module.exports = function(grunt) {
                     'electron-bin:linux',
                     'copy:prebuiltLinuxSlim',
                     'copy:linuxSlim',
+                    'copy:zowiSamplesSlim',
                     'shell:target'
                 ]);
                 break;

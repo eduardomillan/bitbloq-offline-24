@@ -62,9 +62,22 @@ Current version: **1.3.0-rc.1**
   removed the corresponding exclusions and the Linux 32-bit Web2Board launcher
   fallback in `web2board.js` (non-x64 Linux now uses the on-demand download).
   Removed the "Linux 32" links from the README. Only 64-bit Linux is built.
+- **Redundant bundled `libusb`.** Removed `res/linux-prebuilt/libusb/` (the
+  legacy `libusb-0.1.so.4` copy). The Electron app does not use libusb directly
+  on Linux; board flashing is handled by Web2Board, which ships its own libusb
+  inside its toolchain and runs with `LD_LIBRARY_PATH` set to its own folder.
+  USB/serial access on Linux relies on the kernel + `udev` (add the user to the
+  `dialout` group), not on this file.
 
 ### Fixed
 - Board flashing and USB detection issues on current Linux kernels/glibc.
+
+### Added
+- **Zowi example projects at the build root.** The `zowi_samples/` folder is
+  copied to the root of each unpacked build (next to the `Bitbloq` launcher, as
+  `zowi_samples/`), so kids can open the examples directly from the unzipped
+  folder. Wired into `build:*` via new `copy:zowiSamples*` targets (and removed
+  from the app bundle in `getCopySrc`).
 
 ---
 
