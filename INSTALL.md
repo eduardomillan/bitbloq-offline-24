@@ -190,6 +190,35 @@ and is **no longer bundled** inside Bitbloq. Instead, on first use Bitbloq
 > **No manual install required.** The download/verify/launch is fully automatic.
 > You only ever run Web2Board through Bitbloq.
 
+### 4.1 Re-downloading Web2Board (e.g. after deleting the folder)
+
+Web2Board is installed under the application's user-data folder:
+
+| Platform | Install path |
+|----------|--------------|
+| Linux | `~/.config/bitbloq-offline/web2board/` |
+| Windows | `%APPDATA%\bitbloq-offline\web2board\` |
+
+Inside that folder, the platform sub-directory (`linux/` or `win32/`) holds the
+launcher (`web2boardLauncher` / `web2boardLauncher.exe`) plus the rest of the
+package.
+
+If you delete `~/.config/bitbloq-offline/web2board` manually, **Bitbloq will
+download Web2Board again automatically**. On the next time you flash/upload a
+program, Bitbloq checks for the launcher in that folder; when it is missing it
+re-downloads the matching package from the `eduardomillan/web2board` release,
+re-verifies its SHA-256, unzips it into the user-data folder and restores the
+execute permissions — so you end up with a fresh, working copy. The download
+only happens once (when needed) and requires an internet connection at that
+moment; after that, Web2Board starts from the local copy again.
+
+> **What exactly triggers a re-download:** the check looks only for the
+> *launcher* file inside the platform sub-directory. Deleting the whole
+> `web2board` folder always triggers it. Deleting just the temporary zip in the
+> OS temp directory does **not** (the extracted copy is still present), and
+> deleting everything except the launcher also does **not** trigger a re-download
+> since the launcher is still found.
+
 ---
 
 ## 5. Make Bitbloq and Web2Board communicate
