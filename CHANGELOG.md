@@ -5,11 +5,22 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-Current version: **1.2.3**
+Current version: **1.3.0-rc.1**
 
 ## [Unreleased]
 
-## [1.2.3] - 2026-07-16
+## [1.2.3] - Deprecated / Obsolete
+
+> **Deprecated.** This was the last release of the original `bq/bitbloq-offline`
+> lineage, used as the baseline before this fork. It does **not** work on modern
+> systems (Ubuntu 22.04 / Lliurex 23+, current Electron/glibc) and is kept only
+> for historical reference. Use `1.3.0-rc.1` or later instead.
+
+## [1.3.0-rc.1] - 2026-07-16
+
+> First release candidate of the maintained fork. This is the first build
+> intended to be functional on modern systems (Ubuntu 22.04 / Lliurex 23-25,
+> current Electron and glibc). Please test and report issues.
 
 ### Added
 - **Bulgarian (bg-BG) language.** New locale `app/res/locales/bg-BG.json`
