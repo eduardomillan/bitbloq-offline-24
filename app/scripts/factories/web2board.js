@@ -117,7 +117,7 @@ angular.module('bitbloqOffline')
                 return $q.when(true);
             }
             var lastPercent = -1;
-            alertsService.add('web2board_toast_downloading', 'web2board', 'loading', undefined, 0);
+            alertsService.add('web2board_toast_downloading', 'web2board', 'loading');
             return web2boardInstaller.ensureInstalled(function (received, total) {
                 var percent = Math.round((received / total) * 100);
                 if (percent !== lastPercent) {
@@ -127,7 +127,7 @@ angular.module('bitbloqOffline')
                     });
                 }
             }).then(function () {
-                alertsService.add('web2board_toast_downloadFinished', 'web2board', 'ok', 3000);
+                alertsService.add('web2board_toast_downloading', 'web2board', 'loading', undefined, 100);
                 return true;
             }, function (error) {
                 alertsService.add('alert-web2board-download-error', 'web2board', 'warning', undefined, error && error.message);
