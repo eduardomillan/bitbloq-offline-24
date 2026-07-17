@@ -155,6 +155,11 @@ angular.module('bitbloqOffline')
             var boardReference = _.find($scope.hardware.boardList, function(b) {
                 return b.name === $scope.project.hardware.board;
             });
+            if (!boardReference) {
+                boardReference = _.find($scope.hardware.boardList, function(b) {
+                    return b.id === $scope.project.hardware.board;
+                });
+            }
             web2board.serialMonitor(boardReference);
         }
 
@@ -170,17 +175,16 @@ angular.module('bitbloqOffline')
                 var userData = nodeRemote.app.getPath('userData');
                 var logsDir = nodeFs.join(userData, 'logs');
                 var logFile = nodeFs.join(logsDir, 'bitbloq-offline.log');
-                // Asegura que la carpeta de logs exista aunque la app todavía no
-                // haya escrito ningún log (showItemInFolder necesita una ruta
-                // existente para poder abrir el gestor de archivos).
+                // Electron 4 no tiene shell.openPath; showItemInFolder necesita un
+                // archivo existente. Creamos la carpeta y el archivo de log si no
+                // existen para poder abrir el gestor de archivos sobre él.
                 if (!nodeFs.existsSync(logsDir)) {
                     nodeFs.mkdirSync(logsDir, { recursive: true });
                 }
-                if (nodeFs.existsSync(logFile)) {
-                    nodeRemote.shell.showItemInFolder(logFile);
-                } else {
-                    nodeRemote.shell.openPath(logsDir);
+                if (!nodeFs.existsSync(logFile)) {
+                    nodeFs.writeFileSync(logFile, '');
                 }
+                nodeRemote.shell.showItemInFolder(logFile);
             } catch (e) {
                 alertsService.add('alert-open-logs-failed', 'web2board', 'warning');
             }
