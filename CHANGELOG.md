@@ -5,7 +5,16 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-Current version: **2.0.0**
+Current version: **2.0.1**
+
+## [2.0.1] - 2026-07-17
+
+### Fixed
+- **Graceful shutdown when the local compiler port (9877) is already in use.**
+  If another instance of Bitbloq Offline is already running, `localCompilerServer`
+  now catches the `EADDRINUSE`/`EACCES` listen error and the app shows a clear
+  error dialog ("already running") before quitting, instead of crashing with an
+  uncaught `listen` exception at runtime.
 
 ## [2.0.0] - 2026-07-17
 

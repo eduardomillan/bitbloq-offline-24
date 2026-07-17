@@ -32,10 +32,29 @@ app.on('window-all-closed', function() {
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
     // Arranca el servicio local de compilación (arduino-cli) en ws://127.0.0.1:9877
-    try {
-        localCompilerServer.startServer();
-    } catch (e) {
-        console.error('No se pudo arrancar localCompilerServer:', e);
+    var compilerStarted = localCompilerServer.startServer(function(err) {
+        // El puerto 9877 ya está en uso: casi siempre hay otra instancia de
+        // Bitbloq Offline ejecutándose. Avisamos al usuario y cerramos de forma
+        // controlada en lugar de dejar que el error de "listen" caiga en tiempo
+        // de ejecución.
+        var ocupado = err && (err.code === 'EADDRINUSE' || err.code === 'EACCES');
+        var mensaje = ocupado
+            ? 'No se puede iniciar Bitbloq Offline porque ya hay otra instancia ' +
+              'en ejecución (el puerto 9877 está ocupado). Ciérrala y vuelve a ' +
+              'intentarlo.'
+            : 'No se pudo iniciar el servicio de compilación local:\n' +
+              (err && err.message ? err.message : err);
+        console.error('[localCompilerServer] fallo al arrancar:', err);
+        if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.destroy();
+        }
+        require('electron').dialog.showErrorBox('Bitbloq Offline', mensaje);
+        app.quit();
+    });
+
+    if (!compilerStarted) {
+        // startServer ya invocó el callback de error para avisar y cerrar.
+        return;
     }
 
     // Create the browser window.

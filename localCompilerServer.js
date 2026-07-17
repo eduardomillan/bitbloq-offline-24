@@ -218,8 +218,52 @@ function stopMonitor(port) {
 // ---------------------------------------------------------------------------
 // Servidor WebSocket (protocolo WS-Hubs)
 // ---------------------------------------------------------------------------
-function startServer() {
-    var wss = new wsLib.Server({ port: WS_PORT });
+function startServer(onError) {
+    // Creamos el server HTTP nosotros mismos para poder capturar el error de
+    // "listen" (EADDRINUSE/EACCES) antes de que se propague como excepción no
+    // controlada. En versiones antiguas de `ws` (1.x) el server interno no
+    // re-emite el error, así que enganchamos el listener en el server de Node.
+    var http = require('http');
+    var httpServer = http.createServer();
+    var wss;
+
+    httpServer.on('error', function (e) {
+        if (typeof onError === 'function') {
+            onError(e);
+        }
+    });
+
+    try {
+        wss = new wsLib.Server({ server: httpServer });
+    } catch (e) {
+        if (typeof onError === 'function') {
+            onError(e);
+        }
+        return null;
+    }
+
+    // Si el puerto ya está en uso (p.ej. otra instancia de Bitbloq Offline
+    // corriendo) el server emite 'error' y lo capturamos arriba para no dejar
+    // que la excepción no controlada cierre la aplicación.
+    wss.on('error', function (e) {
+        if (typeof onError === 'function') {
+            onError(e);
+        }
+        try { wss.close(); } catch (err) { /* ignore */ }
+    });
+
+    try {
+        httpServer.listen(WS_PORT, '127.0.0.1');
+    } catch (e) {
+        if (typeof onError === 'function') {
+            onError(e);
+        }
+        return null;
+    }
+
+    httpServer.on('listening', function () {
+        console.log('[localCompilerServer] WebSocket escuchando en ws://127.0.0.1:' + WS_PORT);
+    });
 
     function send(ws, msg) {
         if (ws.readyState === wsLib.OPEN) {
@@ -248,7 +292,6 @@ function startServer() {
         });
     });
 
-    console.log('[localCompilerServer] WebSocket escuchando en ws://127.0.0.1:' + WS_PORT);
     return wss;
 }
 
