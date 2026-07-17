@@ -3,6 +3,10 @@ const electron = require('electron');
 const pjson = require('./package.json');
 const PRODUCT_NAME = 'Bitbloq Offline';
 const PRODUCT_NAME_WITH_VERSION = PRODUCT_NAME + ' v' + pjson.version;
+
+// Servicio local de compilación/subida que reemplaza a Web2board (Python +
+// PlatformIO) usando arduino-cli. Ver MIGRATE_ARDUINO_CLI.md.
+const localCompilerServer = require('./localCompilerServer');
 const app = electron.app; // Module to control application life.
 const BrowserWindow = electron.BrowserWindow; // Module to create native browser window.
 
@@ -27,6 +31,13 @@ app.on('window-all-closed', function() {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
+    // Arranca el servicio local de compilación (arduino-cli) en ws://127.0.0.1:9877
+    try {
+        localCompilerServer.startServer();
+    } catch (e) {
+        console.error('No se pudo arrancar localCompilerServer:', e);
+    }
+
     // Create the browser window.
     mainWindow = new BrowserWindow({
         show: false,

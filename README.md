@@ -5,8 +5,9 @@ visual programming environment for Arduino and a wide range of educational
 maker boards and robots (Zowi, mBot, Makeblock, BQ ZUM, eBotics, and many more).
 
 It bundles the **Bitbloq editor** (Angular + Blockly-based "bloqs" blocks)
-together with **Web2Board**, the companion service that flashes compiled
-programs to the physical boards over USB.
+and compiles/flashes programs to the physical boards over USB by itself, using
+**arduino-cli** as its compilation backend (no separate Web2Board install needed
+since v2.0.0 — see [`MIGRATE_ARDUINO_CLI.md`](MIGRATE_ARDUINO_CLI.md)).
 
 This repository is a maintained fork (originally from bq) adapted for modern
 Linux distributions (Ubuntu 22.04 / Lliurex 23-25 and similar) and for
@@ -25,7 +26,7 @@ offline, air-gapped deployments.
 - [Downloads](#downloads)
 - [Quick start (run from source)](#quick-start-run-from-source)
 - [Building distributables](#building-distributables)
-- [Web2Board (separate install)](#web2board-separate-install)
+- [Compilation backend (arduino-cli)](#compilation-backend-arduino-cli)
 - [Internationalization](#internationalization)
 - [Project structure](#project-structure)
 - [Developer notes](#developer-notes)
@@ -70,13 +71,11 @@ Pre-built binaries are published as GitHub Releases on
 - **Windows (32/64-bit)** — `windows.zip`
 - **macOS** — `mac.zip`
 
-Web2Board is shipped **separately** and is **not** downloaded by the
-application. You install it yourself and Bitbloq locates it in the standard
-paths or in a configurable path (see [Web2Board (separate install)](#web2board-separate-install)).
-The Web2Board packages are published as releases in the separate repository
-[eduardomillan/web2board](https://github.com/eduardomillan/web2board).
-
-- **Installation & Web2Board setup:** see [`INSTALL.md`](INSTALL.md).
+Since **v2.0.0**, Bitbloq Offline is **self-contained**: it compiles and uploads
+programs using **arduino-cli**, so no separate Web2Board install is required. The
+only external requirement is that `arduino-cli` (with the `arduino:avr` core) is
+available on the user's `PATH` — see
+[Compilation backend (arduino-cli)](#compilation-backend-arduino-cli).
 
 ---
 
@@ -87,6 +86,9 @@ Requirements:
 - **Node.js 8.x** and the matching **npm 5.x** (the legacy `grunt` toolchain
   and `bower` dependencies are not compatible with newer Node majors).
 - **Electron 4.x** (installed locally as a dev dependency).
+- **arduino-cli** (on the `PATH`) with the `arduino:avr` core installed
+  (`arduino-cli core install arduino:avr`). This is the compilation backend used
+  by Bitbloq Offline since v2.0.0.
 - On Linux, the system libraries pulled in by `bower install` / build
   (e.g. `libusb`, `pango`) and the board USB drivers in `app/res/drivers`.
 
@@ -119,8 +121,8 @@ The build is driven by `grunt`. Available high-level targets:
 
 | Command                              | What it produces                                              |
 |--------------------------------------|---------------------------------------------------------------|
-| `grunt dist`                         | App for Windows, macOS and Linux. Web2Board is **not** bundled — it is downloaded on demand from its own repository. |
-| `grunt dist-slim`                    | Alias for the same on-demand behavior (no bundled Web2Board). |
+| `grunt dist`                         | App for Windows, macOS and Linux. Self-contained (uses arduino-cli for compile/upload). |
+| `grunt dist-slim`                    | Alias for the same self-contained build (no bundled Web2Board). |
 | `grunt build:windows`                | Windows build only.                                           |
 | `grunt build:linux`                  | Linux build only.                                             |
 | `grunt build:mac`                    | macOS build only.                                             |
@@ -142,11 +144,9 @@ Each build writes to `dist/BitbloqOffline{OS}/`, ready to run or package.
 > See [`INSTALL.md`](INSTALL.md) for what each artifact contains and how end
 > users install them.
 
-> **Web2Board is a separate project.** Bitbloq Offline does **not** bundle or
-> download Web2Board. You must install Web2Board yourself (see
-> [Web2Board (separate install)](#web2board-separate-install) and
-> [`INSTALL.md`](INSTALL.md)). Web2Board development (including the system tray
-> feature) happens in [eduardomillan/web2board](https://github.com/eduardomillan/web2board).
+> **Self-contained since v2.0.0.** Bitbloq Offline compiles and uploads by
+> itself via arduino-cli. The separate Web2Board project is no longer required
+> (see [`MIGRATE_ARDUINO_CLI.md`](MIGRATE_ARDUINO_CLI.md)).
 
 > **Electron binary is generated automatically.** The `build` task copies the
 > Electron executable from the local `node_modules/electron/dist` into the
@@ -161,23 +161,42 @@ Each build writes to `dist/BitbloqOffline{OS}/`, ready to run or package.
 
 ---
 
-## Web2Board (separate install)
+## Compilation backend (arduino-cli)
 
-**Web2Board** is the service that compiles Bitbloq programs and flashes them to
-the board. It is a **separate project**
-(https://github.com/eduardomillan/web2board) and is **not bundled** in Bitbloq
-Offline, nor downloaded by it. You install Web2Board yourself and Bitbloq locates
-it automatically (or via a configurable path):
+Since **v2.0.0** Bitbloq Offline does **not** depend on the external Web2Board
+project. Instead, the Electron main process starts a small local WebSocket
+service (`localCompilerServer.js` on `ws://127.0.0.1:9877`) that speaks the same
+hub protocol the frontend already used, but delegates the actual work to
+[arduino-cli](https://arduino.github.io/arduino-cli/):
 
-- Bitbloq Offline ships **without** Web2Board and never downloads it. When you
-  flash/upload a program, Bitbloq searches for the Web2Board launcher in the
-  standard locations (running instance, `/opt/web2board`, the app's own folder,
-  `resources/web2board`, and the user-data folder) and launches it. If it cannot
-  be found, Bitbloq shows a warning with a button to open *Ver → Configurar
-  Web2Board*, where you can set the real install path.
+- **Compile** → `arduino-cli compile --fqbn <board> --libraries res/libs/v1_1_3 ...`
+- **Upload**  → `arduino-cli upload -b <board> -p <port> --input-dir <build> ...`
+- **Serial monitor** → `arduino-cli monitor -p <port> -c baudrate=<n> ...`
 
-See [`INSTALL.md`](INSTALL.md) for the full list of search locations and how to
-configure the path.
+Board tokens from the editor map to arduino-cli FQBNs:
+
+| Editor token (`board.mcu`) | arduino-cli FQBN |
+|----------------------------|------------------|
+| `uno` / `bt328`            | `arduino:avr:uno` |
+| `nanoatmega168`            | `arduino:avr:nano:cpu=atmega168` |
+| `nano`                     | `arduino:avr:nano` |
+| `mega`                     | `arduino:avr:mega` |
+| `diemilanove`              | `arduino:avr:diecimila` |
+
+The Bitbloq libraries under `res/libs/v1_1_3` are passed via `--libraries`, so
+sketches using `#include <BitbloqZowi.h>` (and friends) compile out of the box.
+
+**User requirement:** `arduino-cli` must be installed and on the `PATH` of the
+user running Bitbloq Offline, with the AVR core present:
+
+```bash
+arduino-cli core install arduino:avr
+```
+
+To use a non-default `arduino-cli` binary, set the `ARDUINO_CLI` environment
+variable before launching Bitbloq Offline. See
+[`MIGRATE_ARDUINO_CLI.md`](MIGRATE_ARDUINO_CLI.md) for the full architecture and
+migration rationale.
 
 ---
 
@@ -224,7 +243,7 @@ These come from `../zowiLibs/code/`:
 
 Note: the firmware requires the Zowi Arduino libraries (`Servo`, `Oscillator`,
 `EEPROM`, `BatReader`, `US`, `LedMatrix`, `EnableInterrupt`, `ZowiSerialCommand`,
-`Zowi`) to be available in the compile environment (Web2Board/Arduino). The
+`Zowi`) to be available in the compile environment (arduino-cli + Bitbloq libs). The
 blocks are illustrative only — editing them regenerates the `code` field, so the
 factory firmware is preserved as-is in the embedded `code`.
 
@@ -232,8 +251,8 @@ factory firmware is preserved as-is in the embedded `code`.
 
 ## Debug logs (compile / upload errors)
 
-When code is compiled or uploaded to a board, any error returned by Web2Board
-(including the Arduino `stdErr`) is:
+When code is compiled or uploaded to a board, any error returned by the
+compiler backend (including the Arduino `stdErr` from arduino-cli) is:
 
 1. **Written to a log file** at:
    - Linux: `~/.config/BitbloqOffline/logs/bitbloq-offline.log`
@@ -244,8 +263,8 @@ When code is compiled or uploaded to a board, any error returned by Web2Board
    button copies the **complete** error text to the clipboard, so you can paste
    it into an issue or debugger.
 
-WebSocket and Web2Board launch/connection errors are also appended to the same
-log file (they are not shown as toasts to avoid being intrusive).
+WebSocket and compiler-backend launch/connection errors are also appended to
+the same log file (they are not shown as toasts to avoid being intrusive).
 
 ---
 
@@ -284,14 +303,15 @@ app
 ├── res              # Common resources
 │   ├── locales      # Language translations (angular-translate)
 │   ├── menus        # JSON files for generating menus
-│   ├── web2board    # Web2Board nested app (per-OS launchers)
+│   ├── libs         # Bitbloq Arduino libraries (v1_1_3) passed to arduino-cli
 │   └── drivers      # USB drivers for boards
 ├── scripts          # Angular app (controllers, directives, factories, services)
 ├── styles           # SCSS / compiled CSS
 └── views            # HTML views
 main.js              # Electron entry point / window + launch switches
+localCompilerServer.js # Local WebSocket compiler service (arduino-cli backend)
 res                  # Per-OS prebuilt Electron runtimes (linux, mac, windows32, …)
-tasks                # Custom grunt tasks (e.g. web2board manifest generator)
+tasks                # Custom grunt tasks
 ```
 
 ---
@@ -305,9 +325,9 @@ tasks                # Custom grunt tasks (e.g. web2board manifest generator)
 - **Theming:** styles are SCSS compiled to `app/styles/main.css` via
   `grunt sass` (Dart Sass).
 - **SVG icons:** `grunt svgstore` builds a sprite from `app/images/icons`.
-- **Web2Board releases:** Web2Board is built and published in its own repo
-  (https://github.com/eduardomillan/web2board). `app/res/web2board-download.json`
-  points to those releases; update it when Web2Board is bumped.
+- **Compilation backend:** since v2.0.0 the app uses arduino-cli via
+  `localCompilerServer.js` (started from `main.js`). Board→FQBN mapping and
+  library paths live there; see [`MIGRATE_ARDUINO_CLI.md`](MIGRATE_ARDUINO_CLI.md).
 - **Contributing:** pull requests that add board/robot definitions or fix
   platform issues are welcome. Please run `grunt jshint` before submitting.
 - **Versioning:** this project follows [Semantic Versioning](https://semver.org/)
@@ -323,9 +343,13 @@ tasks                # Custom grunt tasks (e.g. web2board manifest generator)
 - **App won't start on Linux:** ensure you are not running as root and that
   `/dev/shm` is available; the app already passes `--no-sandbox` and
   `--disable-dev-shm-usage`.
-- **Web2Board download fails:** verify internet access on first flash, or
-  pre-place the Web2Board package. The integrity of each download is verified
-  against the SHA-256 in `app/res/web2board-download.json`.
+- **Compile fails with "command not found" / no output:** ensure `arduino-cli`
+  is installed and on the `PATH` of the user running Bitbloq Offline, and that
+  the AVR core is present (`arduino-cli core install arduino:avr`). To point at a
+  custom binary set `ARDUINO_CLI=/ruta/a/arduino-cli` before launching.
+- **Board not found on upload:** check that the board is connected and that the
+  user has permission to access the serial port (e.g. add the user to the
+  `dialout` group on Linux). Bitbloq detects ports via `arduino-cli board list`.
 
 ---
 

@@ -842,37 +842,33 @@ dropdown .menu .menu__dropdown {
 .modal .modal__dialog .modal__dialog__content .modal__body {
   padding: 30px;
 }
-.modal .modal__dialog .modal__dialog__content .modal--buttons button {
-  margin-right: 10px;
-}
-.modal .modal__dialog .modal__dialog__content .modal--buttons {
-  padding: 0 30px 30px;
-}
-
 .modal .modal__dialog .modal__dialog__content .modal__description {
   margin: 0 0 20px;
-  color: #6b7280;
+  color: #8c919b;
   line-height: 1.4;
 }
-
 .modal .modal__dialog .modal__dialog__content .modal__input {
   flex: 1;
   padding: 10px 12px;
-  border: 1px solid #d1d5db;
+  border: 1px solid #d1d1d1;
   border-radius: 4px;
   font-size: 14px;
 }
-
 .modal .modal__dialog .modal__dialog__content .web2board-settings__row {
   display: flex;
   gap: 10px;
   align-items: center;
 }
-
 .modal .modal__dialog .modal__dialog__content .web2board-settings__error {
   margin: 12px 0 0;
-  color: #d32f2f;
+  color: #e74c3c;
   font-size: 13px;
+}
+.modal .modal__dialog .modal__dialog__content .modal--buttons button {
+  margin-right: 10px;
+}
+.modal .modal__dialog .modal__dialog__content .modal--buttons {
+  padding: 0 30px 30px;
 }
 
 .btn--primary {

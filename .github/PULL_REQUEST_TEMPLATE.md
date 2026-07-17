@@ -15,7 +15,7 @@ Closes #
 ## Affected area
 
 - [ ] Editor / bloqs / blocks
-- [ ] Web2Board (flashing / compiler)
+- [ ] Compilation / upload (arduino-cli)
 - [ ] Internationalization (locales)
 - [ ] Boards / robots support
 - [ ] Installer / packaging

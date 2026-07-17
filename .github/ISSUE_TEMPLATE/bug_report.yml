@@ -47,7 +47,7 @@ body:
         - "Makeblock (mBot, mCore, Me Auriga, mRanger...)"
         - "eBotics / FreaksCar / Ranger"
         - "Zowi"
-        - "Web2Board download/install"
+        - "Compilation / upload (arduino-cli)"
         - "Not hardware related (UI / editor / other)"
         - "Other"
     validations:
@@ -75,7 +75,7 @@ body:
     id: logs
     attributes:
       label: Logs / error messages
-      description: Paste any console output, Web2Board logs, or error dialogs.
+      description: Paste any console output, arduino-cli logs, or error dialogs.
       render: shell
     validations:
       required: false

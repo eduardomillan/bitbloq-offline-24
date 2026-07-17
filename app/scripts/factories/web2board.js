@@ -183,85 +183,16 @@ angular.module('bitbloqOffline')
             alert("W2b not detected");
         }
 
+        // La compilación/subida ahora la gestiona el servicio local
+        // (localCompilerServer.js en el proceso principal de Electron, que usa
+        // arduino-cli). Ya no se arranca el binario Python de Web2board.
+        // Ver MIGRATE_ARDUINO_CLI.md.
         function startWeb2board() {
-            console.log('starting Web2board...');
-            var spawn = require('child_process'),
-                path = require('path'),
-                fs = require('fs'),
-                net = require('net'),
-                web2boardCommand = getWeb2boardCommand();
-
-            if (!web2boardCommand) {
-                notifyWeb2boardMissing();
-                return;
-            }
-
-            // Check if the port is already in use (a previous web2board instance
-            // may still be running). If so, skip starting a new one.
-            var portInUse = net.createServer();
-            portInUse.once('error', function () {
-                console.log('Port ' + web2board.config.wsPort + ' already in use, assuming web2board is running');
-            });
-            portInUse.once('listening', function () {
-                portInUse.close(function () {
-                    launchWeb2board(web2boardCommand);
-                });
-            });
-            portInUse.listen(web2board.config.wsPort, '127.0.0.1');
+            console.log('[web2board] Usando servicio local (arduino-cli) en lugar de Web2board Python.');
         }
 
-        function launchWeb2board(web2boardCommand) {
-            var spawn = require('child_process'),
-                path = require('path'),
-                fs = require('fs');
-
-            var web2boardDir = path.dirname(web2boardCommand),
-                env = Object.assign({}, process.env);
-            // web2board es Python 2.7/PySide y necesita libncurses.so.5 (y otras
-            // librerías empaquetadas) que ya no existen en el sistema moderno
-            // (glibc 2.35+ / Lliurex 23-25). Forzamos la búsqueda en su propia
-            // carpeta para que el binario sea autocontenido.
-            // Además, avrdude64 (en res/) precisa libusb-0.1.so.4, que web2board
-            // descarga dentro de res/pp/packages/toolchain-atmelavr/lib; sin esa
-            // ruta en LD_LIBRARY_PATH el upload falla con "no port found".
-            var ldPaths = [
-                web2boardDir,
-                path.join(web2boardDir, 'res'),
-                path.join(web2boardDir, 'res', 'pp', 'packages', 'toolchain-atmelavr', 'lib')
-            ];
-            env.LD_LIBRARY_PATH = ldPaths.join(':') + (process.env.LD_LIBRARY_PATH ? ':' + process.env.LD_LIBRARY_PATH : '');
-
-            // Fix: bundled libncurses.so.5 may need NCURSES_TINFO_6.2.20211010
-            // from libtinfo.so.5, but the bundled libtinfo.so.5 is too old.
-            // Replace it with the system's libtinfo.so.5 so avrdude can load.
-            try {
-                var bundledTinfo = path.join(web2boardDir, 'libtinfo.so.5');
-                var systemTinfo = '/lib/x86_64-linux-gnu/libtinfo.so.5';
-                if (fs.existsSync(bundledTinfo) && fs.existsSync(systemTinfo)) {
-                    var bundledStat = fs.statSync(bundledTinfo);
-                    var systemStat = fs.statSync(systemTinfo);
-                    // If sizes differ, the bundled one is likely the wrong version
-                    if (bundledStat.size !== systemStat.size) {
-                        fs.copyFileSync(systemTinfo, bundledTinfo);
-                        console.log('Fixed libtinfo.so.5: replaced bundled version with system version');
-                    }
-                }
-            } catch (e) {
-                console.log('Could not fix libtinfo.so.5: ' + e.message);
-            }
-
-            var web2boardProcess = spawn.execFile(web2boardCommand,
-                ["--port", web2board.config.wsPort],
-                {env: env, cwd: web2boardDir},
-                function (err, stdout, stderr) {
-                    console.log(stdout);
-                    console.log(stderr);
-                    console.log(err);
-                    logError('W2B_START', 'stdout: ' + stdout + '\nstdout: ' + stderr + '\nerr: ' + err);
-                });
-            web2boardProcess.on("close", function (code) {
-                console.log("Web2board closed with code: " + code);
-            });
+        function launchWeb2board() {
+            // No-op: el servicio local ya está corriendo en ws://127.0.0.1:9877
         }
 
         function openCommunication(callback, showUpdateModalFlag, tryCount) {

@@ -23,6 +23,8 @@ module.exports = function(grunt) {
             '!app/res/web2board/**',
             'LICENSE',
             'main.js',
+            'localCompilerServer.js',
+            'res/libs/**',
             'package.json',
             'bower.json'
         ];

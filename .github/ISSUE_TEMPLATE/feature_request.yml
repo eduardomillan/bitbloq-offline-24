@@ -24,7 +24,7 @@ body:
       options:
         - "New board / robot support"
         - "New language / translation"
-        - "Web2Board (flashing / compiler)"
+        - "Compilation / upload (arduino-cli)"
         - "Editor / bloqs / blocks"
         - "Installer / packaging"
         - "UI / UX"

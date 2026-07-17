@@ -5,25 +5,43 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-Current version: **1.4.3**
+Current version: **2.0.0**
+
+## [2.0.0] - 2026-07-17
 
 ### Changed
-- **Electron binary is now generated at build time.** The `build` task copies
-  the Electron executable from `node_modules/electron/dist` into
-  `res/*-prebuilt` (as `Bitbloq` / `Bitbloq.exe` / `Bitbloq.app`), so the ~114 MB
-  binary is no longer versioned or uploaded. `npm install` provides it. The
-  generated binary is git-ignored.
+- **No longer depends on the external Web2Board project.** This is the major
+  change that drives the 2.0.0 bump. Bitbloq Offline now compiles and uploads to
+  Arduino boards by itself, with no separate Web2Board install required.
+- **Compile/upload now uses `arduino-cli` instead of Web2Board (PlatformIO).**
+  Web2Board bundled PlatformIO 2.6.3 whose registry API
+  (`http://api.platformio.org`) is defunct, causing `[API] Not Found` on every
+  compile. Bitbloq Offline now runs a local WebSocket service
+  (`localCompilerServer.js`, started from `main.js` on `ws://127.0.0.1:9877`)
+  that speaks the same WS-Hubs protocol the frontend expects, but delegates
+  compile/upload to the system `arduino-cli` (tested with v1.5.1, core
+  `arduino:avr` 1.8.8). The Bitbloq libraries under `res/libs/v1_1_3` are passed
+  via `--libraries`, so sketches using `#include <BitbloqZowi.h>` etc. compile.
+  Board tokens map to FQBNs: `uno`/`bt328` → `arduino:avr:uno`,
+  `nanoatmega168` → `arduino:avr:nano:cpu=atmega168`, `mega` → `arduino:avr:mega`.
+  The serial monitor uses `arduino-cli monitor`. Web2Board is no longer spawned
+  (`startWeb2board`/`launchWeb2board` in `web2board.js` are now no-ops). See
+  `MIGRATE_ARDUINO_CLI.md` for details.
+- **Removed Web2Board auto-download and locator.** The on-demand download
+  (`web2boardInstaller.js`, `web2board-download.json`) and the
+  `web2boardLocator` resolution logic are no longer used; the *Configurar
+  Web2Board* settings dialog is obsolete for compilation.
+- **Electron binary is generated at build time.** The `build` task copies the
+  Electron executable from `node_modules/electron/dist` into `res/*-prebuilt`
+  (as `Bitbloq` / `Bitbloq.exe` / `Bitbloq.app`), so the ~114 MB binary is no
+  longer versioned or uploaded; `npm install` provides it. The generated binary
+  is git-ignored.
+
+### Added
+- `localCompilerServer.js`: local WebSocket compiler service (arduino-cli backend).
+- `MIGRATE_ARDUINO_CLI.md`: migration notes and architecture.
 
 ## [Unreleased]
-
-### Changed
-- **Web2Board is no longer downloaded by Bitbloq.** Bitbloq now locates an
-  already-installed Web2Board in the standard locations (a running instance,
-  `/opt/web2board`, the app's own folder, `resources/web2board`, and the
-  user-data folder) and launches it. A configurable path can be set from
-  *Ver → Configurar Web2Board*; if Web2Board is not found, Bitbloq shows a
-  warning with a button to open that settings dialog. The on-demand download
-  (`web2boardInstaller.js`, `web2board-download.json`) has been removed.
 
 ## [1.4.3] - 2026-07-16
 
