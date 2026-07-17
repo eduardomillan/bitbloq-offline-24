@@ -101,6 +101,31 @@ app.on('ready', function() {
         }
     });
 
+    // Borra el contenido de la carpeta de logs (no la carpeta en sí, para poder
+    // seguir registrando). Se ejecuta en el proceso principal por robustez.
+    ipcMain.on('clear-logs-folder', function () {
+        try {
+            var logsDir = path.join(app.getPath('userData'), 'logs');
+            if (fs.existsSync(logsDir)) {
+                fs.readdirSync(logsDir).forEach(function (entry) {
+                    var entryPath = path.join(logsDir, entry);
+                    try {
+                        var stat = fs.statSync(entryPath);
+                        if (stat.isDirectory()) {
+                            fs.rmdirSync(entryPath, { recursive: true });
+                        } else {
+                            fs.unlinkSync(entryPath);
+                        }
+                    } catch (e) {
+                        console.error('[clear-logs-folder] entry', entry, e.message);
+                    }
+                });
+            }
+        } catch (e) {
+            console.error('[clear-logs-folder]', e);
+        }
+    });
+
 
     // Open the DevTools.
     //mainWindow.webContents.openDevTools();

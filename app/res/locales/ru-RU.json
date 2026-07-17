@@ -1410,5 +1410,9 @@
     "web2board_toast_downloadFinished": "Web2Board downloaded successfully",
     "alert-web2board-download-error": "Error downloading Web2Board: {{value}}",
     "open-logs": "Open logs folder",
-    "alert-open-logs-failed": "Could not open the logs folder."
+    "alert-open-logs-failed": "Could not open the logs folder.",
+    "clear-logs-title": "Удалить папку логов",
+    "clear-logs-message": "Все файлы журнала Bitbloq Offline будут удалены. Это действие необратимо.",
+    "clear-logs-confirm": "Принять",
+    "clear-logs-cancel": "Отмена"
 }

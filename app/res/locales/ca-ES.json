@@ -1410,5 +1410,9 @@
     "web2board_toast_downloadFinished": "Web2Board downloaded successfully",
     "alert-web2board-download-error": "Error downloading Web2Board: {{value}}",
     "open-logs": "Open logs folder",
-    "alert-open-logs-failed": "Could not open the logs folder."
+    "alert-open-logs-failed": "Could not open the logs folder.",
+    "clear-logs-title": "Esborrar la carpeta de logs",
+    "clear-logs-message": "S'eliminaran tots els fitxers de registre del Bitbloq Offline. Aquesta acció no es pot desfer.",
+    "clear-logs-confirm": "Acceptar",
+    "clear-logs-cancel": "Cancel·lar"
 }

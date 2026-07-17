@@ -459,7 +459,6 @@
     "alert-web2board-no-port-found": "Non se atopou a placa. Comproba que a placa seleccionada en Bitbloq é a mesma que tes físicamente e que está conectada.",
     "alert-web2board-no-board-serial": "Non se atopou unha placa coa que comunicarse por porto serie. Comproba que a placa na pestana de Hardware é a mesma que tes e que está conectada.",
     "alert-web2board-not-found": "Non se atopou Web2Board instalado. Descárgao desde https://github.com/eduardomillan/web2board e, se non está nunha localización estándar, configura o seu camiño en Axustes.",
-    "alert-web2board-not-found": "Non se atopou Web2Board instalado. Descárgao desde https://github.com/eduardomillan/web2board e, se non está nunha localización estándar, configura o seu camiño en Axustes.",
     "tour-step-one": "Paso 1 de 7",
     "tour-step-one-text": "Abre o menú de \"Placas\"",
     "tour-step-two": "Paso 2 de 7",
@@ -1411,5 +1410,9 @@
     "web2board_toast_downloadFinished": "Web2Board downloaded successfully",
     "alert-web2board-download-error": "Error downloading Web2Board: {{value}}",
     "open-logs": "Open logs folder",
-    "alert-open-logs-failed": "Could not open the logs folder."
+    "alert-open-logs-failed": "Could not open the logs folder.",
+    "clear-logs-title": "Borrar o cartafol de logs",
+    "clear-logs-message": "Eliminaranse todos os ficheiros de rexistro do Bitbloq Offline. Esta acción non se pode desfacer.",
+    "clear-logs-confirm": "Aceptar",
+    "clear-logs-cancel": "Cancelar"
 }

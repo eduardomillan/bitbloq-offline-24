@@ -169,6 +169,19 @@ angular.module('bitbloqOffline')
             }
         }
 
+        function clearLogsFolder() {
+            commonModals.launchClearLogsModal(function(confirmed) {
+                if (confirmed === 0) {
+                    try {
+                        require('electron').ipcRenderer.send('clear-logs-folder');
+                    } catch (e) {
+                        console.error('[clearLogsFolder]', e);
+                        alertsService.add('alert-open-logs-failed', 'web2board', 'warning');
+                    }
+                }
+            });
+        }
+
         require('electron').webFrame.setZoomFactor(common.settings.zoomFactor);
 
         function zoomIn() {
@@ -249,6 +262,11 @@ angular.module('bitbloqOffline')
                     name: 'open-logs',
                     icon: '#web2board',
                     action: openLogsFolder,
+                    disabled: false
+                }, {
+                    name: 'clear-logs',
+                    icon: '#web2board',
+                    action: clearLogsFolder,
                     disabled: false
                 }]
             },

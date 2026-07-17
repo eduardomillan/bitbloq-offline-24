@@ -102,5 +102,34 @@ angular.module('bitbloqOffline')
         return;
     };
 
+    exports.launchClearLogsModal = function(callback) {
+        var modalScope = $rootScope.$new();
+        var confirmAction = function() {
+                clearLogsModal.close();
+                callback(0);
+            },
+            rejectAction = function() {
+                clearLogsModal.close();
+                callback(-1);
+            };
+
+        _.extend(modalScope, {
+            title: 'clear-logs-title',
+            confirmButton: 'clear-logs-confirm',
+            rejectButton: 'clear-logs-cancel',
+            confirmAction: confirmAction,
+            rejectAction: rejectAction,
+            contentTemplate: 'file://' + __dirname + '/views/modals/clear-logs.html',
+            modalButtons: true
+        });
+
+        var clearLogsModal = ngDialog.open({
+            template: 'file://' + __dirname + '/views/modals/modal.html',
+            className: 'modal--container modal--input',
+            scope: modalScope,
+            showClose: false
+        });
+    };
+
     return exports;
   });

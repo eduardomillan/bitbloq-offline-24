@@ -1430,5 +1430,9 @@
     "alert-web2board-download-error": "Грешка при изтегляне на Web2Board: {{value}}",
     "bg-BG": "Български",
     "open-logs": "Open logs folder",
-    "alert-open-logs-failed": "Could not open the logs folder."
+    "alert-open-logs-failed": "Could not open the logs folder.",
+    "clear-logs-title": "Изтриване на папката с дневници",
+    "clear-logs-message": "Всички файлове с дневници на Bitbloq Offline ще бъдат изтрити. Това действие не може да бъде отменено.",
+    "clear-logs-confirm": "Приеми",
+    "clear-logs-cancel": "Отказ"
 }
