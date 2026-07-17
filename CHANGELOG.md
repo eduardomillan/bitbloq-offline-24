@@ -5,7 +5,23 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-Current version: **2.0.1**
+Current version: **2.0.2**
+
+## [2.0.2] - 2026-07-17
+
+### Fixed
+- **Cleaned up the "Ver" (View) menu for the arduino-cli backend.** Removed the
+  dead `Mostrar web2board`, `Ver plotter` (duplicate of the serial monitor) and
+  `Configurar Web2Board` entries. The menu now only has *Mostrar Serial Monitor*
+  and *Abrir carpeta de logs*.
+- **"Mostrar Serial Monitor" now actually opens the monitor.** It was only
+  reserving the port (`startApp` no-op) and never showed a window. It now opens
+  the plotter window, which connects to the board via `arduino-cli monitor`.
+- **"Abrir carpeta de logs" is more robust.** It creates the `logs/` folder if
+  missing and opens the folder (or the log file when present) instead of relying
+  on a possibly non-existent file path.
+- `launchWeb2BoardSettingsModal` is now a no-op (the Web2Board path setting is
+  obsolete).
 
 ## [2.0.1] - 2026-07-17
 

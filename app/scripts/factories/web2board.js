@@ -379,11 +379,10 @@ angular.module('bitbloqOffline')
                         var serialMonitorAlert = alertsService.add('alert-web2board-openSerialMonitor', 'web2board', 'loading');
                         api.SerialMonitorHub.server.findBoardPort(board.mcu).done(function (port) {
                             usingPort = port;
-                            api.SerialMonitorHub.server.startApp(port, board.mcu).done(function () {
-                                alertsService.close(serialMonitorAlert);
-                            }, function () {
-                                showBoardErrorWithCopy('alert-web2board-no-port-found');
-                            }).finally(removeInProgressFlag);
+                            alertsService.close(serialMonitorAlert);
+                            // Abre la ventana del monitor serie (plotter), que se
+                            // conecta al puerto vía arduino-cli monitor.
+                            openPlotter(board, port);
                         }, function () {
                             showBoardErrorWithCopy('alert-web2board-no-port-found');
                         }).finally(removeInProgressFlag);

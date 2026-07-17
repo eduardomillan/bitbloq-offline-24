@@ -158,31 +158,29 @@ angular.module('bitbloqOffline')
             web2board.serialMonitor(boardReference);
         }
 
-        function showPlotter() {
-            var boardReference = _.find($scope.hardware.boardList, function(b) {
-                return b.name === $scope.project.hardware.board;
-            });
-            web2board.showPlotter(boardReference);
-        }
-
-        function configureWeb2Board() {
-            commonModals.launchWeb2BoardSettingsModal();
-        }
-
         /**
-         * Open the folder that holds the Bitbloq Offline log and the Web2Board
-         * log, so the user can inspect them when something goes wrong (e.g. the
-         * board is not detected). Uses the OS file manager via Electron's shell.
+         * Open the folder that holds the Bitbloq Offline log so the user can
+         * inspect it when something goes wrong (e.g. the board is not detected
+         * or a compile/upload fails). Uses the OS file manager via Electron's
+         * shell. Since v2.0.0 compilation is handled locally by arduino-cli,
+         * there is no separate Web2Board log.
          */
         function openLogsFolder() {
             try {
                 var userData = nodeRemote.app.getPath('userData');
                 var logsDir = nodeFs.join(userData, 'logs');
-                var web2boardLogsDir = nodeFs.join(userData, 'web2board');
-                // Show the bitbloq-offline log directory, falling back to the
-                // web2board directory if the logs folder does not exist yet.
-                var target = nodeFs.existsSync(logsDir) ? logsDir : web2boardLogsDir;
-                nodeRemote.shell.showItemInFolder(nodeFs.join(target, 'bitbloq-offline.log'));
+                var logFile = nodeFs.join(logsDir, 'bitbloq-offline.log');
+                // Asegura que la carpeta de logs exista aunque la app todavía no
+                // haya escrito ningún log (showItemInFolder necesita una ruta
+                // existente para poder abrir el gestor de archivos).
+                if (!nodeFs.existsSync(logsDir)) {
+                    nodeFs.mkdirSync(logsDir, { recursive: true });
+                }
+                if (nodeFs.existsSync(logFile)) {
+                    nodeRemote.shell.showItemInFolder(logFile);
+                } else {
+                    nodeRemote.shell.openPath(logsDir);
+                }
             } catch (e) {
                 alertsService.add('alert-open-logs-failed', 'web2board', 'warning');
             }
@@ -270,24 +268,9 @@ angular.module('bitbloqOffline')
                     action: startSM,
                     disabled: false
                 }, {
-                    name: 'show-web2board',
-                    icon: '#web2board',
-                    action: web2board.showWeb2board,
-                    disabled: false
-                }, {
-                    name: 'Ver plotter',
-                    icon: '#Ver_verSerialMonitor',
-                    action: showPlotter,
-                    disabled: false
-                }, {
                     name: 'open-logs',
                     icon: '#web2board',
                     action: openLogsFolder,
-                    disabled: false
-                }, {
-                    name: 'web2board-settings-open',
-                    icon: '#web2board',
-                    action: configureWeb2Board,
                     disabled: false
                 }]
             },

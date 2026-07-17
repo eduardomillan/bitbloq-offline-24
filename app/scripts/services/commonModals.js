@@ -8,7 +8,7 @@
  * Service in the bitbloqOffline.
  */
 angular.module('bitbloqOffline')
-  .service('commonModals', function($rootScope, $translate, _, ngDialog, common, nodeDialog, nodeFs, web2boardLocator) {
+  .service('commonModals', function($rootScope, $translate, _, ngDialog, common) {
 
     var exports = {};
 
@@ -95,45 +95,11 @@ angular.module('bitbloqOffline')
         });
     };
 
+    // Obsoleto desde v2.0.0: la compilación/subida la gestiona el servicio
+    // local (arduino-cli) y ya no hay una ruta de Web2board que configurar.
+    // Se mantiene como no-op para no romper llamadores potenciales.
     exports.launchWeb2BoardSettingsModal = function() {
-        var scope = $rootScope.$new();
-        scope.path = (common.settings && common.settings.web2boardPath) || '';
-        scope.error = '';
-
-        scope.browse = function() {
-            var selection = nodeDialog.showOpenDialog({
-                properties: ['openFile', 'openDirectory']
-            });
-            if (selection) {
-                scope.path = selection[0];
-                scope.error = '';
-            }
-        };
-
-        scope.cancel = function() {
-            modal.close();
-        };
-
-        scope.save = function() {
-            var value = (scope.path || '').trim();
-            // Reuse the same detection logic as the runtime so the dialog accepts
-            // any location the app would actually be able to launch (including
-            // depth-limited nested installs). An empty path means auto-detect.
-            if (!web2boardLocator.isValid(value)) {
-                scope.error = $translate.instant('web2board-settings-invalid');
-                return;
-            }
-            common.settings.web2boardPath = value;
-            common.saveSettings();
-            modal.close();
-        };
-
-        var modal = ngDialog.open({
-            template: 'file://' + __dirname + '/views/modals/web2board-settings.html',
-            className: 'modal--container modal--input',
-            scope: scope,
-            showClose: true
-        });
+        return;
     };
 
     return exports;
