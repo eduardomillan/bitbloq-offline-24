@@ -6,7 +6,7 @@ Architecture: amd64
 Maintainer: Eduardo Millán <eduardo.millan@bitbloq.local>
 Description: Bitbloq Offline - visual programming for Arduino, Zowi and PrintBot.
  Bitbloq Offline is the desktop application that lets you program boards
- (Arduino, Zowi, PrintBot, etc.) with a visual block editor. It downloads
- Web2Board on demand (see https://github.com/eduardomillan/web2board), the
- service that compiles and flashes programs over USB.
+ (Arduino, Zowi, PrintBot, etc.) with a visual block editor. It works with
+ Web2Board (see https://github.com/eduardomillan/web2board), the service that
+ compiles and flashes programs over USB, which must be installed separately.
  Homepage: https://github.com/eduardomillan/bitbloq-offline-24

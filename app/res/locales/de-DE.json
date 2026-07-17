@@ -458,6 +458,7 @@
     "alert-web2board-boardNotReady": "Die Platine wurde nicht erkannt. Schließe eine Platine an",
     "alert-web2board-no-port-found": "Die Platine wurde nicht gefunden. Überprüfe, dass es sich bei der in Bitbloq ausgewählten Platine um die gleiche handelt, die du physisch vor dir liegen hast und dass sie angeschlossen ist.",
     "alert-web2board-no-board-serial": "Es wurde keine Platine gefunden, mit der über den seriellen Port kommuniziert werden kann. Überprüfe, dass es sich bei der Platine beim Reiter der Hardware um die gleiche handelt, die du physisch vor dir liegen hast und dass sie angeschlossen ist.",
+    "alert-web2board-not-found": "Web2Board wurde nicht gefunden. Lade es von https://github.com/eduardomillan/web2board herunter und lege, falls es nicht an einem Standardort liegt, den Pfad in den Einstellungen fest.",
     "tour-step-one": "Schritt 1 von 7",
     "tour-step-one-text": "Öffne das Menü \"Platinen\"",
     "tour-step-two": "Schritt 2 von 7",

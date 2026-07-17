@@ -11,7 +11,7 @@
 // Then: fakeroot dpkg-deb --build -> dist/bitbloq_<version>_amd64.deb
 //
 // Note: Web2Board is packaged in its own repository
-// (https://github.com/eduardomillan/web2board) and is downloaded on demand,
+// (https://github.com/eduardomillan/web2board) and is NOT bundled in this .deb (install it separately).
 // so it is not bundled in this .deb.
 
 var fs = require('fs');

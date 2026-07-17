@@ -5,9 +5,9 @@ module.exports = function(grunt) {
     grunt.loadTasks('tasks');
 
     // Web2Board is developed and released in its own repository
-    // (https://github.com/eduardomillan/web2board) and is no longer bundled
-    // inside Bitbloq Offline; it is downloaded on demand by web2boardInstaller.
-    // Therefore the build always excludes app/res/web2board.
+    // (https://github.com/eduardomillan/web2board) and is NOT bundled inside
+    // Bitbloq Offline nor downloaded on demand. The user installs it separately;
+    // Bitbloq locates it in the standard paths or via a configurable path.
     function getCopySrc(os) {
         var array = ['app/**',
             'bower_components/**',
@@ -337,8 +337,8 @@ module.exports = function(grunt) {
         ]);
     });
 
-    // Build de la app sin web2board empaquetado (este se descarga bajo demanda
-    // desde el repositorio de web2board: https://github.com/eduardomillan/web2board).
+    // Build de la app sin web2board empaquetado (web2board se instala por
+    // separado por el usuario, no se descarga bajo demanda).
     grunt.registerTask('dist-slim', function() {
         grunt.task.run([
             'build:windows-slim',

@@ -5,10 +5,9 @@ how Web2Board is installed, and how to make Bitbloq and Web2Board talk to each
 other so you can compile and upload programs to your board (Arduino, Zowi,
 PrintBot, etc.).
 
-> **Versions covered:** Bitbloq Offline `1.4.0`. Web2Board `3.0.0` is a
+> **Versions covered:** Bitbloq Offline `1.4.0`. Web2Board `3.1.0` is a
 > **separate** project (https://github.com/eduardomillan/web2board) and is
-> downloaded automatically by Bitbloq on first use — you do not install it
-> manually.
+> **not** downloaded by Bitbloq — you must install it yourself.
 
 ---
 
@@ -33,11 +32,10 @@ this release:
 
 - **Bitbloq `.deb`** installs to `/opt/bitbloq-offline` and adds
   `/usr/bin/bitbloq-offline` plus a menu entry. Web2Board is **not** bundled;
-  it is downloaded on demand.
-- **Web2Board** is handled by Bitbloq itself: when you first connect a board,
-  Bitbloq downloads the matching Web2Board package from
-  [eduardomillan/web2board](https://github.com/eduardomillan/web2board),
-  verifies its SHA-256 and launches it. No manual Web2Board install required.
+  you must install it separately (see section 4).
+- **Web2Board** is a separate project that must be installed on the system
+  before Bitbloq can use it. Bitbloq searches for it in several locations
+  (see section 4.1) and launches it automatically when needed.
 - The **Windows installer** puts Bitbloq in `C:\Program Files\BitbloqOffline`,
   creates Start Menu and Desktop shortcuts, and leaves the board drivers in the
   `drivers\` folder for manual install.
@@ -89,8 +87,8 @@ sudo apt-get install -f   # only if dpkg reports missing dependencies
 
 This installs the app under `/opt/bitbloq-offline` and a launcher at
 `/usr/bin/bitbloq-offline`. After that you can start it from the applications
-menu or by running `bitbloq-offline` in a terminal. Web2Board is downloaded
-automatically on first use.
+menu or by running `bitbloq-offline` in a terminal. Web2Board must be installed
+separately (see section 4).
 
 To remove it:
 
@@ -108,7 +106,7 @@ chmod +x BitbloqOffline-1.4.0.AppImage
 ```
 
 It needs FUSE to mount itself; on a normal desktop that is already available.
-Web2Board is downloaded automatically the first time you flash a program.
+Web2Board must be installed separately (see section 4).
 
 ### 2.5 Give your user access to the board (serial port)
 
@@ -177,61 +175,51 @@ uploads it to the board over USB. The Bitbloq app talks to Web2Board through a
 local WebSocket on **`127.0.0.1:9877`**.
 
 Web2Board is a **separate project** (https://github.com/eduardomillan/web2board)
-and is **no longer bundled** inside Bitbloq. Instead, on first use Bitbloq
-**downloads it on demand**:
+and is **not downloaded by Bitbloq**. You must install it yourself on the system
+and Bitbloq will look for it in the usual locations (see section 5). No Internet
+connection is used by Bitbloq to obtain Web2Board.
 
-- When you flash a program for the first time, Bitbloq downloads the correct
-  Web2Board package for your platform from the
-  [eduardomillan/web2board releases](https://github.com/eduardomillan/web2board/releases),
-  verifies its SHA-256 checksum (see `web2board-download.json`), unpacks it to
-  the user data folder and launches it. An internet connection is needed only
-  for this one-time download; afterwards Web2Board starts from the local copy.
+> **You must install Web2Board yourself.** Bitbloq only *launches* and *talks to*
+> an already installed Web2Board. If it cannot be found, Bitbloq shows a warning
+> and offers to open the settings so you can point it at the install location.
 
-> **No manual install required.** The download/verify/launch is fully automatic.
-> You only ever run Web2Board through Bitbloq.
+### 4.1 Where to install Web2Board
 
-### 4.1 Re-downloading Web2Board (e.g. after deleting the folder)
+Bitbloq searches for Web2Board (the `web2boardLauncher` / `web2boardLauncher.exe`
+executable, or a folder containing it) in this order:
 
-Web2Board is installed under the application's user-data folder:
+1. **A running Web2Board** on `127.0.0.1:9877` — if it is already started,
+   Bitbloq just connects to it. This is the fastest path and requires no
+   binary detection.
+2. **The path configured in Bitbloq** (menu *Ver → Configurar Web2Board*). Use
+   this when Web2Board is installed somewhere non-standard.
+3. **`/opt/web2board`** (or `/opt`) on the system.
+4. **The directory Bitbloq is executed from.**
+5. **`<execution dir>/resources/web2board`** (or `<resourcesPath>/web2board`).
+6. **The user-data folder** `~/.config/bitbloq-offline/web2board/` (Linux) /
+   `%APPDATA%\bitbloq-offline\web2board\` (Windows), as a manual fallback.
 
-| Platform | Install path |
-|----------|--------------|
-| Linux | `~/.config/bitbloq-offline/web2board/` |
-| Windows | `%APPDATA%\bitbloq-offline\web2board\` |
-
-Inside that folder, the platform sub-directory (`linux/` or `win32/`) holds the
-launcher (`web2boardLauncher` / `web2boardLauncher.exe`) plus the rest of the
-package.
-
-If you delete `~/.config/bitbloq-offline/web2board` manually, **Bitbloq will
-download Web2Board again automatically**. On the next time you flash/upload a
-program, Bitbloq checks for the launcher in that folder; when it is missing it
-re-downloads the matching package from the `eduardomillan/web2board` release,
-re-verifies its SHA-256, unzips it into the user-data folder and restores the
-execute permissions — so you end up with a fresh, working copy. The download
-only happens once (when needed) and requires an internet connection at that
-moment; after that, Web2Board starts from the local copy again.
-
-> **What exactly triggers a re-download:** the check looks only for the
-> *launcher* file inside the platform sub-directory. Deleting the whole
-> `web2board` folder always triggers it. Deleting just the temporary zip in the
-> OS temp directory does **not** (the extracted copy is still present), and
-> deleting everything except the launcher also does **not** trigger a re-download
-> since the launcher is still found.
+If Web2Board is not found in any of these places, Bitbloq shows the warning
+*“Web2Board no encontrado”* with a button to open the settings, where you can
+enter its real path (a folder or the launcher executable). The path is saved in
+`config.json` and reused on every launch.
 
 ---
 
 ## 5. Make Bitbloq and Web2Board communicate
 
-In the normal workflow **this is automatic**: when Bitbloq starts, it launches
-Web2Board and connects to `ws://127.0.0.1:9877`. You do not need to configure
-anything.
+In the normal workflow **this is automatic**: when you flash/upload a program,
+Bitbloq first checks if Web2Board is already running on `127.0.0.1:9877` and
+connects to it. If not, it searches for the Web2Board binary in the standard
+locations (see section 4.1), launches it, and connects. You do not normally need
+to configure anything — unless Web2Board is installed in a non-standard
+location, in which case set its path from *Ver → Configurar Web2Board*.
 
 If they are not communicating, check the following:
 
 1. **Is Web2Board running?**
-   - Linux: `ps aux | grep web2boardLauncher`
-   - Windows: look for `web2boardLauncher.exe` in Task Manager.
+   - Linux: `ps aux | grep web2board`
+   - Windows: look for `web2board.exe` in Task Manager.
    - Or test the port directly:
      ```bash
      # Linux / macOS
@@ -240,23 +228,22 @@ If they are not communicating, check the following:
      On Windows use a port-checker or `Test-NetConnection 127.0.0.1 -Port 9877`
      in PowerShell.
 
-2. **Restart Web2Board from Bitbloq.** In Bitbloq, go to the board/connection
-   area and choose to restart or reconnect Web2Board. Bitbloq will relaunch it.
+2. **Restart Web2Board.** If Web2Board is running but not responding, kill it
+   and start it manually, or let Bitbloq relaunch it on the next operation.
 
 3. **Firewall.** Make sure your firewall allows local connections to `127.0.0.1`
    on port `9877`. This is loopback (your own machine), so it should be allowed
    by default; if you use a strict firewall, allow the `Bitbloq` / `web2board`
    executables for local communication.
 
-4. **Reinstall / redownload Web2Board.** If the bundled or downloaded Web2Board
-   is missing or corrupted, delete the downloaded copy
-   (`~/.config/bitbloq-offline/web2board/` on Linux, or the app's user-data
-   folder on Windows) and let Bitbloq fetch it again (slim build) or
-   reinstall the full build.
+4. **Reinstall Web2Board.** If Web2Board is missing or corrupted,
+   reinstall it from the official release
+   (https://github.com/eduardomillan/web2board) and place it in a standard
+   location (see §4.1) or configure the path in *Ver → Configurar Web2Board*.
 
 5. **Board not detected even though Web2Board is up?** That is a *serial port*
    permission problem, not a Web2Board/Bitbloq link problem:
-   - Linux: add your user to `dialout` (see §2.3).
+   - Linux: add your user to `dialout` (see §2.5).
    - Windows: install the board drivers (see §3.3).
 
 ---
@@ -266,14 +253,14 @@ If they are not communicating, check the following:
 | Symptom | Likely cause | Fix |
 |---------|--------------|-----|
 | App does not start (Linux) | missing libs / old pango | use `./bitbloq.sh`; ensure a modern distro |
-| "Web2Board not found" | first download pending / offline | connect to internet once so Bitbloq can fetch Web2Board |
-| Port 9877 closed | Web2Board not running | restart from Bitbloq; check §5.1 |
+| "Web2Board not found" | Web2Board not installed or path wrong | install Web2Board; check §4.1; use *Ver → Configurar Web2Board* |
+| Port 9877 closed | Web2Board not running | start Web2Board manually or let Bitbloq launch it; check §5 |
 | Board not listed | no serial permission | Linux: add user to `dialout`; Windows: install drivers |
 | Upload fails / board unrecognized | wrong board selected or driver missing | select correct board in Bitbloq; install drivers |
 
 ---
 
-## 6. Logs (when something goes wrong)
+## 7. Logs (when something goes wrong)
 
 When Web2Board cannot be reached (e.g. "board not found", port 9877 closed),
 the most useful diagnostics are in two log files:
@@ -281,24 +268,23 @@ the most useful diagnostics are in two log files:
 - **Bitbloq Offline log** — written by the app itself:
   `~/.config/bitbloq-offline/logs/bitbloq-offline.log` (Linux) /
   `%APPDATA%\bitbloq-offline\logs\bitbloq-offline.log` (Windows).
-  It records WebSocket/compile/upload errors and the `W2B_NOT_DETECTED` event.
-- **Web2Board launcher log** — written by the downloaded Web2Board process:
-  `~/.config/bitbloq-offline/web2board/linux/web2boardLauncher.log` (Linux) /
-  `%APPDATA%\bitbloq-offline\web2board\win32\web2boardLauncher.log` (Windows).
+  It records WebSocket/compile/upload errors and the `W2B_NOT_FOUND` event.
+- **Web2Board log** — written by the Web2Board process itself:
+  `<web2board-dir>/info.log` (where `<web2board-dir>` is the folder containing
+  the Web2Board binary).
 
 **To open them from the UI:** in the top menu, go to **Ver → Abrir carpeta de
 logs** ("Open logs folder"). This opens the logs folder in your file manager so
-you can inspect `bitbloq-offline.log` (and the Web2Board folder alongside it).
-If the launcher log is empty, Web2Board did not even start — check that the
-downloaded binary can run on your system (missing libraries, `LD_LIBRARY_PATH`,
-etc.).
+you can inspect `bitbloq-offline.log`. If Web2Board is not starting, check its
+`info.log` in the Web2Board directory for errors (missing libraries,
+`LD_LIBRARY_PATH`, etc.).
 
 If a toast error appears without enough detail, use its **Copiar** button to
 copy the message and paste it when asking for support.
 
 ---
 
-## 7. Where things live (reference)
+## 8. Where things live (reference)
 
 ```
 BitbloqOffline<OS>/
@@ -306,10 +292,11 @@ BitbloqOffline<OS>/
 ├── bitbloq.sh                # Linux launcher
 ├── zowi_samples/             # example projects at the build root
 ├── drivers/                  # Windows board drivers
-└── resources/app/app/res/web2board-download.json   # Web2Board download descriptor
+└── resources/app/app/res/   # Web2Board is NOT bundled; install it separately
 ```
 
-Web2Board is **not** bundled inside the app. Its download descriptor
-`web2board-download.json` records the version, release tag, per-platform file
-and SHA-256; once downloaded, Web2Board lives in the user data folder
-(`~/.config/bitbloq-offline/web2board/` on Linux).
+Web2Board is **not** bundled inside the app. You must install it separately
+(see section 4) and Bitbloq will locate it by checking for a running instance
+on port 9877 first, then searching the standard paths or the path you configure
+in *Ver → Configurar Web2Board*. It does **not** download Web2Board from the
+Internet.

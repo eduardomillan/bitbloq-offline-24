@@ -16,6 +16,15 @@ Current version: **1.4.3**
 
 ## [Unreleased]
 
+### Changed
+- **Web2Board is no longer downloaded by Bitbloq.** Bitbloq now locates an
+  already-installed Web2Board in the standard locations (a running instance,
+  `/opt/web2board`, the app's own folder, `resources/web2board`, and the
+  user-data folder) and launches it. A configurable path can be set from
+  *Ver → Configurar Web2Board*; if Web2Board is not found, Bitbloq shows a
+  warning with a button to open that settings dialog. The on-demand download
+  (`web2boardInstaller.js`, `web2board-download.json`) has been removed.
+
 ## [1.4.3] - 2026-07-16
 
 - **Fix upload: replace bundled libtinfo.so.5 with system version.** web2board

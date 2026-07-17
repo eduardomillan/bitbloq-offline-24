@@ -34,6 +34,9 @@ angular.module('bitbloqOffline')
 
         exports.settings = JSON.parse(fs.readFileSync(exports.appPath + '/app/res/config.json', 'utf8'));
         exports.settings.zoomFactor = exports.settings.zoomFactor || 1;
+        // Ruta personalizada donde el usuario tiene instalado Web2Board. Si está
+        // vacía, bitbloq-offline busca Web2Board en las ubicaciones habituales.
+        exports.settings.web2boardPath = exports.settings.web2boardPath || '';
         $translate.use(exports.settings.language);
 
         exports.translateTo = function(lang) {

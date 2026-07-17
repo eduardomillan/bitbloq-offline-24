@@ -13,6 +13,16 @@
             onOpenTriggers = [];
         url = url || '';
 
+        function camelToSnake(name) {
+            return name.replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2')
+                       .replace(/([a-z0-9])([A-Z])/g, '$1_$2')
+                       .toLowerCase();
+        }
+
+        function snakeToCamel(name) {
+            return name.replace(/_([a-z])/g, function (_, c) { return c.toUpperCase(); });
+        }
+
         this.clearTriggers = function () {
             messagesBeforeOpen = [];
             onOpenTriggers = [];
@@ -79,22 +89,29 @@
                 try {
                     var f,
                         msgObj = JSON.parse(ev.data);
-                    if (msgObj.hasOwnProperty('replay')) {
+                    // Server may use "reply" or "replay" depending on wshubsapi version
+                    var reply = msgObj.reply !== undefined ? msgObj.reply : msgObj.replay;
+                    if (msgObj.hasOwnProperty('reply') || msgObj.hasOwnProperty('replay')) {
                         f = returnFunctions[msgObj.ID];
                         if (msgObj.success && f !== undefined && f.onSuccess !== undefined) {
-                            f.onSuccess(msgObj.replay);
+                            f.onSuccess(reply);
                         }
                         if (!msgObj.success) {
                             if (f !== undefined && f.onError !== undefined) {
-                                f.onError(msgObj.replay);
+                                f.onError(reply);
                             }
                         }
                     } else {
-                        f = thisApi[msgObj.hub].client[msgObj.function];
-                        if (f!== undefined) {
+                        // Server may send snake_case function names; try both
+                        var serverFunc = msgObj.function;
+                        f = thisApi[msgObj.hub] && thisApi[msgObj.hub].client[serverFunc];
+                        if (f === undefined) {
+                            f = thisApi[msgObj.hub] && thisApi[msgObj.hub].client[snakeToCamel(serverFunc)];
+                        }
+                        if (f !== undefined) {
                             f.apply(f, msgObj.args);
                         } else {
-                            this.onClientFunctionNotFound(msgObj.hub, msgObj.function);
+                            this.onClientFunctionNotFound(msgObj.hub, serverFunc);
                         }
                     }
                 } catch (err) {
@@ -142,7 +159,7 @@
             }
             args = Array.prototype.slice.call(args);
             var id = messageID++,
-                body = {'hub': hubName, 'function': functionName, 'args': args, 'ID': id};
+                body = {'hub': hubName, 'function': camelToSnake(functionName), 'args': args, 'ID': id};
             if(thisApi.wsClient.readyState === WebSocket.CONNECTING) {
                 messagesBeforeOpen.push(JSON.stringify(body));
             } else if (thisApi.wsClient.readyState !== WebSocket.OPEN) {

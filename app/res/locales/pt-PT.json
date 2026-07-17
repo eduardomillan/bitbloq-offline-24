@@ -458,6 +458,7 @@
     "alert-web2board-boardNotReady": "Placa não detetada. Conecta uma placa",
     "alert-web2board-no-port-found": "Placa não encontrada Verifica se a placa selecionada no Bitbloq é a mesma que a que tens fisicamente e se está conectada.",
     "alert-web2board-no-board-serial": "Não foi encontrada nenhuma placa com a qual comunicar através da porta série. Verifica se a placa no separador de Hardware é a mesma que a que tens fisicamente e se está conectada.",
+    "alert-web2board-not-found": "O Web2Board não foi encontrado. Transfira-o de https://github.com/eduardomillan/web2board e, se não estiver numa localização padrão, defina o seu caminho em Definições.",
     "tour-step-one": "Passo 1 de 7",
     "tour-step-one-text": "Abre o menu de \"Placas\"",
     "tour-step-two": "Passo 2 de 7",

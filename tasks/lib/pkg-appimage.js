@@ -12,7 +12,7 @@
 // Then: appimagetool dist/pkg/bitbloq-appdir dist/BitbloqOffline-<version>.AppImage
 //
 // Note: Web2Board is packaged in its own repository
-// (https://github.com/eduardomillan/web2board) and is downloaded on demand.
+// (https://github.com/eduardomillan/web2board) and is NOT bundled in this AppImage (install it separately).
 
 var fs = require('fs');
 var path = require('path');

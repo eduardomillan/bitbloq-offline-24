@@ -458,6 +458,7 @@
     "alert-web2board-boardNotReady": "No s’ha detectat la placa. Connecta una placa",
     "alert-web2board-no-port-found": "No s'ha trobat la placa. Comprova que la placa seleccionada a Bitbloq és la mateixa que tens físicament i que està connectada.",
     "alert-web2board-no-board-serial": "No s'ha trobat una placa amb la qual comunicar-se per port sèrie. Comprova que la placa de la pestanya Hardware és la mateixa que tens i que està connectada.",
+    "alert-web2board-not-found": "No s'ha trobat Web2Board instal·lat. Descarrega'l des de https://github.com/eduardomillan/web2board i, si no és en una ubicació estàndard, configura'n la ruta a Ajustos.",
     "tour-step-one": "Pas 1 de 7",
     "tour-step-one-text": "Obre el menú \"Plaques\"",
     "tour-step-two": "Pas 2 de 7",

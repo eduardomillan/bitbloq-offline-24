@@ -457,6 +457,7 @@
     "alert-web2board-boardNotReady": "Платка не е засечена. Свържи платка",
     "alert-web2board-no-port-found": "Не se ha encontrado la платка. Comprueba que la платка seleccionada en Bitbloq es la misma que tienes físicamente y que está свързана.",
     "alert-web2board-no-board-serial": "Не se ha encontrado una платка con la que comunicarse por puerto serie. Comprueba que la платка en la pestaña de Hardware es la misma que tienes y que está свързана.",
+    "alert-web2board-not-found": "Web2Board не беше намерен. Изтеглете го от https://github.com/eduardomillan/web2board и, ако не е в стандартно местоположение, задайте пътя му в Настройки.",
     "tour-step-one": "Стъпка 1 от 7",
     "tour-step-one-text": "Abre el menú de \"Платки\"",
     "tour-step-two": "Стъпка 2 от 7",

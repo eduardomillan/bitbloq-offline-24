@@ -1,0 +1,43 @@
+<section class="modal">
+    <div class="modal__dialog">
+        <div class="modal__dialog__content">
+            <div class="modal__header">
+                <h1 class="modal--title" data-element="web2board-settings-title">{{'web2board-settings-title' | translate}}</h1>
+                <div class="modal--close">
+                    <button type="button" ng-click="cancel()" class="btn btn__modal--close" data-element="web2board-settings-close">
+                        <svg class="svg-icon svg-icon__modal--close">
+                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cierre"></use>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="modal__body">
+                <p class="modal__description">{{'web2board-settings-description' | translate}}</p>
+                <div class="web2board-settings__row">
+                    <input type="text"
+                           class="modal__input"
+                           ng-model="path"
+                           placeholder="{{'web2board-settings-placeholder' | translate}}"
+                           data-element="web2board-settings-path" />
+                    <button type="button"
+                            class="btn btn--secondary"
+                            ng-click="browse()"
+                            data-element="web2board-settings-browse">{{'web2board-settings-browse' | translate}}</button>
+                </div>
+                <p class="web2board-settings__error" ng-if="error">{{error}}</p>
+            </div>
+            <div class="modal__footer">
+                <div class="modal--buttons">
+                    <button type="button"
+                            class="btn btn--secondary btn__modal--footer btn--reject"
+                            ng-click="cancel()"
+                            data-element="web2board-settings-cancel">{{'web2board-settings-cancel' | translate}}</button>
+                    <button type="button"
+                            class="btn btn--primary btn__modal--footer"
+                            ng-click="save()"
+                            data-element="web2board-settings-save">{{'web2board-settings-save' | translate}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

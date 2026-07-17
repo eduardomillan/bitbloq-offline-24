@@ -458,6 +458,7 @@
     "alert-web2board-boardNotReady": "Placa no detectada. Conecta una placa",
     "alert-web2board-no-port-found": "No se ha encontrado la placa. Comprueba que la placa en la pestaña de Hardware es la misma que tienes y que está conectada.",
     "alert-web2board-no-board-serial": "No se ha encontrado una placa con la que comunicarse por puerto serie. Comprueba que la placa en la pestaña de Hardware es la misma que tienes y que está conectada.",
+    "alert-web2board-not-found": "Web2Board niet gevonden. Download het van https://github.com/eduardomillan/web2board en stel, als het niet op een standaardlocatie staat, het pad in bij Instellingen.",
     "tour-step-one": "Stp 1 van 7",
     "tour-step-one-text": "Open het Boardsmenu",
     "tour-step-two": "Stap 2 van 7",

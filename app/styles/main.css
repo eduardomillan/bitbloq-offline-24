@@ -763,6 +763,29 @@ dropdown .menu .menu__dropdown {
   background-color: #ebebeb;
   cursor: pointer;
 }
+.modal--container.modal--input .modal_languages .menu__dropdown .modal__progress {
+  text-align: center;
+  padding: 20px 0;
+}
+.modal--container.modal--input .modal_languages .menu__dropdown .modal__progress .progress-bar {
+  width: 100%;
+  height: 24px;
+  background-color: #e2e2e2;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.modal--container.modal--input .modal_languages .menu__dropdown .modal__progress .progress-bar .progress-bar__fill {
+  height: 100%;
+  background-color: #62d017;
+  border-radius: 12px;
+  transition: width 0.3s ease;
+}
+.modal--container.modal--input .modal_languages .menu__dropdown .modal__progress .progress-bar__label {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #373b44;
+  font-weight: 700;
+}
 
 .modal {
   height: 100%;
@@ -824,6 +847,32 @@ dropdown .menu .menu__dropdown {
 }
 .modal .modal__dialog .modal__dialog__content .modal--buttons {
   padding: 0 30px 30px;
+}
+
+.modal .modal__dialog .modal__dialog__content .modal__description {
+  margin: 0 0 20px;
+  color: #6b7280;
+  line-height: 1.4;
+}
+
+.modal .modal__dialog .modal__dialog__content .modal__input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.modal .modal__dialog .modal__dialog__content .web2board-settings__row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.modal .modal__dialog .modal__dialog__content .web2board-settings__error {
+  margin: 12px 0 0;
+  color: #d32f2f;
+  font-size: 13px;
 }
 
 .btn--primary {

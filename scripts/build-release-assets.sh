@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Build & package Bitbloq Offline release assets (bitbloq-offline 1.4.3)
 #
-# Web2Board is NO LONGER bundled. It is downloaded on demand by the app from
-# https://github.com/eduardomillan/web2board (see app/res/web2board-download.json).
+# Web2Board is NO LONGER bundled. The user installs it separately from
+# https://github.com/eduardomillan/web2board; Bitbloq locates it in the standard
+# paths or via a configurable path (Ver -> Configurar Web2Board).
 #
 # This script documents / automates the steps to produce every release asset
 # from a clean checkout. Run it ON THE TARGET OS (Linux here, Windows/macOS on
@@ -49,7 +50,6 @@
 #     dist/bitbloq-offline-setup-1.4.3.exe \
 #     dist/bitbloq-offline-mac-1.4.3.zip
 #
-# NOTE: Web2Board (v3.0.0) assets are published SEPARATELY under
-# https://github.com/eduardomillan/web2board/releases (tag web2board-v3.0.0).
-# After those are published, set the real SHA-256 values in
-# app/res/web2board-download.json (currently TODO placeholders).
+# NOTE: Web2Board assets are published SEPARATELY under
+# https://github.com/eduardomillan/web2board/releases; Bitbloq Offline does not
+# download them.

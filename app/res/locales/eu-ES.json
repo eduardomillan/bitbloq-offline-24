@@ -458,6 +458,7 @@
     "alert-web2board-boardNotReady": "Plakarik ez da detektatu. Konektatu plaka bat",
     "alert-web2board-no-port-found": "Ez da plakarik aurkitu. Egiaztatu Bitbloq-en hautatutako plaka fisikoki duzuna dela eta konektatuta dagoela.",
     "alert-web2board-no-board-serial": "Ez da aurkitu serieko ataka bidez komunikatzeko plakarik. Egiaztatu Hardware erlaitzean duzun plaka zuk duzuna dela eta konektatuta dagoela.",
+    "alert-web2board-not-found": "Ez da Web2Board instalaturi aurkitu. Deskargatu https://github.com/eduardomillan/web2board gunetik eta, tokiko leku batean ez badago, ezarri bere bidea Ezarpenetan.",
     "tour-step-one": "7tik 1. urratsa",
     "tour-step-one-text": "Ireki \"Plakak\" menua",
     "tour-step-two": "7tik 2. urratsa",

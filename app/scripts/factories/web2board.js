@@ -8,7 +8,7 @@
  * Service in the bitbloqOffline.
  */
 angular.module('bitbloqOffline')
-    .factory('web2board', function ($rootScope, $log, $q, _, $timeout, common, alertsService, WSHubsAPI, OpenWindow, $location, web2boardInstaller, nodeFs, nodeRemote) {
+    .factory('web2board', function ($rootScope, $log, $q, _, $timeout, common, alertsService, WSHubsAPI, OpenWindow, $location, nodeFs, nodeRemote, ngDialog, commonModals, web2boardLocator) {
 
         /** Variables */
         var web2board = this,
@@ -86,53 +86,96 @@ angular.module('bitbloqOffline')
             serialPort: ''
         };
 
-        // Web2Board is developed and released in its own repository
-        // (https://github.com/eduardomillan/web2board). It is no longer bundled
-        // inside Bitbloq Offline; it is downloaded on demand by web2boardInstaller.
-        // This function therefore always returns null so the app falls back to the
-        // on-demand download.
-        function getBundledWeb2boardCommand() {
+        // Web2Board is a separate project (https://github.com/eduardomillan/web2board)
+        // and is NOT downloaded by Bitbloq Offline. The user must install it
+        // somewhere on the system and (optionally) tell Bitbloq Offline where it is
+        // through the configurable path in common.settings.web2boardPath.
+        //
+
+        /**
+         * Candidate directories where Web2Board may be installed, in priority
+         * order:
+         *   1. Path configured by the user in Bitbloq Offline settings.
+         *   2. Already running locally (only the port check matters; nothing to
+         *      launch). This is implicit: if Web2Board is up we don't need a path.
+         *   3. /opt/web2board (or similar) on the system.
+         *   4. The directory the application is executed from.
+         *   5. The execution directory's resources/web2board folder.
+         *   6. ~/.config/bitbloq-offline/web2board (legacy / manual install).
+         */
+        function getCandidateDirs() {
+            var path = require('path'),
+                dirs = [];
+
+            // 1. User-configured path (a folder or the launcher itself).
+            var cfg = (common.settings && common.settings.web2boardPath) || '';
+            cfg = (cfg || '').trim();
+            if (cfg) {
+                dirs.push(cfg);
+            }
+
+            // 3. /opt on the system.
+            dirs.push('/opt/web2board');
+            dirs.push('/opt');
+
+            // 4. Execution directory (main module folder).
+            var execDir = process.mainModule ? path.dirname(process.mainModule.filename) : __dirname;
+            dirs.push(execDir);
+
+            // 5. Execution directory's resources/web2board.
+            dirs.push(path.join(execDir, 'resources', 'web2board'));
+            if (process.resourcesPath) {
+                dirs.push(path.join(process.resourcesPath, 'web2board'));
+            }
+
+            // 6. User data directory (legacy manual install).
+            dirs.push(path.join(nodeRemote.app.getPath('userData'), 'web2board'));
+
+            return dirs;
+        }
+
+        /**
+         * Normalize a candidate entry to a launcher path. Delegates to the shared
+         * web2boardLocator so detection and settings validation agree.
+         */
+        function candidateToLauncher(candidate) {
+            return web2boardLocator.resolve(candidate);
+        }
+
+        var cachedCommand = null;
+
+        function getWeb2boardCommand() {
+            if (cachedCommand && require('fs').existsSync(cachedCommand)) {
+                return cachedCommand;
+            }
+            var dirs = getCandidateDirs(),
+                fs = require('fs');
+            for (var i = 0; i < dirs.length; i++) {
+                var launcher = candidateToLauncher(dirs[i]);
+                if (launcher && fs.existsSync(launcher)) {
+                    cachedCommand = launcher;
+                    return launcher;
+                }
+            }
             return null;
         }
 
-        function getWeb2boardCommand() {
-            var fs = require('fs'),
-                bundled = getBundledWeb2boardCommand();
-            // Build normal: web2board viene empaquetado dentro de la app.
-            if (bundled && fs.existsSync(bundled)) {
-                return bundled;
-            }
-            // Build "slim": web2board se descarga bajo demanda en userData.
-            return web2boardInstaller.getLauncherPath();
-        }
-
         function isWeb2boardAvailable() {
-            var fs = require('fs'),
-                bundled = getBundledWeb2boardCommand();
-            return (bundled && fs.existsSync(bundled)) || web2boardInstaller.isInstalled();
+            return !!getWeb2boardCommand();
         }
 
-        function ensureWeb2boardDownloaded() {
-            if (isWeb2boardAvailable()) {
-                return $q.when(true);
-            }
-            var lastPercent = -1;
-            alertsService.add('web2board_toast_downloading', 'web2board', 'loading');
-            return web2boardInstaller.ensureInstalled(function (received, total) {
-                var percent = Math.round((received / total) * 100);
-                if (percent !== lastPercent) {
-                    lastPercent = percent;
-                    $rootScope.$applyAsync(function () {
-                        alertsService.add('web2board_toast_downloading', 'web2board', 'loading', undefined, percent);
-                    });
-                }
-            }).then(function () {
-                alertsService.add('web2board_toast_downloading', 'web2board', 'loading', undefined, 100);
-                return true;
-            }, function (error) {
-                alertsService.add('alert-web2board-download-error', 'web2board', 'warning', undefined, error && error.message);
-                return $q.reject(error);
-            });
+        /**
+         * If Web2Board cannot be found anywhere, inform the user that it must be
+         * installed and point them to the configured (and editable) path.
+         */
+        function notifyWeb2boardMissing() {
+            logError('W2B_NOT_FOUND', 'Web2Board not found in any known location');
+            var cfg = (common.settings && common.settings.web2boardPath) || '';
+            var detail = cfg ? (' (' + cfg + ')') : '';
+            alertsService.add('alert-web2board-not-found', 'web2board', 'warning', undefined, detail, false, false,
+                'web2board-settings-open', function () {
+                    commonModals.launchWeb2BoardSettingsModal();
+                });
         }
 
         function showUpdateModal() {
@@ -145,8 +188,34 @@ angular.module('bitbloqOffline')
             var spawn = require('child_process'),
                 path = require('path'),
                 fs = require('fs'),
-                web2boardCommand = getWeb2boardCommand(),
-                web2boardDir = path.dirname(web2boardCommand),
+                net = require('net'),
+                web2boardCommand = getWeb2boardCommand();
+
+            if (!web2boardCommand) {
+                notifyWeb2boardMissing();
+                return;
+            }
+
+            // Check if the port is already in use (a previous web2board instance
+            // may still be running). If so, skip starting a new one.
+            var portInUse = net.createServer();
+            portInUse.once('error', function () {
+                console.log('Port ' + web2board.config.wsPort + ' already in use, assuming web2board is running');
+            });
+            portInUse.once('listening', function () {
+                portInUse.close(function () {
+                    launchWeb2board(web2boardCommand);
+                });
+            });
+            portInUse.listen(web2board.config.wsPort, '127.0.0.1');
+        }
+
+        function launchWeb2board(web2boardCommand) {
+            var spawn = require('child_process'),
+                path = require('path'),
+                fs = require('fs');
+
+            var web2boardDir = path.dirname(web2boardCommand),
                 env = Object.assign({}, process.env);
             // web2board es Python 2.7/PySide y necesita libncurses.so.5 (y otras
             // librerías empaquetadas) que ya no existen en el sistema moderno
@@ -196,16 +265,9 @@ angular.module('bitbloqOffline')
         }
 
         function openCommunication(callback, showUpdateModalFlag, tryCount) {
-            // En la primera invocación garantizamos que web2board esté disponible
-            // (en builds "slim" esto dispara la descarga bajo demanda).
-            if (!tryCount && !isWeb2boardAvailable()) {
-                ensureWeb2boardDownloaded().then(function () {
-                    doOpenCommunication(callback, showUpdateModalFlag, tryCount);
-                }, function () {
-                    inProgress = false;
-                });
-                return;
-            }
+            // Prioridad 1: si ya hay un web2board corriendo en el puerto, conectamos.
+            // Solo si la conexión falla (tryCount > 0) y no se encontró el binario,
+            // avisamos al usuario.
             doOpenCommunication(callback, showUpdateModalFlag, tryCount);
         }
 

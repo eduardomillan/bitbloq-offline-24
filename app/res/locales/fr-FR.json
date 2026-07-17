@@ -458,6 +458,7 @@
     "alert-web2board-boardNotReady": "Carte non détectée. Connecte une carte",
     "alert-web2board-no-port-found": "La carte n'a pas été trouvée. Vérifie que la carte sélectionnée dans Bitbloq correspond à celle dont tu disposes chez toi et qu'elle est connectée.",
     "alert-web2board-no-board-serial": "Nous n'avons pas trouvé de carte avec laquelle communiquer via port série. Vérifie que la carte sélectionnée dans l'onglet Hardware correspond à celle dont tu disposes chez toi et qu'elle est connectée.",
+    "alert-web2board-not-found": "Web2Board est introuvable. Téléchargez-le depuis https://github.com/eduardomillan/web2board et, s'il n'est pas dans un emplacement standard, configurez son chemin dans les Paramètres.",
     "tour-step-one": "Étape 1 sur 7",
     "tour-step-one-text": "Clique sur Cartes.",
     "tour-step-two": "Étape 2 sur 7",

@@ -458,6 +458,7 @@
     "alert-web2board-boardNotReady": "Scheda non rilevata. Collega una scheda",
     "alert-web2board-no-port-found": "Scheda non trovata. Verifica che la scheda selezionata in Bitbloq sia quella di cui disponi fisicamente e che sia collegata.",
     "alert-web2board-no-board-serial": "Non è stata trovata una scheda con cui comunicare tramite la porta seriale. Verifica che la scheda Hardware corrisponda a quella di cui disponi e che sia collegata.",
+    "alert-web2board-not-found": "Web2Board non trovato. Scaricalo da https://github.com/eduardomillan/web2board e, se non si trova in una posizione standard, imposta il suo percorso in Impostazioni.",
     "tour-step-one": "Passo 1 di 7",
     "tour-step-one-text": "Apri il menu \"Schede\"",
     "tour-step-two": "Passo 2 di 7",

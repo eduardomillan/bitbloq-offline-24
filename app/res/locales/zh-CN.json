@@ -458,6 +458,7 @@
     "alert-web2board-boardNotReady": "板未被发现。请连接板一个",
     "alert-web2board-no-port-found": "没有找到板块。请检查你所选Bitbloq板跟实际的是一样。",
     "alert-web2board-no-board-serial": "没有发现与通过串口进行通信的牌匾。请检查板硬件选项卡是一样的。",
+    "alert-web2board-not-found": "未找到 Web2Board。请从 https://github.com/eduardomillan/web2board 下载，如果不在标准位置，请在设置中配置其路径。",
     "tour-step-one": "步骤1/7",
     "tour-step-one-text": "打开“板”菜单",
     "tour-step-two": "步骤2/7",

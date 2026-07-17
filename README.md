@@ -25,7 +25,7 @@ offline, air-gapped deployments.
 - [Downloads](#downloads)
 - [Quick start (run from source)](#quick-start-run-from-source)
 - [Building distributables](#building-distributables)
-- [Web2Board and the "slim" build](#web2board-and-the-slim-build)
+- [Web2Board (separate install)](#web2board-separate-install)
 - [Internationalization](#internationalization)
 - [Project structure](#project-structure)
 - [Developer notes](#developer-notes)
@@ -70,10 +70,11 @@ Pre-built binaries are published as GitHub Releases on
 - **Windows (32/64-bit)** — `windows.zip`
 - **macOS** — `mac.zip`
 
-Web2Board is shipped **separately** and downloaded on demand by the application
-on first use (see [Web2Board and the "slim" build](#web2board-and-the-slim-build)).
-The Web2Board packages are published as release assets tagged
-`web2board-vX.Y.Z`.
+Web2Board is shipped **separately** and is **not** downloaded by the
+application. You install it yourself and Bitbloq locates it in the standard
+paths or in a configurable path (see [Web2Board (separate install)](#web2board-separate-install)).
+The Web2Board packages are published as releases in the separate repository
+[eduardomillan/web2board](https://github.com/eduardomillan/web2board).
 
 - **Installation & Web2Board setup:** see [`INSTALL.md`](INSTALL.md).
 
@@ -141,11 +142,11 @@ Each build writes to `dist/BitbloqOffline{OS}/`, ready to run or package.
 > See [`INSTALL.md`](INSTALL.md) for what each artifact contains and how end
 > users install them.
 
-> **Web2Board is a separate project.** Bitbloq Offline no longer bundles
-> Web2Board. On first use it downloads the correct Web2Board package from
-> [eduardomillan/web2board](https://github.com/eduardomillan/web2board) and
-> verifies its SHA-256 (see `app/res/web2board-download.json`). Web2Board
-> development (including the system tray feature) happens in that repository.
+> **Web2Board is a separate project.** Bitbloq Offline does **not** bundle or
+> download Web2Board. You must install Web2Board yourself (see
+> [Web2Board (separate install)](#web2board-separate-install) and
+> [`INSTALL.md`](INSTALL.md)). Web2Board development (including the system tray
+> feature) happens in [eduardomillan/web2board](https://github.com/eduardomillan/web2board).
 
 > **Electron binary is generated automatically.** The `build` task copies the
 > Electron executable from the local `node_modules/electron/dist` into the
@@ -160,22 +161,23 @@ Each build writes to `dist/BitbloqOffline{OS}/`, ready to run or package.
 
 ---
 
-## Web2Board and on-demand download
+## Web2Board (separate install)
 
 **Web2Board** is the service that compiles Bitbloq programs and flashes them to
 the board. It is a **separate project**
-(https://github.com/eduardomillan/web2board) and is **no longer bundled** in
-Bitbloq Offline. Instead:
+(https://github.com/eduardomillan/web2board) and is **not bundled** in Bitbloq
+Offline, nor downloaded by it. You install Web2Board yourself and Bitbloq locates
+it automatically (or via a configurable path):
 
-- Bitbloq Offline ships **without** Web2Board. The first time the user flashes a
-  program, the app fetches the correct package for the platform from the
-  `eduardomillan/web2board` GitHub releases, verifies its SHA-256 checksum and
-  runs it. An internet connection is needed only for that one-time download.
+- Bitbloq Offline ships **without** Web2Board and never downloads it. When you
+  flash/upload a program, Bitbloq searches for the Web2Board launcher in the
+  standard locations (running instance, `/opt/web2board`, the app's own folder,
+  `resources/web2board`, and the user-data folder) and launches it. If it cannot
+  be found, Bitbloq shows a warning with a button to open *Ver → Configurar
+  Web2Board*, where you can set the real install path.
 
-The download descriptor lives at `app/res/web2board-download.json` and records
-the Web2Board `version`, the `releaseTag`, the `baseUrl` and per-platform
-`file` / `rootDir` / `sha256`. Update this file (and republish the
-`web2board-vX.Y.Z` release in the web2board repo) when Web2Board changes.
+See [`INSTALL.md`](INSTALL.md) for the full list of search locations and how to
+configure the path.
 
 ---
 

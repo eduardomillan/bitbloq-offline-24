@@ -165,6 +165,10 @@ angular.module('bitbloqOffline')
             web2board.showPlotter(boardReference);
         }
 
+        function configureWeb2Board() {
+            commonModals.launchWeb2BoardSettingsModal();
+        }
+
         /**
          * Open the folder that holds the Bitbloq Offline log and the Web2Board
          * log, so the user can inspect them when something goes wrong (e.g. the
@@ -279,6 +283,11 @@ angular.module('bitbloqOffline')
                     name: 'open-logs',
                     icon: '#web2board',
                     action: openLogsFolder,
+                    disabled: false
+                }, {
+                    name: 'web2board-settings-open',
+                    icon: '#web2board',
+                    action: configureWeb2Board,
                     disabled: false
                 }]
             },
