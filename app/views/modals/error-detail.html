@@ -1,0 +1,26 @@
+<section class="modal">
+    <div class="modal__dialog">
+        <div class="modal__dialog__content">
+            <div class="modal__header">
+                <h1 class="modal--title" data-element="error-dialog-title">{{title | translate}}</h1>
+                <div class="modal--close">
+                    <button ng-click="acceptAction()" class="btn btn__modal--close" data-element="error-dialog-close">
+                        <svg class="svg-icon svg-icon__modal--close">
+                            <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#cierre"></use>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="modal__body">
+                <p ng-if="messageKey" data-element="error-dialog-message">{{messageKey | translate}}</p>
+                <p ng-if="messageText" data-element="error-dialog-message">{{messageText}}</p>
+            </div>
+            <div class="modal__footer">
+                <div class="modal--buttons">
+                    <button ng-if="hasCopy" type="button" ng-click="copyAction()" class="btn btn--secondary btn__modal--footer" data-element="error-dialog-copy">{{'error-dialog-copy' | translate}}</button>
+                    <button type="button" ng-click="acceptAction()" class="btn btn--primary btn__modal--footer" data-element="error-dialog-accept">{{acceptButton | translate}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

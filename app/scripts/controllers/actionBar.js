@@ -11,6 +11,54 @@ angular.module('bitbloqOffline')
     .controller('ActionBarCtrl', function($rootScope, $scope, $route, bloqs, $log, web2board, _, clipboard, bloqsUtils, utils, hw2Bloqs, projectApi, nodeDialog, nodeFs, nodeUtils, common, commonModals, alertsService) {
         $log.debug('ActionBarCtrl', $scope.$parent.$id);
 
+        // Setup IPC listeners for native Electron menu actions
+        var ipcRenderer = require('electron').ipcRenderer;
+        ipcRenderer.on('menu-action', function(event, action) {
+            $log.debug('Menu action received:', action);
+            switch (action) {
+                case 'new-project':
+                    newProject();
+                    break;
+                case 'open-project':
+                    openProject();
+                    break;
+                case 'save-project':
+                    $scope.saveProject($scope.getCurrentProject());
+                    break;
+                case 'save-project-as':
+                    $scope.saveProjectAs($scope.getCurrentProject());
+                    break;
+                case 'export-arduino-code':
+                    $scope.saveIno($scope.getCurrentProject());
+                    break;
+                case 'change-language':
+                    changeLanguage();
+                    break;
+                case 'copy-code':
+                    copyCodeToClipboard();
+                    break;
+                case 'open-logs':
+                    openLogsFolder();
+                    break;
+                case 'clear-logs':
+                    clearLogsFolder();
+                    break;
+                case 'zoom-in':
+                    zoomIn();
+                    break;
+                case 'zoom-out':
+                    zoomOut();
+                    break;
+                case 'zoom-reset':
+                    resetZoom();
+                    break;
+                default:
+                    $log.warn('Unknown menu action:', action);
+            }
+            // Ensure AngularJS applies the changes
+            utils.apply($scope);
+        });
+
         $scope.actions = {
             newProject: newProject,
             openProject: openProject,

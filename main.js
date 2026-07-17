@@ -1,6 +1,7 @@
 'use strict';
 const electron = require('electron');
 const ipcMain = electron.ipcMain;
+const Menu = electron.Menu;
 const fs = require('fs');
 const path = require('path');
 const pjson = require('./package.json');
@@ -31,9 +32,195 @@ app.on('window-all-closed', function() {
     }
 });
 
+// Build the application menu template
+function createMenuTemplate() {
+    var template = [
+        {
+            label: 'File',
+            submenu: [
+                {
+                    label: 'New Project',
+                    accelerator: 'CmdOrCtrl+N',
+                    click: function() {
+                        if (mainWindow) {
+                            mainWindow.webContents.send('menu-action', 'new-project');
+                        }
+                    }
+                },
+                {
+                    label: 'Open Project',
+                    accelerator: 'CmdOrCtrl+O',
+                    click: function() {
+                        if (mainWindow) {
+                            mainWindow.webContents.send('menu-action', 'open-project');
+                        }
+                    }
+                },
+                { type: 'separator' },
+                {
+                    label: 'Save',
+                    accelerator: 'CmdOrCtrl+S',
+                    click: function() {
+                        if (mainWindow) {
+                            mainWindow.webContents.send('menu-action', 'save-project');
+                        }
+                    }
+                },
+                {
+                    label: 'Save As...',
+                    accelerator: 'CmdOrCtrl+Shift+S',
+                    click: function() {
+                        if (mainWindow) {
+                            mainWindow.webContents.send('menu-action', 'save-project-as');
+                        }
+                    }
+                },
+                { type: 'separator' },
+                {
+                    label: 'Export Arduino Code',
+                    click: function() {
+                        if (mainWindow) {
+                            mainWindow.webContents.send('menu-action', 'export-arduino-code');
+                        }
+                    }
+                },
+                { type: 'separator' },
+                {
+                    label: 'Change Language',
+                    click: function() {
+                        if (mainWindow) {
+                            mainWindow.webContents.send('menu-action', 'change-language');
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            label: 'Edit',
+            submenu: [
+                {
+                    label: 'Copy Code to Clipboard',
+                    accelerator: 'CmdOrCtrl+Shift+C',
+                    click: function() {
+                        if (mainWindow) {
+                            mainWindow.webContents.send('menu-action', 'copy-code');
+                        }
+                    }
+                },
+                { type: 'separator' },
+                { role: 'undo', label: 'Undo' },
+                { role: 'redo', label: 'Redo' },
+                { type: 'separator' },
+                { role: 'cut', label: 'Cut' },
+                { role: 'copy', label: 'Copy' },
+                { role: 'paste', label: 'Paste' },
+                { role: 'selectall', label: 'Select All' }
+            ]
+        },
+        {
+            label: 'View',
+            submenu: [
+                {
+                    label: 'Open Logs Folder',
+                    click: function() {
+                        if (mainWindow) {
+                            mainWindow.webContents.send('menu-action', 'open-logs');
+                        }
+                    }
+                },
+                {
+                    label: 'Clear Logs',
+                    click: function() {
+                        if (mainWindow) {
+                            mainWindow.webContents.send('menu-action', 'clear-logs');
+                        }
+                    }
+                },
+                { type: 'separator' },
+                { role: 'reload', label: 'Reload' },
+                { role: 'forcereload', label: 'Force Reload' },
+                { role: 'toggledevtools', label: 'Toggle Developer Tools' },
+                { type: 'separator' },
+                { role: 'resetzoom', label: 'Actual Size' },
+                { role: 'zoomin', label: 'Zoom In' },
+                { role: 'zoomout', label: 'Zoom Out' },
+                { type: 'separator' },
+                { role: 'togglefullscreen', label: 'Toggle Full Screen' }
+            ]
+        },
+        {
+            label: 'Zoom',
+            submenu: [
+                {
+                    label: 'Zoom In',
+                    accelerator: 'CmdOrCtrl+Plus',
+                    click: function() {
+                        if (mainWindow) {
+                            mainWindow.webContents.send('menu-action', 'zoom-in');
+                        }
+                    }
+                },
+                {
+                    label: 'Zoom Out',
+                    accelerator: 'CmdOrCtrl+-',
+                    click: function() {
+                        if (mainWindow) {
+                            mainWindow.webContents.send('menu-action', 'zoom-out');
+                        }
+                    }
+                },
+                {
+                    label: 'Reset Zoom',
+                    accelerator: 'CmdOrCtrl+0',
+                    click: function() {
+                        if (mainWindow) {
+                            mainWindow.webContents.send('menu-action', 'zoom-reset');
+                        }
+                    }
+                }
+            ]
+        }
+    ];
+
+    // On macOS, add the standard application menu
+    if (process.platform === 'darwin') {
+        template.unshift({
+            label: PRODUCT_NAME,
+            submenu: [
+                { role: 'about', label: 'About ' + PRODUCT_NAME },
+                { type: 'separator' },
+                { role: 'services', label: 'Services', submenu: [] },
+                { type: 'separator' },
+                { role: 'hide', label: 'Hide ' + PRODUCT_NAME },
+                { role: 'hideothers', label: 'Hide Others' },
+                { role: 'unhide', label: 'Show All' },
+                { type: 'separator' },
+                { role: 'quit', label: 'Quit ' + PRODUCT_NAME }
+            ]
+        });
+
+        // Window menu for macOS
+        template.push({
+            label: 'Window',
+            role: 'window',
+            submenu: [
+                { role: 'minimize', label: 'Minimize' },
+                { role: 'close', label: 'Close' }
+            ]
+        });
+    }
+
+    return template;
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 app.on('ready', function() {
+    // Create the application menu
+    var menuTemplate = createMenuTemplate();
+    var menu = Menu.buildFromTemplate(menuTemplate);
+    Menu.setApplicationMenu(menu);
+
     // Arranca el servicio local de compilación (arduino-cli) en ws://127.0.0.1:9877
     var compilerStarted = localCompilerServer.startServer(function(err) {
         // El puerto 9877 ya está en uso: casi siempre hay otra instancia de

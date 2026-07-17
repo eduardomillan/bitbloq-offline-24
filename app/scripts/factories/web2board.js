@@ -8,7 +8,7 @@
  * Service in the bitbloqOffline.
  */
 angular.module('bitbloqOffline')
-    .factory('web2board', function ($rootScope, $log, $q, _, $timeout, common, alertsService, WSHubsAPI, OpenWindow, $location, nodeFs, nodeRemote, ngDialog, commonModals, web2boardLocator) {
+    .factory('web2board', function ($rootScope, $log, $q, _, $timeout, common, alertsService, WSHubsAPI, OpenWindow, $location, nodeFs, nodeRemote, ngDialog, commonModals, web2boardLocator, errorDialogs) {
 
         /** Variables */
         var web2board = this,
@@ -41,43 +41,32 @@ angular.module('bitbloqOffline')
         }
 
         /**
-         * Show an error toast that only displays the first part of the message
-         * (with scrollbars via the alert--error-detail CSS class) while keeping
-         * the complete text available to copy through the "Copiar" button.
+         * Show an error dialog with the first line as the message and a "Copiar"
+         * button that copies the complete error text (e.g. for support).
          */
         function showErrorWithCopy(tag, fullError) {
             logError(tag, fullError);
             var text = (fullError && fullError.stdErr) ? fullError.stdErr
                 : (typeof fullError === 'string' ? fullError : JSON.stringify(fullError));
             var preview = text.split('\n')[0].slice(0, 200);
-            alertsService.add('alert-web2board-error-detail', 'alert-web2board-error-detail', 'warning', undefined, preview, false, false,
-                'alert-copy-error', function () {
-                    try {
-                        if (nodeClipboard && nodeClipboard.writeText) {
-                            nodeClipboard.writeText(text);
-                        }
-                    } catch (e) {
-                        // clipboard may be unavailable in some contexts
-                    }
-                });
+            errorDialogs.showErrorDialog({
+                titleKey: 'error-dialog-title',
+                messageText: preview,
+                copyText: text
+            });
         }
 
         /**
-         * Show a board-related error toast (e.g. "board not found") that also
-         * offers a "Copiar" button so the user can copy the message when asking
-         * for support. `key` is the locale key; `message` is the text copied.
+         * Show a board-related error dialog (e.g. "board not found") with a
+         * "Copiar" button that copies the message when asking for support.
+         * `key` is the locale key for the message; `message` is the text copied.
          */
         function showBoardErrorWithCopy(key, message) {
-            alertsService.add(key, 'web2board', 'warning', undefined, undefined, false, false,
-                'alert-copy-error', function () {
-                    try {
-                        if (nodeClipboard && nodeClipboard.writeText) {
-                            nodeClipboard.writeText(message || key);
-                        }
-                    } catch (e) {
-                        // clipboard may be unavailable in some contexts
-                    }
-                });
+            errorDialogs.showErrorDialog({
+                titleKey: 'error-dialog-title',
+                messageKey: key,
+                copyText: message || key
+            });
         }
 
         web2board.config = {
@@ -317,7 +306,10 @@ angular.module('bitbloqOffline')
             api.clearTriggers();
             inProgress = false;
             if (api.wsClient.couldSuccessfullyConnect) {
-                alertsService.add('web2board_toast_closedUnexpectedly', 'web2board', 'warning');
+                errorDialogs.showErrorDialog({
+                    titleKey: 'error-dialog-title',
+                    messageKey: 'web2board_toast_closedUnexpectedly'
+                });
             }
         };
 
