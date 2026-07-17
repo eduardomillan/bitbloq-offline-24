@@ -8,7 +8,7 @@
  * Controller of the bitbloqOffline
  */
 angular.module('bitbloqOffline')
-    .controller('ActionBarCtrl', function($rootScope, $scope, $route, bloqs, $log, web2board, _, clipboard, bloqsUtils, utils, hw2Bloqs, projectApi, nodeDialog, nodeFs, nodeUtils, common, commonModals, alertsService, nodeRemote) {
+    .controller('ActionBarCtrl', function($rootScope, $scope, $route, bloqs, $log, web2board, _, clipboard, bloqsUtils, utils, hw2Bloqs, projectApi, nodeDialog, nodeFs, nodeUtils, common, commonModals, alertsService) {
         $log.debug('ActionBarCtrl', $scope.$parent.$id);
 
         $scope.actions = {
@@ -159,28 +159,10 @@ angular.module('bitbloqOffline')
          * there is no separate Web2Board log.
          */
         function openLogsFolder() {
+            // La apertura real la hace el proceso principal (main.js) vía IPC,
+            // donde shell.openExternal funciona de forma fiable en Electron 4.
             try {
-                var userData = nodeRemote.app.getPath('userData');
-                var logsDir = nodeFs.join(userData, 'logs');
-                // Asegura que la carpeta de logs exista (la app solo la crea al
-                // escribir el primer error). userData siempre existe, así que no
-                // hace falta recursive.
-                if (!nodeFs.existsSync(logsDir)) {
-                    nodeFs.mkdirSync(logsDir);
-                }
-                // openExternal con una ruta file:// abre la carpeta en el gestor
-                // de archivos del sistema. Es la forma más robusta en Electron 4
-                // (shell.openPath no existe y showItemInFolder a veces falla en
-                // Linux si el gestor no está configurado).
-                var ok = nodeRemote.shell.openExternal('file://' + logsDir);
-                if (ok === false) {
-                    // Fallback: resaltar el archivo de log si existe.
-                    var logFile = nodeFs.join(logsDir, 'bitbloq-offline.log');
-                    if (!nodeFs.existsSync(logFile)) {
-                        nodeFs.writeFileSync(logFile, '');
-                    }
-                    nodeRemote.shell.showItemInFolder(logFile);
-                }
+                require('electron').ipcRenderer.send('open-logs-folder');
             } catch (e) {
                 console.error('[openLogsFolder]', e);
                 alertsService.add('alert-open-logs-failed', 'web2board', 'warning');

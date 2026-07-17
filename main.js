@@ -1,5 +1,8 @@
 'use strict';
 const electron = require('electron');
+const ipcMain = electron.ipcMain;
+const fs = require('fs');
+const path = require('path');
 const pjson = require('./package.json');
 const PRODUCT_NAME = 'Bitbloq Offline';
 const PRODUCT_NAME_WITH_VERSION = PRODUCT_NAME + ' v' + pjson.version;
@@ -81,6 +84,21 @@ app.on('ready', function() {
 
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.setTitle(PRODUCT_NAME_WITH_VERSION);
+    });
+
+    // Abre la carpeta de logs en el gestor de archivos del sistema. Se hace en
+    // el proceso principal porque shell.openExternal funciona de forma fiable
+    // aquí (vía remote shell en el renderer era unreliable en Electron 4).
+    ipcMain.on('open-logs-folder', function () {
+        try {
+            var logsDir = path.join(app.getPath('userData'), 'logs');
+            if (!fs.existsSync(logsDir)) {
+                fs.mkdirSync(logsDir);
+            }
+            electron.shell.openExternal('file://' + logsDir);
+        } catch (e) {
+            console.error('[open-logs-folder]', e);
+        }
     });
 
 
