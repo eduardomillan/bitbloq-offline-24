@@ -21,6 +21,75 @@ angular.module('bitbloqOffline')
             $scope.refreshComponentsArray();
         };
 
+        var PRODUCT_NAME = 'Bitbloq Offline';
+
+        function updateWindowTitle() {
+            if (!$scope.project) {
+                return;
+            }
+            var fileName;
+            if (typeof projectApi.savedProjectPath === 'string' && projectApi.savedProjectPath) {
+                fileName = require('path').basename(projectApi.savedProjectPath);
+            } else {
+                fileName = common.translate('new-project');
+            }
+            var dirty = projectApi.hasChanged($scope.getCurrentProject());
+            var title = fileName + (dirty ? '*' : '') + ' — ' + PRODUCT_NAME;
+            require('electron').ipcRenderer.send('update-window-title', title);
+        }
+
+        function watchExpr() {
+            return projectApi.projectChanged + '|' + projectApi.savedProjectPath;
+        }
+
+        $rootScope.$watch(watchExpr, updateWindowTitle);
+        $rootScope.$watch('project.hardware', updateWindowTitle, true);
+        $rootScope.$watch('project.software', updateWindowTitle, true);
+
+        // Las ediciones de bloqs (añadir/quitar/mover/cambiar) viven en
+        // arduinoMainBloqs, no en $scope.project.software, así que ni el watch de
+        // projectChanged ni el de project.software se disparan. La librería bloqs
+        // emite estos eventos DOM en $window (ver scrollBar.js). Los usamos para
+        // marcar el proyecto como modificado comparando la estructura actual con
+        // la base (oldProject) para no falsear al abrir/cargar un proyecto.
+        function getCurrentSoftwareStructure() {
+            if (!$scope.arduinoMainBloqs) {
+                return null;
+            }
+            return {
+                vars: $scope.arduinoMainBloqs.varsBloq.getBloqsStructure(),
+                setup: $scope.arduinoMainBloqs.setupBloq.getBloqsStructure(),
+                loop: $scope.arduinoMainBloqs.loopBloq.getBloqsStructure()
+            };
+        }
+
+        // Tras guardar, la base (oldProject.software) se reconstruye desde el
+        // proyecto serializado, que NO refleja la estructura viva de los bloqs.
+        // Igualamos la base a la estructura actual en pantalla para que el
+        // asterisco desaparezca y no se falsee en la siguiente edición.
+        function syncOldProjectSoftware() {
+            var current = getCurrentSoftwareStructure();
+            if (current && projectApi.oldProject) {
+                projectApi.oldProject.software = current;
+            }
+        }
+
+        function onBloqsChanged() {
+            if (!$scope.project || !$scope.arduinoMainBloqs) {
+                return;
+            }
+            var current = getCurrentSoftwareStructure();
+            var baseline = projectApi.oldProject ? projectApi.oldProject.software : null;
+            if (current && !_.isEqual(current, baseline)) {
+                projectApi.projectChanged = true;
+            }
+            updateWindowTitle();
+        }
+
+        $window.addEventListener('bloqs:bloqadded', onBloqsChanged);
+        $window.addEventListener('bloqs:bloqremoved', onBloqsChanged);
+        $window.addEventListener('bloqs:dragend', onBloqsChanged);
+
         $scope.deleteBoard = function() {
             hw2Bloqs.removeBoard();
             $scope.boardSelected = false;
@@ -161,7 +230,6 @@ angular.module('bitbloqOffline')
 
         $scope.refreshComponentsArray = function() {
             projectApi.projectChanged = true;
-            projectApi.oldProject = $scope.project;
             var newComponentsArray = bloqsUtils.getEmptyComponentsArray();
             var newHardwareTags = [];
             var readyToSave = false;
@@ -316,6 +384,7 @@ angular.module('bitbloqOffline')
 
             if (projectApi.hasChanged(project)) {
                 return projectApi.save(project, function() {
+                    syncOldProjectSoftware();
                     alertsService.add('make-saved-project', 'project-saved', 'ok', 3000);
                     if (callback) {
                         return callback();
@@ -327,6 +396,7 @@ angular.module('bitbloqOffline')
         $scope.saveProjectAs = function(project, callback) {
             project = project || $scope.getCurrentProject();
             return projectApi.saveAs(project, function() {
+                syncOldProjectSoftware();
                 alertsService.add('make-saved-project', 'project-saved', 'ok', 3000);
                 if (callback) {
                     return callback();

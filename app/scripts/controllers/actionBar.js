@@ -162,6 +162,7 @@ angular.module('bitbloqOffline')
                             }
                             $scope.setProject(project);
                             projectApi.savedProjectPath = filePath[0];
+                            projectApi.oldProject = projectApi.getCleanProject(project);
                             projectApi.projectChanged = false;
                             hw2Bloqs.repaint();
                             $scope.refreshCode();

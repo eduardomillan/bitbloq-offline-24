@@ -276,6 +276,14 @@ app.on('ready', function() {
     // Abre la carpeta de logs en el gestor de archivos del sistema. Se hace en
     // el proceso principal porque shell.openExternal funciona de forma fiable
     // aquí (vía remote shell en el renderer era unreliable en Electron 4).
+    // Actualiza la barra de título de la ventana con el nombre del proyecto
+    // abierto y un asterisco (*) si hay cambios sin guardar (estilo LibreOffice).
+    ipcMain.on('update-window-title', function (event, title) {
+        if (mainWindow && !mainWindow.isDestroyed()) {
+            mainWindow.setTitle(title);
+        }
+    });
+
     ipcMain.on('open-logs-folder', function () {
         try {
             var logsDir = path.join(app.getPath('userData'), 'logs');
