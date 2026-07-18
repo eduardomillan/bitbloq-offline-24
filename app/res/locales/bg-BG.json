@@ -1434,5 +1434,8 @@
     "clear-logs-title": "Изтриване на папката с дневници",
     "clear-logs-message": "Всички файлове с дневници на Bitbloq Offline ще бъдат изтрити. Това действие не може да бъде отменено.",
     "clear-logs-confirm": "Приеми",
-    "clear-logs-cancel": "Отказ"
+    "clear-logs-cancel": "Отказ",
+    "error-dialog-title": "Грешка",
+    "error-dialog-copy": "Копирай",
+    "error-dialog-accept": "Приеми"
 }

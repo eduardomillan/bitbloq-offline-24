@@ -459,8 +459,7 @@
     "alert-web2board-no-port-found": "No se ha encontrado la placa. Comprueba que la placa seleccionada en Bitbloq es la misma que tienes físicamente y que está conectada. En Linux, verifica que tu usuario pertenece al grupo 'dialout' y que el puerto /dev/ttyACM* o /dev/ttyUSB* tiene permisos de lectura/escritura (p.ej. 'sudo adduser $USER dialout').",
     "alert-web2board-no-board-serial": "No se ha encontrado una placa con la que comunicarse por puerto serie. Comprueba que la placa en la pestaña de Hardware es la misma que tienes y que está conectada.",
     "alert-web2board-not-found": "No se ha encontrado Web2Board instalado. Descárgalo desde https://github.com/eduardomillan/web2board y, si no está en una ubicación estándar, configura su ruta en Ajustes.",
-    "alert-web2board-not-found": "No se ha encontrado Web2Board instalado. Descárgalo desde https://github.com/eduardomillan/web2board y, si no está en una ubicación estándar, configura su ruta en Ajustes.",
-    "web2board-settings-title": "Ruta de Web2Board",
+    "web2board-settings-title": "Configuración web2board",
     "web2board-settings-description": "Indica la carpeta o el ejecutable de Web2Board. Déjalo vacío para que Bitbloq Offline lo busque en las ubicaciones habituales (/opt, carpeta de la aplicación, etc.).",
     "web2board-settings-placeholder": "Ruta a web2board (carpeta o ejecutable)",
     "web2board-settings-browse": "Examinar...",
@@ -820,7 +819,6 @@
     "plotter-pause": "Pausa",
     "plotter-play": "Continuar",
     "web2board-proxyTest-error": "Incapaz de conectarse a Internet con este proxy",
-    "web2board-settings-title": "Configuración web2board",
     "web2board-proxy-label": "Proxy:",
     "web2board-libsDir-label": "Ruta de las librerías Bitbloq:",
     "web2board-libsDir-error": "No existe la ruta",
@@ -1443,5 +1441,8 @@
     "web2board_toast_downloadFinished": "Web2Board descargado correctamente",
     "alert-web2board-download-error": "Error al descargar Web2Board: {{value}}",
     "open-logs": "Abrir carpeta de logs",
-    "alert-open-logs-failed": "No se pudo abrir la carpeta de logs."
+    "alert-open-logs-failed": "No se pudo abrir la carpeta de logs.",
+    "error-dialog-title": "Error",
+    "error-dialog-copy": "Copiar",
+    "error-dialog-accept": "Aceptar"
 }

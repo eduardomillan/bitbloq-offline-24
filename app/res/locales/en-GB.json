@@ -1425,5 +1425,8 @@
     "clear-logs-title": "Clear logs folder",
     "clear-logs-message": "All Bitbloq Offline log files will be deleted. This action cannot be undone.",
     "clear-logs-confirm": "Accept",
-    "clear-logs-cancel": "Cancel"
+    "clear-logs-cancel": "Cancel",
+    "error-dialog-title": "Error",
+    "error-dialog-copy": "Copy",
+    "error-dialog-accept": "Accept"
 }

@@ -1171,5 +1171,8 @@
     "clear-logs-title": "清空日志文件夹",
     "clear-logs-message": "Bitbloq Offline 的所有日志文件将被删除。此操作无法撤销。",
     "clear-logs-confirm": "确定",
-    "clear-logs-cancel": "取消"
+    "clear-logs-cancel": "取消",
+    "error-dialog-title": "错误",
+    "error-dialog-copy": "复制",
+    "error-dialog-accept": "接受"
 }

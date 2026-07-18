@@ -1414,5 +1414,8 @@
     "clear-logs-title": "Supprimer le dossier de logs",
     "clear-logs-message": "Tous les fichiers journaux de Bitbloq Offline seront supprimés. Cette action est irréversible.",
     "clear-logs-confirm": "Accepter",
-    "clear-logs-cancel": "Annuler"
+    "clear-logs-cancel": "Annuler",
+    "error-dialog-title": "Erreur",
+    "error-dialog-copy": "Copier",
+    "error-dialog-accept": "Accepter"
 }
