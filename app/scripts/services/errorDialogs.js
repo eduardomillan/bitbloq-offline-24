@@ -11,7 +11,9 @@
  * Ver MIGRATE_ARDUINO_CLI.md.
  */
 angular.module('bitbloqOffline')
-  .service('errorDialogs', function($rootScope, $translate, _, ngDialog, nodeClipboard) {
+  .service('errorDialogs', function($rootScope, $translate, _, ngDialog) {
+
+    var nodeClipboard = require('electron').clipboard;
 
     var exports = {};
 
