@@ -183,6 +183,31 @@ function findBoardPort() {
     });
 }
 
+// Busca el puerto reintentando durante un tiempo, para dar margen a que el
+// usuario conecte la placa DESPUÉS de haber abierto el programa. Sin esto, la
+// carga fallaba de inmediato con BOARD_NOT_READY si el robot no estaba conectado
+// en el momento de pulsar "Cargar".
+function findBoardPortWithRetry(tries, intervalMs) {
+    tries = tries || 10;
+    intervalMs = intervalMs || 1000;
+    function attempt(n) {
+        return findBoardPort().then(function (portInfo) {
+            if (portInfo.found) {
+                return portInfo;
+            }
+            if (n <= 1) {
+                return { found: false, port: null };
+            }
+            return new Promise(function (resolve) {
+                setTimeout(function () {
+                    attempt(n - 1).then(resolve);
+                }, intervalMs);
+            });
+        });
+    }
+    return attempt(tries);
+}
+
 function startMonitor(port, baudrate, push) {
     stopMonitor(port);
     var args = ['monitor', '-p', port, '-c', 'baudrate=' + (baudrate || 9600)];
@@ -342,7 +367,7 @@ function handleCodeHub(ws, func, args, ID, push, reply) {
         var upCode = args[0];
         var token = args[1];
         push(ws, 'CodeHub', 'isUploading', ['uploading']);
-        return findBoardPort().then(function (portInfo) {
+        return findBoardPortWithRetry().then(function (portInfo) {
             if (!portInfo.found) {
                 return reply(ws, ID, false, { title: 'BOARD_NOT_READY', stdErr: 'No port found' });
             }
@@ -359,7 +384,7 @@ function handleCodeHub(ws, func, args, ID, push, reply) {
     if (func === 'upload_hex') {
         var hexText = args[0];
         var hexToken = args[1];
-        return findBoardPort().then(function (portInfo) {
+        return findBoardPortWithRetry().then(function (portInfo) {
             if (!portInfo.found) {
                 return reply(ws, ID, false, { title: 'BOARD_NOT_READY', stdErr: 'No port found' });
             }
