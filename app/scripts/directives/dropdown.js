@@ -35,6 +35,22 @@ angular.module('bitbloqOffline')
           }, 0);
         };
 
+        // Convierte un accelerator de Electron (p.ej. 'CommandOrControl+S') en
+        // texto legible para mostrar junto a la entrada del menú ('Ctrl+S').
+        self.formatAccelerator = function(accelerator) {
+            if (!accelerator) {
+                return '';
+            }
+            var isMac = process.platform === 'darwin';
+            return accelerator
+                .replace(/CommandOrControl/g, isMac ? 'Cmd' : 'Ctrl')
+                .replace(/Control/g, 'Ctrl')
+                .replace(/Command/g, 'Cmd')
+                .replace(/Plus/g, '+')
+                .replace(/Shift/g, isMac ? '⇧' : 'Shift')
+                .replace(/Alt/g, isMac ? '⌥' : 'Alt');
+        };
+
         $(document).on('click', function() {
           if ($(event.target).closest('dropdown').length > 0) {
             return false;

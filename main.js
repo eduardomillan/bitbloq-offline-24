@@ -1,6 +1,7 @@
 'use strict';
 const electron = require('electron');
 const ipcMain = electron.ipcMain;
+const globalShortcut = electron.globalShortcut;
 const fs = require('fs');
 const path = require('path');
 const pjson = require('./package.json');
@@ -29,6 +30,11 @@ app.on('window-all-closed', function() {
     if (process.platform !== 'darwin') {
         app.quit();
     }
+});
+
+// Libera los atajos globales al cerrar la app por completo.
+app.on('will-quit', function() {
+    globalShortcut.unregisterAll();
 });
 
 
@@ -87,6 +93,34 @@ app.on('ready', function() {
     mainWindow.loadURL('file://' + __dirname + '/app/index.html');
     // mainWindow.center();
     mainWindow.show();
+
+    // Atajos de teclado. Al haber quitado el menú nativo de Electron, sus
+    // accelerators dejaron de funcionar; los registramos aquí y los reenviamos
+    // al renderer vía el mismo canal IPC 'menu-action' que usaba el menú nativo.
+    // Cada entrada [accelerator, acción] debe coincidir con menuTree en
+    // actionBar.js y con los 'menu-action' que escucha el ActionBarCtrl.
+    var appShortcuts = [
+        ['CommandOrControl+N', 'new-project'],
+        ['CommandOrControl+O', 'open-project'],
+        ['CommandOrControl+S', 'save-project'],
+        ['CommandOrControl+Shift+S', 'save-project-as'],
+        ['CommandOrControl+Shift+C', 'copy-code'],
+        ['CommandOrControl+Plus', 'zoom-in'],
+        ['CommandOrControl+=', 'zoom-in'],
+        ['CommandOrControl+-', 'zoom-out'],
+        ['CommandOrControl+0', 'zoom-reset']
+    ];
+    appShortcuts.forEach(function(pair) {
+        try {
+            globalShortcut.register(pair[0], function() {
+                if (mainWindow && !mainWindow.isDestroyed()) {
+                    mainWindow.webContents.send('menu-action', pair[1]);
+                }
+            });
+        } catch (e) {
+            console.error('[shortcut] no se pudo registrar', pair[0], e.message);
+        }
+    });
 
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.setTitle(PRODUCT_NAME_WITH_VERSION);
@@ -147,9 +181,11 @@ app.on('ready', function() {
     // Emitted when the window is closed.
     mainWindow.on('closed', function() {
         mainWindow = null;
+        globalShortcut.unregisterAll();
         if (process.platform === 'darwin') {
             app.quit();
         }
     });
     // mainWindow.setMenu(null);
+
 });

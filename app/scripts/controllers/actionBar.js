@@ -268,21 +268,25 @@ angular.module('bitbloqOffline')
                     name: 'create-new-project',
                     icon: '#nuevoProyecto',
                     action: newProject,
+                    accelerator: 'CommandOrControl+N',
                     disabled: false
                 }, {
                     name: 'open-project',
                     icon: '#abrirProyecto',
                     action: openProject,
+                    accelerator: 'CommandOrControl+O',
                     disabled: false
                 }, {
                     name: 'save',
                     icon: '#guardar',
                     action: $scope.saveProject,
+                    accelerator: 'CommandOrControl+S',
                     disabled: false
                 }, {
                     name: 'offline-save-as',
                     icon: '#guardar',
                     action: $scope.saveProjectAs,
+                    accelerator: 'CommandOrControl+Shift+S',
                     disabled: false
                 }, {
                     name: 'export-arduino-code',
@@ -302,6 +306,7 @@ angular.module('bitbloqOffline')
                     name: 'makeActions_copyCode',
                     icon: '#copiarTexto',
                     action: copyCodeToClipboard,
+                    accelerator: 'CommandOrControl+Shift+C',
                     disabled: false
                 }]
             },
@@ -325,17 +330,20 @@ angular.module('bitbloqOffline')
                         name: 'more-zoom',
                         icon: '#zoomin',
                         action: zoomIn,
+                        accelerator: 'CommandOrControl+Plus',
                         disabled: false
                     }, {
                         name: 'less-zoom',
                         icon: '#zoomout',
                         action: zoomOut,
+                        accelerator: 'CommandOrControl+-',
                         disabled: false
                     },
                     {
                         name: 'reset-zoom',
                         icon: '#versionAnterior',
                         action: resetZoom,
+                        accelerator: 'CommandOrControl+0',
                         disabled: false
                     }
                 ]
