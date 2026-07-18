@@ -1,75 +1,76 @@
-# Plan: Reemplazar Web2board (PlatformIO) con arduino-cli en Bitbloq Offline
+# Plan: Replace Web2board (PlatformIO) with arduino-cli in Bitbloq Offline
 
-## Contexto
+## Context
 
-Bitbloq Offline compila y sube código a placas Arduino a través de **Web2board**, una
-app Python externa que corre como proceso hijo y escucha en `ws://127.0.0.1:9877`.
-Web2board usa **PlatformIO 2.6.3** (2015), cuya API de registro (`http://api.platformio.org`)
-ya no existe → error `[API] Not Found` al intentar descargar paquetes.
+Bitbloq Offline compiles and uploads code to Arduino boards through **Web2board**, an
+external Python app that runs as a child process and listens on `ws://127.0.0.1:9877`.
+Web2board uses **PlatformIO 2.6.3** (2015), whose registry API
+(`http://api.platformio.org`) no longer exists → `[API] Not Found` error when trying to
+download packages.
 
-Decisión acordada: **implementar la capa en Bitbloq Offline** (no modificar el repo de
-Web2board). Reemplazamos el servidor WebSocket de Web2board Python por un **servicio
-WebSocket local en el proceso principal de Electron** que usa `arduino-cli` (ya instalado,
-v1.5.1, core `arduino:avr` 1.8.8) para compilar/subir, y `arduino-cli monitor` para el
-monitor serie.
+Agreed decision: **implement the layer inside Bitbloq Offline** (do not modify the
+Web2board repo). We replace Web2board's Python WebSocket server with a **local WebSocket
+service in the Electron main process** that uses `arduino-cli` (already installed,
+v1.5.1, core `arduino:avr` 1.8.8) to compile/upload, and `arduino-cli monitor` for the
+serial monitor.
 
-Ventaja clave: el frontend (AngularJS) ya habla el protocolo **WS-Hubs** (`WSHubsApi.js`).
-Si el nuevo servicio implementa los mismos hubs (`CodeHub`, `SerialMonitorHub`,
-`WindowHub`, `UtilsAPIHub`) con la misma serialización, `web2board.js` y `plotter.js`
-**cambian mínimo**.
+Key advantage: the frontend (AngularJS) already speaks the **WS-Hubs** protocol
+(`WSHubsApi.js`). If the new service implements the same hubs (`CodeHub`,
+`SerialMonitorHub`, `WindowHub`, `UtilsAPIHub`) with the same serialization,
+`web2board.js` and `plotter.js` **change minimally**.
 
 ---
 
-## Arquitectura objetivo
+## Target architecture
 
 ```
  Bitbloq Offline (renderer, AngularJS)
-   │  api.CodeHub.server.compile(code)   ← SIN CAMBIOS (WSHubsApi.js)
-   │  api.SerialMonitorHub.server.*      ← SIN CAMBIOS
+   │  api.CodeHub.server.compile(code)   ← UNCHANGED (WSHubsApi.js)
+   │  api.SerialMonitorHub.server.*      ← UNCHANGED
    ▼
- WebSocket ws://127.0.0.1:9877  (protocolo WS-Hubs existente)
+ WebSocket ws://127.0.0.1:9877  (existing WS-Hubs protocol)
    │
- main.js (Electron main process)  ← NUEVO: servidor WS + arduino-cli
+ main.js (Electron main process)  ← NEW: WS server + arduino-cli
    ├── CodeHub.compile / upload   → spawn arduino-cli compile/upload
    ├── SerialMonitorHub.*         → spawn arduino-cli monitor
-   ├── WindowHub.showApp          → ya no abre nada (noop o log)
+   ├── WindowHub.showApp          → no longer opens anything (noop or log)
    └── UtilsAPIHub.setId          → ack
 ```
 
 ---
 
-## Pasos de implementación
+## Implementation steps
 
-### 1. Servidor WebSocket en `main.js`
-- Añadir `require('ws')` y crear `new WebSocket.Server({ port: 9877 })` en el arranque.
-- Mantener el `45s` de timeout que espera `WSHubsApi.construct(url, 45)`.
-- Router de mensajes WS-Hubs: parsear `{hub, function (snake_case), args, ID}`,
-  despachar al handler, responder `{ID, result}` / `{ID, error}`.
-  Pushes servidor→cliente con `{hub, function, args}` (ver `WSHubsApi.js:104-116`).
+### 1. WebSocket server in `main.js`
+- Add `require('ws')` and create `new WebSocket.Server({ port: 9877 })` at startup.
+- Keep the `45s` timeout that `WSHubsApi.construct(url, 45)` expects.
+- WS-Hubs message router: parse `{hub, function (snake_case), args, ID}`, dispatch to the
+  handler, respond `{ID, result}` / `{ID, error}`.
+  Server→client pushes use `{hub, function, args}` (see `WSHubsApi.js:104-116`).
 
-### 2. Hub `CodeHub` (compile / upload / uploadHex)
-- **compile(code)**: escribir `code` a `<tmp>/sketch/<name>.ino`, ejecutar
+### 2. `CodeHub` hub (compile / upload / uploadHex)
+- **compile(code)**: write `code` to `<tmp>/sketch/<name>.ino`, run
   `arduino-cli compile --fqbn <FQBN> --build-path <tmp>/build <tmp>/sketch`.
-  Devolver `{success, {out, err}}`.
-- **upload(code, board)**: `compile` + luego
+  Return `{success, {out, err}}`.
+- **upload(code, board)**: `compile` then
   `arduino-cli upload -b <FQBN> -p <port> --input-dir <tmp>/build <tmp>/sketch`.
-- **uploadHex(hexText, board)**: escribir hex y subir con `--input-file`.
-- Pushes `isCompiling()` / `isUploading(port)` durante el proceso.
+- **uploadHex(hexText, board)**: write the hex and upload with `--input-file`.
+- Push `isCompiling()` / `isUploading(port)` during the process.
 
-### 3. Hub `SerialMonitorHub`
-- **findBoardPort(mcu)**: `arduino-cli board list` o listar `/dev/tty*`.
+### 3. `SerialMonitorHub` hub
+- **findBoardPort(mcu)**: `arduino-cli board list` or list `/dev/tty*`.
 - **startConnection(port, baudrate)**: `arduino-cli monitor -p <port> -c <baud>`,
-  reenviar cada línea como push `SerialMonitorHub.client.received(port, data)`.
-- **write / changeBaudrate / closeConnection**: proxy al proceso serie.
+  forward each line as a `SerialMonitorHub.client.received(port, data)` push.
+- **write / changeBaudrate / closeConnection**: proxy to the serial process.
 
-### 4. Hub `WindowHub`
-- `showApp()` → noop (ya no hay ventana de Web2board).
+### 4. `WindowHub` hub
+- `showApp()` → noop (there is no longer a Web2board window).
 
-### 5. Hub `UtilsAPIHub`
-- `setId("Bitbloq")` → ack; `getId()` → devolver id.
+### 5. `UtilsAPIHub` hub
+- `setId("Bitbloq")` → ack; `getId()` → return the id.
 
-### 6. Mapeo de boards → FQBN
-| Token cliente | FQBN arduino-cli |
+### 6. Board → FQBN mapping
+| Client token | arduino-cli FQBN |
 |---|---|
 | `uno` | `arduino:avr:uno` |
 | `nano` | `arduino:avr:nano` |
@@ -77,37 +78,38 @@ Si el nuevo servicio implementa los mismos hubs (`CodeHub`, `SerialMonitorHub`,
 | `diemilanove` | `arduino:avr:diecimila` |
 | `bt328` | `arduino:avr:uno` |
 
-### 7. Cambios mínimos en el frontend
-- **`web2board.js`**: quitar `startWeb2board()` / `launchWeb2board()` (186-265, 298) y
-  la lógica de `LD_LIBRARY_PATH` / `libtinfo`. El `wsPort` sigue siendo 9877.
-- **`WSHubsApi.js` / `plotter.js`**: sin cambios.
+### 7. Minimal frontend changes
+- **`web2board.js`**: remove `startWeb2board()` / `launchWeb2board()` (186-265, 298) and
+  the `LD_LIBRARY_PATH` / `libtinfo` logic. The `wsPort` stays 9877.
+- **`WSHubsApi.js` / `plotter.js`**: no changes.
 
-### 8. Dependencias
-- `ws` ya está en `package.json`. Usar `arduino-cli monitor` (sin añadir `serialport`).
+### 8. Dependencies
+- `ws` is already in `package.json`. Use `arduino-cli monitor` (no need to add
+  `serialport`).
 
 ---
 
-## Archivos a crear / modificar
-| Archivo | Acción |
+## Files to create / modify
+| File | Action |
 |---|---|
-| `main.js` | Servidor WS + handlers de hubs + spawn arduino-cli |
-| `app/scripts/factories/web2board.js` | Quitar spawn de Web2board Python |
-| `app/scripts/factories/web2boardLocator.js` | Simplificar / marcar obsoleto |
-| `app/scripts/WSHubsApi.js` | Sin cambios |
-| `app/scripts/controllers/plotter.js` | Sin cambios |
-| `MIGRATE_ARDUINO_CLI.md` | Este documento |
+| `main.js` | WS server + hub handlers + spawn arduino-cli |
+| `app/scripts/factories/web2board.js` | Remove Web2board Python spawn |
+| `app/scripts/factories/web2boardLocator.js` | Simplify / mark obsolete |
+| `app/scripts/WSHubsApi.js` | No changes |
+| `app/scripts/controllers/plotter.js` | No changes |
+| `MIGRATE_ARDUINO_CLI.md` | This document |
 
 ---
 
-## Verificación (end-to-end)
-1. `npm start` → Bitbloq arranca, `main.js` levanta WS en 9877.
-2. Verificar Uno → "código verificado" (sin `[API] Not Found`).
-3. Cargar a placa → sube y parpadea.
-4. Monitor serie / Plotter → datos en vivo.
-5. `userData/logs/bitbloq-offline.log` sin errores de WS/compile.
+## Verification (end-to-end)
+1. `npm start` → Bitbloq starts, `main.js` brings up the WS on 9877.
+2. Verify Uno → "code verified" (no `[API] Not Found`).
+3. Upload to board → it uploads and blinks.
+4. Serial monitor / Plotter → live data.
+5. `userData/logs/bitbloq-offline.log` without WS/compile errors.
 
-## Riesgos / notas
-- `arduino-cli` debe estar en el PATH del proceso Electron.
-- Sketch a tmp por petición para evitar condiciones de carrera.
-- `get_hex_data` (devolver .hex al cliente) se puede implementar leyendo
+## Risks / notes
+- `arduino-cli` must be on the Electron process's PATH.
+- Write sketch to tmp per request to avoid race conditions.
+- `get_hex_data` (return the .hex to the client) can be implemented by reading
   `<build>/<name>.ino.hex`.
