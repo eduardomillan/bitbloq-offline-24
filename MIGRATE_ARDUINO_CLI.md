@@ -97,7 +97,7 @@ Key advantage: the frontend (AngularJS) already speaks the **WS-Hubs** protocol
 | `app/scripts/factories/web2boardLocator.js` | Simplify / mark obsolete |
 | `app/scripts/WSHubsApi.js` | No changes |
 | `app/scripts/controllers/plotter.js` | No changes |
-| `MIGRATE_ARDUINO_CLI.md` | This document |
+| `MIGRATE_ARDUINO_CLI.md` | This document (already created) |
 
 ---
 
