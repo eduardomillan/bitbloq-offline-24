@@ -90,7 +90,9 @@ Requirements:
   (`arduino-cli core install arduino:avr`). This is the compilation backend used
   by Bitbloq Offline since v2.0.0.
 - On Linux, the system libraries pulled in by `bower install` / build
-  (e.g. `libusb`, `pango`) and the board USB drivers in `app/res/drivers`.
+  (e.g. `libusb`, `pango`). Board USB drivers are not bundled: on Linux they are
+  handled by the kernel/udev, and on Windows via Windows Update / arduino-cli or
+  a manual install (see `INSTALL.md`).
 
 ```bash
 # 1. Clone
@@ -303,8 +305,7 @@ app
 ├── res              # Common resources
 │   ├── locales      # Language translations (angular-translate)
 │   ├── menus        # JSON files for generating menus
-│   ├── libs         # Bitbloq Arduino libraries (v1_1_3) passed to arduino-cli
-│   └── drivers      # USB drivers for boards
+│   └── libs         # Bitbloq Arduino libraries (v1_1_3) passed to arduino-cli
 ├── scripts          # Angular app (controllers, directives, factories, services)
 ├── styles           # SCSS / compiled CSS
 └── views            # HTML views
@@ -338,8 +339,9 @@ tasks                # Custom grunt tasks
 ## Troubleshooting
 
 - **Board not detected although it is connected?** Check the board
-  troubleshooting guide in `docs/` and make sure the USB drivers from
-  `app/res/drivers` are installed.
+  troubleshooting guide in `docs/` and make sure the correct USB-serial driver
+  for the board is installed (on Windows via Windows Update / arduino-cli or a
+  manual install; see `INSTALL.md`).
 - **App won't start on Linux:** ensure you are not running as root and that
   `/dev/shm` is available; the app already passes `--no-sandbox` and
   `--disable-dev-shm-usage`.

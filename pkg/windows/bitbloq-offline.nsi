@@ -48,8 +48,8 @@ Section "Install" SecInstall
     ; resources\app\... and zowi_samples\ next to it).
     File /r "${SRC}"
 
-    ; Add the user to the dialout-equivalent group is N/A on Windows;
-    ; drivers are provided for manual install.
+    ; Board USB drivers are no longer bundled: on modern Windows they are
+    ; installed via Windows Update / arduino-cli or manually (see INSTALL.md).
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "DisplayName" "${APPNAME}"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "DisplayVersion" "${APPVERSION}"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "Publisher" "${PUBLISHER}"

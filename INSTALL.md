@@ -34,9 +34,9 @@ this release:
   `/usr/bin/bitbloq-offline` plus a menu entry.
 - **arduino-cli** must be installed on the system (see section 4) — it is the
   compilation backend used since v2.0.0.
-- The **Windows installer** puts Bitbloq in `C:\Program Files\BitbloqOffline`,
-  creates Start Menu and Desktop shortcuts, and leaves the board drivers in the
-  `drivers\` folder for manual install.
+- The **Windows installer** puts Bitbloq in `C:\Program Files\BitbloqOffline`
+  and creates Start Menu and Desktop shortcuts. Board drivers are no longer
+  bundled — see section 3.4.
 
 Unzip it anywhere you like. You do **not** need administrator rights to run the
 app — just unzip and launch.
@@ -124,43 +124,75 @@ Then unplug and replug the board. No extra USB drivers are needed on Linux.
 
 ## 3. Install on Windows
 
+Tested on **Windows 10** (also works on Windows 7 and newer, 32-bit or 64-bit).
+
 ### 3.1 Requirements
 
-- Windows 7 or newer (32-bit or 64-bit).
-- When you first flash a program, Windows may ask for administrator rights to
-  install the board drivers. Allow it.
+- Windows 7 or newer (32-bit or 64-bit). ARM editions of Windows are **not**
+  supported.
+- **arduino-cli** installed and on the `PATH`, with the `arduino:avr` core — this
+  is the compilation backend and is **mandatory** (see section 4). It is the only
+  external requirement.
+- The correct board USB driver (see section 3.4). Modern Windows installs most
+  of them automatically; when you first flash a program, Windows may ask for
+  administrator rights to install a driver — allow it.
 
-### 3.2 Install from the setup executable (recommended)
+### 3.2 Install Bitbloq Offline
 
-Download `bitbloq-offline-setup-2.0.2.exe` and double-click it. The
-installer:
+**Option A — Setup executable (recommended).** Download
+`bitbloq-offline-setup-2.0.2.exe` and double-click it. The installer:
 
 - installs Bitbloq in `C:\Program Files\BitbloqOffline`,
 - creates **Start Menu** and **Desktop** shortcuts,
-- leaves the board drivers in the `drivers\` folder (install them if the board
-  is not detected),
 - adds an **Uninstall** entry in the Start Menu and in *Programs and Features*.
 
-On first launch Windows may show a SmartScreen / "unknown publisher" warning —
-choose **Run anyway** (the app is not code-signed).
+**Option B — Portable zip.** Download `bitbloq-offline-windows-2.0.2.zip`,
+unzip it anywhere (no administrator rights needed) and double-click
+`Bitbloq.exe`.
 
-### 3.3 Run from the zip (portable)
+In both cases, on first launch Windows may show a SmartScreen / "unknown
+publisher" warning — choose **More info → Run anyway** (the app is not
+code-signed).
 
-Unzip the file and double-click `Bitbloq.exe`. On first launch Windows might
-show a SmartScreen / "unknown publisher" warning — choose **Run anyway**
-(the app is not code-signed).
+### 3.3 Install arduino-cli (mandatory)
 
-### 3.3 Board drivers
+Bitbloq Offline compiles and uploads by itself using **arduino-cli**; without it
+compilation fails with a "command not found"-type error. Full details are in
+section 4, but the short version for Windows is:
 
-If your board is not detected, install the drivers that ship with the app:
+1. Download `arduino-cli` for Windows from the
+   [arduino-cli releases](https://github.com/arduino/arduino-cli/releases).
+2. Put `arduino-cli.exe` in a folder that is on your `PATH` (or add its folder to
+   the `PATH`). Alternatively, set the `ARDUINO_CLI` environment variable to the
+   absolute path of `arduino-cli.exe` before launching Bitbloq.
+3. Install the AVR core and verify:
+   ```
+   arduino-cli core install arduino:avr
+   arduino-cli version
+   arduino-cli board list
+   ```
 
-```
-BitbloqOfflineWin/
-└── drivers/        # Windows .inf drivers for the boards
-```
+### 3.4 Board drivers
 
-Right-click the appropriate `.inf` file → **Install**, or let Windows install
-the driver automatically when you plug the board in.
+Bitbloq Offline **no longer bundles** board USB drivers. On modern Windows
+(10/11) the required serial drivers are provided automatically via Windows
+Update or by the platform packages that **arduino-cli** installs
+(`arduino-cli core install arduino:avr`), so most boards are recognized as soon
+as you plug them in.
+
+If a board is still not detected (it does not appear in Bitbloq or in
+`arduino-cli board list`), install the driver for its USB-serial chip from the
+manufacturer:
+
+| Board / chip | Official driver |
+|--------------|-----------------|
+| Boards with **Silicon Labs CP210x** (many mBot, BQ ZUM) | [Silicon Labs CP210x VCP](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers) |
+| Boards with **FTDI FT232** | [FTDI VCP](https://ftdichip.com/drivers/vcp-drivers/) |
+| Clones with **WCH CH340/CH341** (cheap Uno/Nano clones) | [WCH CH340](https://www.wch-ic.com/downloads/CH341SER_EXE.html) |
+| Genuine **Arduino** boards | installed by the Arduino AVR core / Windows Update |
+
+Download the installer for your chip, run it (accept the admin prompt), then
+unplug and replug the board.
 
 ---
 
@@ -229,7 +261,7 @@ If compilation/upload fails, check the following:
    (they are, by default).
 4. **Board not detected?** That is a *serial port* permission problem:
     - Linux: add your user to `dialout` (see §2.5).
-    - Windows: install the board drivers (see §3.3).
+    - Windows: install the board's USB-serial driver (see §3.4).
 
 ---
 
@@ -277,7 +309,6 @@ BitbloqOffline<OS>/
 ├── Bitbloq / Bitbloq.exe     # the app
 ├── bitbloq.sh                # Linux launcher
 ├── zowi_samples/             # example projects at the build root
-├── drivers/                  # Windows board drivers
 └── resources/app/app/res/libs/v1_1_3/   # Bitbloq Arduino libraries (bundled)
 ```
 
