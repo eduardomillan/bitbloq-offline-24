@@ -1,0 +1,21 @@
+2026-07-18T21:53:05.284Z [VERIFY] {
+  "title": "INTERNAL_ERROR",
+  "stdErr": "fs.mkdtempSync is not a function"
+}
+2026-07-18T21:54:12.385Z [VERIFY] {
+  "title": "INTERNAL_ERROR",
+  "stdErr": "fs.mkdtempSync is not a function"
+}
+2026-07-18T21:55:39.874Z [VERIFY] {
+  "title": "INTERNAL_ERROR",
+  "stdErr": "fs.mkdtempSync is not a function"
+}
+2026-07-18T21:57:40.277Z [VERIFY] {
+  "title": "INTERNAL_ERROR",
+  "stdErr": "fs.mkdtempSync is not a function"
+}
+2026-07-18T22:26:16.198Z [VERIFY] {
+  "title": "INTERNAL_ERROR",
+  "stdErr": "fs.mkdtempSync is not a function"
+}
+2026-07-18T22:27:05.721Z [UPLOAD] timeOut Error
