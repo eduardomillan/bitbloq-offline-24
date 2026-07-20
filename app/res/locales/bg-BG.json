@@ -1,4 +1,6 @@
 {
+  "status-zowi-connected": "Свързан към: {{port}}",
+  "status-zowi-disconnected": "Не е свързан",
     "text-join": " и ",
     "back": "< Назад",
     "enter": "Вход",

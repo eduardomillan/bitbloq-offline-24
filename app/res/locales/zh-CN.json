@@ -1,4 +1,6 @@
 {
+  "status-zowi-connected": "已连接至：{{port}}",
+  "status-zowi-disconnected": "未连接",
     "bg-BG": "保加利亚语",
     "text-join": "和",
     "back": "回",

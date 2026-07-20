@@ -1,4 +1,6 @@
 {
+  "status-zowi-connected": "Verbonden op: {{port}}",
+  "status-zowi-disconnected": "Niet verbonden",
     "bg-BG": "Bulgaars",
     "text-join": " en ",
     "back": "< Terug",

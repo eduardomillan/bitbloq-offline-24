@@ -1,0 +1,26 @@
+.statusbar {
+    display: flex;
+    align-items: center;
+    height: $statusbar-height;
+    padding: 0 10px;
+    border-top: 1px solid $color-border;
+    background-color: $color-white;
+    color: $font-color-base;
+    font-size: $font-size-small;
+}
+
+.statusbar__dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 6px;
+    border-radius: 50%;
+}
+
+.statusbar__dot--connected {
+    background-color: #2ecc71;
+}
+
+.statusbar__dot--disconnected {
+    background-color: $color-error;
+}

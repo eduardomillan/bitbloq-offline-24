@@ -3,4 +3,9 @@
   <div id="main-content" class="main__content main__content--with-header">
     <div ng-include="'views/main-tabs.html'" data-ng-click="tabsClick()"></div>
   </div>
+  <div class="statusbar">
+    <span class="statusbar__dot" ng-class="{ 'statusbar__dot--connected': web2board.portStatus.connected, 'statusbar__dot--disconnected': !web2board.portStatus.connected }"></span>
+    <span ng-if="!web2board.portStatus.connected" translate="status-zowi-disconnected"></span>
+    <span ng-if="web2board.portStatus.connected" translate="status-zowi-connected" translate-values="{ port: web2board.portStatus.port }"></span>
+  </div>
 </div>

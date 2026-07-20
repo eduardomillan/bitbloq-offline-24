@@ -1,4 +1,6 @@
 {
+  "status-zowi-connected": "Verbunden mit: {{port}}",
+  "status-zowi-disconnected": "Nicht verbunden",
     "bg-BG": "Bulgarisch",
     "text-join": " und ",
     "back": "< Zurück",

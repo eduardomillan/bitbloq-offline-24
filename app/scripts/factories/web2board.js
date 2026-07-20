@@ -15,6 +15,7 @@ angular.module('bitbloqOffline')
             api,
             inProgress = false,
             usingPort = null,
+            portStatus = { connected: false, port: null },
             TIME_FOR_WEB2BOARD_TO_START = 700,
             w2bToast = null,
             plotterWin = null, //ms
@@ -295,6 +296,42 @@ angular.module('bitbloqOffline')
 
         api = WSHubsAPI.construct('ws://' + web2board.config.wsHost + ':' + web2board.config.wsPort, 45);
 
+        /**
+         * Consulta periódicamente el puerto serie donde está conectado Zowi
+         * (cualquier puerto USB real) para alimentar la barra de estado.
+         * Sólo actúa cuando el WS local está abierto.
+         */
+        var portRefreshTimeout = null;
+
+        function refreshPortStatus() {
+            if (!api.wsClient || api.wsClient.readyState !== WebSocket.OPEN) {
+                // La conexión aún no está lista: reintentar en breve.
+                portRefreshTimeout = $timeout(refreshPortStatus, 1000);
+                return;
+            }
+            api.SerialMonitorHub.server.findBoardPort('uno')
+                .done(function (port) {
+                    $rootScope.$applyAsync(function () {
+                        portStatus.connected = !!port;
+                        portStatus.port = port || null;
+                    });
+                }, function () {
+                    $rootScope.$applyAsync(function () {
+                        portStatus.connected = false;
+                        portStatus.port = null;
+                    });
+                })
+                .finally(function () {
+                    // Sin Zowi conectado sondeamos cada 1 s; si ya hay uno
+                    // conectado, cada 2 s basta para detectar desconexiones.
+                    var delay = portStatus.connected ? 2000 : 1000;
+                    portRefreshTimeout = $timeout(refreshPortStatus, delay);
+                });
+        }
+
+        openCommunication();
+        refreshPortStatus();
+
         api.defaultErrorHandler = function (error) {
             $log.error('Error receiving message: ' + error);
             logError('WS', error);
@@ -435,6 +472,7 @@ angular.module('bitbloqOffline')
             isInProcess: function () {
                 return inProgress;
             },
+            portStatus: portStatus,
             api: api
         };
 

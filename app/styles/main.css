@@ -355,7 +355,7 @@ body {
 
 .main__content--with-header {
   display: block;
-  height: calc(100vh - 41px);
+  height: calc(100vh - 41px - 25px);
   overflow-y: auto;
 }
 
@@ -526,6 +526,33 @@ body {
   color: #666;
 }
 
+.statusbar {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 10px;
+  border-top: 1px solid #d1d1d1;
+  background-color: #fff;
+  color: #5d6069;
+  font-size: 12px;
+}
+
+.statusbar__dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+}
+
+.statusbar__dot--connected {
+  background-color: #2ecc71;
+}
+
+.statusbar__dot--disconnected {
+  background-color: #e74c3c;
+}
+
 dropdown .menu .menu__heading.disabled {
   background-color: #cfcfcf !important;
   pointer-events: none;
@@ -544,14 +571,14 @@ dropdown .menu .menu__dropdown {
   background-color: #3b3e45;
   display: block;
   float: left;
-  height: calc(100vh - 41px);
+  height: calc(100vh - 41px - 25px);
   width: 48px;
 }
 
 .tabcontent {
   display: block;
   float: right;
-  height: calc(100vh - 41px);
+  height: calc(100vh - 41px - 25px);
   position: relative;
   width: calc(100% - 48px);
   background-color: #ebebeb;

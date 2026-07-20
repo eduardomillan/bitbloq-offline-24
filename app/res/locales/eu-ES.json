@@ -1,4 +1,6 @@
 {
+  "status-zowi-connected": "Konektatuta: {{port}}",
+  "status-zowi-disconnected": "Konektatuta ez",
     "bg-BG": "Bulgariera",
     "text-join": " eta ",
     "back": "< Atzera",

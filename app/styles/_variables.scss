@@ -16,7 +16,9 @@ $transition-duration      : 120ms;
 // Layout
 $action-bar-height: 40px;
 $action-bar-height-with-border: 41px;
-$main-content-with-header-height: calc(100vh - #{$action-bar-height-with-border});
+$statusbar-height: 24px;
+$statusbar-height-with-border: 25px;
+$main-content-with-header-height: calc(100vh - #{$action-bar-height-with-border} - #{$statusbar-height-with-border});
 
 // Colors
 $color-white: #fff;

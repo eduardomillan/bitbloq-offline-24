@@ -169,17 +169,41 @@ function listPorts() {
 }
 
 function findBoardPort() {
-    return listPorts().then(function (ports) {
-        if (ports.length === 0) {
+    return runCommand(arduinoCli(), ['board', 'list', '--json']).then(function (r) {
+        try {
+            var parsed = JSON.parse(r.out);
+            // arduino-cli >= 0.20 usa "detected_ports"; versiones antiguas "ports"
+            var rawList = parsed.detected_ports || parsed.ports || [];
+            var usbCandidates = [];
+            var anyCandidate = null;
+            rawList.forEach(function (entry) {
+                var portObj = entry.port || entry;
+                var address = portObj && portObj.address;
+                if (!address) {
+                    return;
+                }
+                // Un Zowi (o placa real conectada) expone "serialNumber" en
+                // properties y "hardware_id"; los puertos serie ficticios de
+                // placa base (ttyS*) no los tienen. Usamos ambos como señal de
+                // que hay un dispositivo real conectado.
+                var serial = (portObj.properties && portObj.properties.serialNumber) || portObj.hardware_id;
+                if (!serial) {
+                    return;
+                }
+                if (/tty(USB|ACM)/.test(address)) {
+                    usbCandidates.push(address);
+                } else if (!anyCandidate) {
+                    anyCandidate = address;
+                }
+            });
+            var candidate = usbCandidates.length ? usbCandidates[0] : anyCandidate;
+            if (candidate) {
+                return { found: true, port: candidate };
+            }
+            return { found: false, port: null };
+        } catch (e) {
             return { found: false, port: null };
         }
-        // Preferir puertos USB reales (ttyUSB/ttyACM) y descartar los puertos
-        // serie ficticios de placa base (ttyS*), que no son placas Arduino.
-        var usbPorts = ports.filter(function (p) {
-            return /tty(USB|ACM)/.test(p);
-        });
-        var candidate = usbPorts.length ? usbPorts[0] : ports[0];
-        return { found: true, port: candidate };
     });
 }
 
