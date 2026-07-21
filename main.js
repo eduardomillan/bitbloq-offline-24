@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const pjson = require('./package.json');
 const PRODUCT_NAME = 'Bitbloq Offline';
-const PRODUCT_NAME_WITH_VERSION = PRODUCT_NAME + ' v' + pjson.version;
+const PRODUCT_NAME_WITH_VERSION = PRODUCT_NAME + ' ' + pjson.version;
 
 // Servicio local de compilación/subida que reemplaza a Web2board (Python +
 // PlatformIO) usando arduino-cli. Ver MIGRATE_ARDUINO_CLI.md.

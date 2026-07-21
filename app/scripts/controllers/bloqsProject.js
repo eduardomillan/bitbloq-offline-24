@@ -22,8 +22,6 @@ angular.module('bitbloqOffline')
             $scope.refreshComponentsArray();
         };
 
-        var PRODUCT_NAME = 'Bitbloq Offline';
-
         function updateWindowTitle() {
             if (!$scope.project) {
                 return;
@@ -35,7 +33,7 @@ angular.module('bitbloqOffline')
                 fileName = common.translate('new-project');
             }
             var dirty = projectApi.hasChanged($scope.getCurrentProject());
-            var title = fileName + (dirty ? '*' : '') + ' — ' + PRODUCT_NAME;
+            var title = fileName + (dirty ? '*' : '');
             require('electron').ipcRenderer.send('update-window-title', title);
         }
 
