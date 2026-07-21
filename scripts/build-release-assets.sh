@@ -24,6 +24,52 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+usage() {
+    cat <<'EOF'
+Usage: build-release-assets.sh [-t TARGET] [-h|--help]
+
+Build & package Bitbloq Offline release assets for the given target OS.
+Each target must be built ON ITS OWN OS (Electron binaries and native
+packaging tools differ).
+
+Options:
+  -t TARGET   Target to build: linux, windows, mac, all. Default: linux.
+  -h, --help  Show this help message and exit.
+
+Targets:
+  linux     Build on 64-bit Linux (Ubuntu 22.04+). Produces .deb, AppImage and .zip.
+  windows   Build on Windows with NSIS installed. Produces .exe and .zip.
+  mac       Build on macOS. Produces .zip.
+  all       Build every target available on this machine.
+
+The version is read from package.json so filenames never drift.
+
+Examples:
+  build-release-assets.sh
+  build-release-assets.sh -t linux
+  build-release-assets.sh -t all
+EOF
+}
+
+TARGET="linux"
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -h|--help) usage; exit 0 ;;
+        -t)
+            shift
+            if [ $# -eq 0 ]; then
+                echo "ERROR: -t requires a target argument (linux|windows|mac|all)" >&2
+                exit 2
+            fi
+            TARGET="$1"
+            shift
+            ;;
+        --) shift; break ;;
+        *)  TARGET="$1"; shift ;;
+    esac
+done
+
 VERSION="$(node -p "require('./package.json').version")"
 PRODUCT="bitbloq-offline"
 
@@ -57,8 +103,6 @@ build_mac() {
     echo "macOS asset: ${PRODUCT}-mac-${VERSION}.zip"
 }
 
-TARGET="${1:-linux}"
-
 case "$TARGET" in
     linux)  build_linux ;;
     windows) build_windows ;;
@@ -73,7 +117,7 @@ case "$TARGET" in
         build_mac
         ;;
     *)
-        echo "Usage: $0 {linux|windows|mac|all}" >&2
+        usage
         exit 1
         ;;
 esac
