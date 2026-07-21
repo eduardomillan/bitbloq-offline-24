@@ -5,7 +5,18 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-Current version: **2.0.2**
+Current version: **2.0.3**
+
+## [2.0.3] - 2026-07-21
+
+### Changed
+- **Hide "Ver" (View) menu for arduino-cli backend.** This removes the
+  obsolete Web2Board-related menu entries ("Ver"/"View" menu). The "Mostrar"
+  menu is now simplified with only *Mostrar Serial Monitor* and *Abrir carpeta
+  de logs*.
+- **Added connection status bar to the robot board interface.** The status bar
+  now displays real-time connection status to the robot board, showing when the
+  connection is active or when there are connection issues.
 
 ## [2.0.2] - 2026-07-17
 

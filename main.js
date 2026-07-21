@@ -133,7 +133,13 @@ app.on('ready', function() {
     // abierto y un asterisco (*) si hay cambios sin guardar (estilo LibreOffice).
     ipcMain.on('update-window-title', function (event, title) {
         if (mainWindow && !mainWindow.isDestroyed()) {
-            mainWindow.setTitle(title);
+            if (title) {
+                // Mostrar nombre del archivo/abierto o proyecto sin título + versión
+                mainWindow.setTitle(title + ' - ' + PRODUCT_NAME_WITH_VERSION);
+            } else {
+                // Mostrar solo la versión (cuando no hay archivo/abierto o proyecto sin título)
+                mainWindow.setTitle(PRODUCT_NAME_WITH_VERSION);
+            }
         }
     });
 
