@@ -5,7 +5,21 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-Current version: **2.0.3**
+Current version: **2.0.4**
+
+## [2.0.4] - 2026-07-21
+
+### Fixed
+- **Window title now shows the application name and version correctly.** The
+  project filename (with dirty `*` marker) is sent from the renderer, while the
+  main process appends `Bitbloq Offline <version>` — matching the convention
+  used by the rest of the app. Previously the renderer sent the full title
+  including a hardcoded product name, which duplicated the version string.
+- **"Exportar código Arduino" now uses the project name from the window title.**
+  The exported `.ino` file is named after the saved `.bitbloq` project (or
+  "new-project" when unsaved), instead of always defaulting to "new-project".
+  This keeps the downloaded filename consistent with what the user sees in the
+  title bar.
 
 ## [2.0.3] - 2026-07-21
 

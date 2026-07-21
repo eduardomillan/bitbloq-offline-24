@@ -48,7 +48,13 @@ angular.module('bitbloqOffline')
                 loopBloq: arduinoMainBloqs.loopBloq.getBloqsStructure(true)
             }, componentsArray));
             //var code = utils.prettyCode(bloqsUtils.getCode(componentsArray, arduinoMainBloqs)),
-            var filename = utils.removeDiacritics(common.translate('new-project'));
+            var filename;
+            if (typeof exports.savedProjectPath === 'string' && exports.savedProjectPath) {
+                filename = require('path').basename(exports.savedProjectPath, '.bitbloq');
+            } else {
+                filename = utils.removeDiacritics(common.translate('new-project'));
+            }
+            filename = utils.removeDiacritics(filename);
 
             nodeUtils.downloadFile(filename.substring(0, 30) + '.ino', code, '.ino', function(path) {
                 alertsService.add('make-saved-project', 'project-saved', 'ok', 3000);
