@@ -1,7 +1,7 @@
 # TODO FILE
 
 ## BUGS
-- [ ] The version numeber must be shown always in the estatusbar
+- [X] The version number must be shown always in the title bar
 
 ## IDEAS, NEW FEATURES
 
