@@ -20,6 +20,12 @@ Current version: **2.0.4**
   "new-project" when unsaved), instead of always defaulting to "new-project".
   This keeps the downloaded filename consistent with what the user sees in the
   title bar.
+- **Opening a project from disk now switches to the blocks tab automatically.**
+  When a `.bitbloq` file is opened, the application switches to the "Bloques"
+  (software) tab (index 1) so the blocks are visible immediately, regardless of
+  which tab (Hardware, Bloques, or Código) was active before. This is done via
+  a `select-tab` event broadcast from `ActionBarCtrl` and handled by the
+  `tabset` directive's new `selectByIndex` method.
 
 ## [2.0.3] - 2026-07-21
 

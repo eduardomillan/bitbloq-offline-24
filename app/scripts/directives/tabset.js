@@ -7,7 +7,7 @@ angular.module('bitbloqOffline')
       templateUrl: 'file://' + __dirname + '/views/components/tabset.html',
       bindToController: true,
       controllerAs: 'tabset',
-      controller: function() {
+      controller: function($rootScope) {
 
         var self = this;
         self.tabs = [];
@@ -31,6 +31,16 @@ angular.module('bitbloqOffline')
           });
           selectedTab.active = true;
         };
+
+        self.selectByIndex = function(index) {
+          if (self.tabs[index] && !self.tabs[index].active) {
+            self.select(self.tabs[index]);
+          }
+        };
+
+        $rootScope.$on('select-tab', function(event, index) {
+          self.selectByIndex(index);
+        });
 
       }
     };

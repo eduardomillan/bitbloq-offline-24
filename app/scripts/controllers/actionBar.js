@@ -168,6 +168,7 @@ angular.module('bitbloqOffline')
                             $scope.refreshCode();
                             $scope.refreshComponentsArray();
                             utils.apply($scope);
+                            $rootScope.$broadcast('select-tab', 1);
                             projectApi.save(project);
                             $rootScope.$emit('refreshScroll');
                             bloqs.updateDropdowns();
