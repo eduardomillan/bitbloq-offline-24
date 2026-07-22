@@ -34,9 +34,12 @@ function copyRecursive(src, dest) {
 rimraf(outBase);
 fs.mkdirSync(outBase, { recursive: true });
 
-// DEBIAN/control
+// DEBIAN/control — inject version from package.json
 fs.mkdirSync(path.join(outBase, 'DEBIAN'), { recursive: true });
-fs.copyFileSync(path.join(pkg, 'control'), path.join(outBase, 'DEBIAN', 'control'));
+var version = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).version;
+var ctrl = fs.readFileSync(path.join(pkg, 'control'), 'utf8');
+ctrl = ctrl.replace(/^Version:\s*.+$/m, 'Version: ' + version);
+fs.writeFileSync(path.join(outBase, 'DEBIAN', 'control'), ctrl);
 
 // DEBIAN/postinst & postrm (create/remove libusb symlink for avrdude64)
 ['postinst', 'postrm'].forEach(function(script) {
@@ -73,10 +76,9 @@ fs.mkdirSync(appDir, { recursive: true });
 fs.copyFileSync(path.join(pkg, 'bitbloq.desktop'), path.join(appDir, 'bitbloq.desktop'));
 cp.execSync('chmod 644 "' + path.join(appDir, 'bitbloq.desktop') + '"');
 
-// read version from control
-var ctrl = fs.readFileSync(path.join(outBase, 'DEBIAN', 'control'), 'utf8');
-var version = (ctrl.match(/Version:\s*(.+)/) || [])[1].trim();
-var arch = (ctrl.match(/Architecture:\s*(.+)/) || [])[1].trim();
+// read arch from control and build output path
+var ctrlWritten = fs.readFileSync(path.join(outBase, 'DEBIAN', 'control'), 'utf8');
+var arch = (ctrlWritten.match(/Architecture:\s*(.+)/) || [])[1].trim();
 var outDeb = path.join(dist, 'bitbloq_' + version + '_' + arch + '.deb');
 
 console.log('Building .deb: ' + outDeb);

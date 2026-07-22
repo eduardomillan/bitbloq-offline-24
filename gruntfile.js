@@ -234,7 +234,7 @@ module.exports = function(grunt) {
                 command: 'node tasks/lib/pkg-appimage.js bitbloq'
             },
             'pkg-nsis-win': {
-                command: 'makensis pkg/windows/bitbloq-offline.nsi'
+                command: 'makensis -DAPPVERSION=$(node -p "require(\'./package.json\').version") pkg/windows/bitbloq-offline.nsi'
             }
         }
     });

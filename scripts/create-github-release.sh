@@ -44,22 +44,15 @@ Examples:
 EOF
 }
 
+GH_FLAGS=()
+VERSION=""
 for arg in "$@"; do
     case "$arg" in
-        -h|--help) usage; exit 0 ;;
-    esac
-done
-
-VERSION="${1:-}"
-shift || true
-
-# Flags passed to `gh release create`.
-GH_FLAGS=()
-while [ $# -gt 0 ]; do
-    case "$1" in
-        --draft)       GH_FLAGS+=("--draft"); shift ;;
-        --prerelease)  GH_FLAGS+=("--prerelease"); shift ;;
-        *) echo "Unknown option: $1" >&2; exit 2 ;;
+        -h|--help)     usage; exit 0 ;;
+        --draft)       GH_FLAGS+=("--draft") ;;
+        --prerelease)  GH_FLAGS+=("--prerelease") ;;
+        -*)            echo "Unknown option: $arg" >&2; exit 2 ;;
+        *)             VERSION="$arg" ;;
     esac
 done
 
@@ -105,8 +98,8 @@ done
 NOTES_FILE="$(mktemp)"
 trap 'rm -f "$NOTES_FILE"' EXIT
 
-awk -v ver="## [${VERSION}]" '
-    $0 == ver { found=1; next }
+awk -v ver="${VERSION}" '
+    $0 ~ "^## \\[" ver "\\]" { found=1; next }
     found && /^## \[/ { exit }
     found { print }
 ' CHANGELOG.md > "$NOTES_FILE"
@@ -122,7 +115,20 @@ cat "$NOTES_FILE"
 echo "----------------------------------------"
 
 # Create the release.
+REMOTE_URL="$(git remote get-url origin 2>/dev/null || true)"
+REPO=""
+if [ -n "$REMOTE_URL" ]; then
+    REPO="$(echo "$REMOTE_URL" | sed -E 's#.*github\.com[:/]##; s#\.git$##')"
+fi
+
+if [ -z "$REPO" ]; then
+    echo "ERROR: cannot determine GitHub repo from git remote 'origin'." >&2
+    echo "       Run: gh repo set-default OWNER/REPO" >&2
+    exit 1
+fi
+
 gh release create "$TAG" "${ASSETS[@]}" \
+    -R "$REPO" \
     --title "Bitbloq Offline v${VERSION}" \
     --notes-file "$NOTES_FILE" \
     "${GH_FLAGS[@]}"

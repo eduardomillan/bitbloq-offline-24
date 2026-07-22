@@ -1,9 +1,12 @@
 ; Bitbloq Offline - NSIS installer script
 ; Builds bitbloq-offline-setup-<version>.exe from the Windows build folder.
-; Run: makensis pkg/windows/bitbloq-offline.nsi
+; Run: makensis -DAPPVERSION=X.Y.Z pkg/windows/bitbloq-offline.nsi
+; (version is passed automatically by grunt pkg-nsis-win)
 
 !define APPNAME "Bitbloq Offline"
-!define APPVERSION "2.0.2"
+!ifndef APPVERSION
+    !define APPVERSION "dev"
+!endif
 !define PUBLISHER "Eduardo Millán"
 !define WEBSITE "https://github.com/eduardomillan/bitbloq-offline-24"
 !define SRC "/home/eduardo/bitbloq-offline-24/dist/BitbloqOfflineWin"

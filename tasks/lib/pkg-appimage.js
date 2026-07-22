@@ -48,13 +48,8 @@ cp.execSync('chmod 755 "' + path.join(appdir, 'Bitbloq') + '"');
 var iconSrc = path.join(root, 'app', 'images', 'bitbloq_ico.png');
 if (fs.existsSync(iconSrc)) fs.copyFileSync(iconSrc, path.join(appdir, 'bitbloq-offline.png'));
 
-// version from the .deb control metadata
-var ctrlPath = path.join(pkg, 'control');
-var version = '1.0.0';
-if (fs.existsSync(ctrlPath)) {
-    var ctrl = fs.readFileSync(ctrlPath, 'utf8');
-    version = ((ctrl.match(/Version:\s*(.+)/) || [])[1] || '1.0.0').trim();
-}
+// version from package.json
+var version = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).version;
 
 // ensure appimagetool is on PATH
 try {
