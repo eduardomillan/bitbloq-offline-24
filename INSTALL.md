@@ -4,7 +4,7 @@ This document explains how to install **Bitbloq Offline** on Linux and Windows,
 and how to compile and upload programs to your board (Arduino, Zowi, PrintBot,
 etc.).
 
-> **Versions covered:** Bitbloq Offline `2.0.2`. Starting from this version
+> **Versions covered:** Starting from version 2.0,
 > Bitbloq Offline is **self-contained**: it compiles and uploads by itself using
 > **arduino-cli** and no longer needs the separate Web2Board project. See
 > [`MIGRATE_ARDUINO_CLI.md`](MIGRATE_ARDUINO_CLI.md).
@@ -18,17 +18,17 @@ Get the build for your platform from the
 
 | Platform | File |
 |----------|------|
-| Linux (64-bit) | `bitbloq-offline-linux-2.0.2.zip` |
-| Windows (64/32-bit) | `bitbloq-offline-windows-2.0.2.zip` |
+| Linux (64-bit) | `bitbloq-offline-linux-x.y.zip` |
+| Windows (64/32-bit) | `bitbloq-offline-windows-x.y.zip` |
 
 In addition to the zips, the following **native installers** are published for
 this release:
 
 | Format | Bitbloq Offline |
 |--------|-----------------|
-| Linux `.deb` | `bitbloq_2.0.2_amd64.deb` |
-| Linux AppImage | `BitbloqOffline-2.0.2.AppImage` |
-| Windows installer | `bitbloq-offline-setup-2.0.2.exe` |
+| Linux `.deb` | `bitbloq_x.y_amd64.deb` |
+| Linux AppImage | `BitbloqOffline-x.y.AppImage` |
+| Windows installer | `bitbloq-offline-setup-x.y.exe` |
 
 - **Bitbloq `.deb`** installs to `/opt/bitbloq-offline` and adds
   `/usr/bin/bitbloq-offline` plus a menu entry.
@@ -76,10 +76,10 @@ variables needed on modern distributions (`NO_AT_BRIDGE=1`, no forced old
 
 ### 2.3 Install from the `.deb` package (recommended on Debian/Ubuntu)
 
-Download `bitbloq_2.0.2_amd64.deb` and install it:
+Download `bitbloq_x.y_amd64.deb` and install it:
 
 ```bash
-sudo dpkg -i bitbloq_2.0.2_amd64.deb
+sudo dpkg -i bitbloq_x.y_amd64.deb
 sudo apt-get install -f   # only if dpkg reports missing dependencies
 ```
 
@@ -99,8 +99,8 @@ sudo dpkg -r bitbloq-offline
 The AppImage is a single self-contained file — no installation needed:
 
 ```bash
-chmod +x BitbloqOffline-2.0.2.AppImage
-./BitbloqOffline-2.0.2.AppImage
+chmod +x BitbloqOffline-x.y.AppImage
+./BitbloqOffline-x.y.AppImage
 ```
 
 It needs FUSE to mount itself; on a normal desktop that is already available.
@@ -140,13 +140,13 @@ Tested on **Windows 10** (also works on Windows 7 and newer, 32-bit or 64-bit).
 ### 3.2 Install Bitbloq Offline
 
 **Option A — Setup executable (recommended).** Download
-`bitbloq-offline-setup-2.0.2.exe` and double-click it. The installer:
+`bitbloq-offline-setup-x.y.exe` and double-click it. The installer:
 
 - installs Bitbloq in `C:\Program Files\BitbloqOffline`,
 - creates **Start Menu** and **Desktop** shortcuts,
 - adds an **Uninstall** entry in the Start Menu and in *Programs and Features*.
 
-**Option B — Portable zip.** Download `bitbloq-offline-windows-2.0.2.zip`,
+**Option B — Portable zip.** Download `bitbloq-offline-windows-x.y.zip`,
 unzip it anywhere (no administrator rights needed) and double-click
 `Bitbloq.exe`.
 
