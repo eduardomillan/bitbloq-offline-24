@@ -232,7 +232,7 @@ module.exports = function(grunt) {
                 stderr: false
             },
             target: {
-                command: 'chmod -R 755 dist/'
+                command: process.platform === 'win32' ? 'echo Skipping chmod on Windows' : 'chmod -R 755 dist/'
             },
             // --- Native packages (.deb / AppImage / NSIS) ---
             'pkg-deb-bitbloq': {
@@ -242,7 +242,7 @@ module.exports = function(grunt) {
                 command: 'node tasks/lib/pkg-appimage.js bitbloq'
             },
             'pkg-nsis-win': {
-                command: 'makensis -DAPPVERSION=$(node -p "require(\'./package.json\').version") pkg/windows/bitbloq-offline.nsi'
+                command: 'node tasks/lib/pkg-nsis.js'
             }
         }
     });
@@ -309,11 +309,26 @@ module.exports = function(grunt) {
         if (os === 'win' || os === 'windows' || os === 'windows-slim' || os === undefined) {
             var srcWin = path.join(electronDist, 'electron.exe');
             var dstWin = path.join('res', 'windows32-prebuilt', 'Bitbloq.exe');
+            var dstDataDir = path.join('res', 'windows32-prebuilt', 'data');
             if (!fs.existsSync(srcWin)) {
                 grunt.log.writeln('Skipping Windows binary (electron.exe not found in this platform).');
             } else {
+                // Copia electron.exe -> Bitbloq.exe
                 fs.writeFileSync(dstWin, fs.readFileSync(srcWin));
                 grunt.log.writeln('Electron -> ' + dstWin);
+                // Copia TODOS los recursos de Electron (DLLs, paks, etc.) a data/
+                // para que la versión del ejecutable coincida con las DLLs.
+                grunt.file.delete(dstDataDir, { force: true });
+                grunt.file.mkdir(dstDataDir);
+                grunt.file.recurse(electronDist, function(abspath, rootdir, subdir, filename) {
+                    var rel = subdir ? path.join(subdir, filename) : filename;
+                    var dest = path.join(dstDataDir, rel);
+                    if (subdir) {
+                        grunt.file.mkdir(path.join(dstDataDir, subdir));
+                    }
+                    grunt.file.copy(abspath, dest);
+                });
+                grunt.log.writeln('Electron resources -> ' + dstDataDir);
             }
         }
 

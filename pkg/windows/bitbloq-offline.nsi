@@ -9,15 +9,15 @@
 !endif
 !define PUBLISHER "Eduardo Millán"
 !define WEBSITE "https://github.com/eduardomillan/bitbloq-offline-24"
-!define SRC "/home/eduardo/bitbloq-offline-24/dist/BitbloqOfflineWin"
-!define ICON "/home/eduardo/bitbloq-offline-24/res/buildWindowsExe/Bitbloq.ico"
+!define SRC "dist\BitbloqOfflineWin"
+!define ICON "res\buildWindowsExe\Bitbloq.ico"
 
 ; NSIS modern UI
 !include "MUI2.nsh"
 !include "x64.nsh"
 
 Name "${APPNAME} ${APPVERSION}"
-OutFile "/home/eduardo/bitbloq-offline-24/dist/bitbloq-offline-setup-${APPVERSION}.exe"
+OutFile "dist\bitbloq-offline-setup-${APPVERSION}.exe"
 InstallDir "$PROGRAMFILES64\BitbloqOffline"
 InstallDirRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "InstallLocation"
 RequestExecutionLevel admin
