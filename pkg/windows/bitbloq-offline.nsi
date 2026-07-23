@@ -31,6 +31,7 @@ RequestExecutionLevel admin
 ;--------------------------------
 ; Pages
 !insertmacro MUI_PAGE_WELCOME
+!insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
 !insertmacro MUI_PAGE_FINISH
@@ -44,8 +45,14 @@ RequestExecutionLevel admin
 !insertmacro MUI_LANGUAGE "English"
 
 ;--------------------------------
+; Component selection
+InstType "Full installation (with arduino-cli setup)"
+InstType "Minimal installation (arduino-cli must be installed separately)"
+
+;--------------------------------
 ; Installer sections
 Section "Install" SecInstall
+    SectionIn 1 2
     SetOutPath "$INSTDIR"
     ; Copy the whole build preserving structure (Bitbloq.exe at root,
     ; resources\app\... and zowi_samples\ next to it).
@@ -73,11 +80,46 @@ Section "Install" SecInstall
     WriteUninstaller "$INSTDIR\uninstall.exe"
 SectionEnd
 
+Section "Arduino CLI Setup Scripts" SecArduinoScripts
+    SectionIn 1 2
+    SetOutPath "$INSTDIR\tools"
+    
+    ; Include the installation scripts
+    File "${SRC}\..\..\scripts\install-arduino-cli.ps1"
+    File "${SRC}\..\..\scripts\install-arduino-cli.cmd"
+    
+    ; Create shortcut to setup script in Start Menu
+    CreateShortCut "$SMPROGRAMS\${APPNAME}\Setup Arduino CLI.lnk" "$INSTDIR\tools\install-arduino-cli.cmd" "" "$INSTDIR\tools\install-arduino-cli.cmd" 0
+SectionEnd
+
+Section "Run Arduino CLI Setup" SecRunArduinoSetup
+    SectionIn 1
+    ; Run the PowerShell script to install arduino-cli
+    ; This is optional and can be run later from Start Menu
+    ExecWait 'powershell.exe -ExecutionPolicy Bypass -File "$INSTDIR\tools\install-arduino-cli.ps1" -Silent'
+SectionEnd
+
+;--------------------------------
+; Descriptions
+LangString DESC_SecInstall ${LANG_ENGLISH} "Install Bitbloq Offline application files."
+LangString DESC_SecInstall ${LANG_SPANISH} "Instalar los archivos de la aplicación Bitbloq Offline."
+LangString DESC_SecArduinoScripts ${LANG_ENGLISH} "Install Arduino CLI setup scripts (can be run later from Start Menu)."
+LangString DESC_SecArduinoScripts ${LANG_SPANISH} "Instalar scripts de configuración de Arduino CLI (pueden ejecutarse después desde el Menú Inicio)."
+LangString DESC_SecRunArduinoSetup ${LANG_ENGLISH} "Run Arduino CLI setup now (installs arduino-cli, AVR core, and Servo library)."
+LangString DESC_SecRunArduinoSetup ${LANG_SPANISH} "Ejecutar configuración de Arduino CLI ahora (instala arduino-cli, core AVR y librería Servo)."
+
+!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecInstall} $(DESC_SecInstall)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecArduinoScripts} $(DESC_SecArduinoScripts)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SecRunArduinoSetup} $(DESC_SecRunArduinoSetup)
+!insertmacro MUI_FUNCTION_DESCRIPTION_END
+
 Section "Uninstall" SecUninstall
     Delete "$INSTDIR\uninstall.exe"
     RMDir /r "$INSTDIR"
     Delete "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk"
     Delete "$SMPROGRAMS\${APPNAME}\Uninstall.lnk"
+    Delete "$SMPROGRAMS\${APPNAME}\Setup Arduino CLI.lnk"
     RMDir "$SMPROGRAMS\${APPNAME}"
     Delete "$DESKTOP\${APPNAME}.lnk"
     DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"

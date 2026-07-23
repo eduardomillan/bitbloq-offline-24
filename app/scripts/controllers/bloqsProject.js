@@ -11,6 +11,7 @@ angular.module('bitbloqOffline')
     .controller('BloqsProjectCtrl', function($scope, $rootScope, $timeout, $translate, hw2Bloqs, alertsService, commonModals, $window, $document, bloqsUtils, projectApi, nodeFs, common, _, $log, bloqs, web2board) {
         $log.debug('bloqsproject ctrl', $scope.$parent.$id);
         $scope.hw2Bloqs = hw2Bloqs;
+        $scope.initializingBloqs = true;
         this.common = common;
         $scope.web2board = web2board;
 
@@ -55,11 +56,21 @@ angular.module('bitbloqOffline')
             if (!$scope.arduinoMainBloqs) {
                 return null;
             }
-            return {
-                vars: $scope.arduinoMainBloqs.varsBloq.getBloqsStructure(),
-                setup: $scope.arduinoMainBloqs.setupBloq.getBloqsStructure(),
-                loop: $scope.arduinoMainBloqs.loopBloq.getBloqsStructure()
-            };
+            var varsBloq = $scope.arduinoMainBloqs.varsBloq;
+            var setupBloq = $scope.arduinoMainBloqs.setupBloq;
+            var loopBloq = $scope.arduinoMainBloqs.loopBloq;
+            if (!varsBloq || !setupBloq || !loopBloq) {
+                return null;
+            }
+            try {
+                return {
+                    vars: varsBloq.getBloqsStructure(),
+                    setup: setupBloq.getBloqsStructure(),
+                    loop: loopBloq.getBloqsStructure()
+                };
+            } catch (e) {
+                return null;
+            }
         }
 
         // Tras guardar, la base (oldProject.software) se reconstruye desde el
@@ -74,7 +85,7 @@ angular.module('bitbloqOffline')
         }
 
         function onBloqsChanged() {
-            if (!$scope.project || !$scope.arduinoMainBloqs) {
+            if ($scope.initializingBloqs || !$scope.project || !$scope.arduinoMainBloqs) {
                 return;
             }
             var current = getCurrentSoftwareStructure();
@@ -359,19 +370,34 @@ angular.module('bitbloqOffline')
 
         $scope.getCurrentProject = function() {
             var project = _.cloneDeep($scope.project);
-            if ($scope.arduinoMainBloqs.varsBloq) {
-                project.software = {
-                    vars: $scope.arduinoMainBloqs.varsBloq.getBloqsStructure(),
-                    setup: $scope.arduinoMainBloqs.setupBloq.getBloqsStructure(),
-                    loop: $scope.arduinoMainBloqs.loopBloq.getBloqsStructure()
-                };
+            var varsBloq = $scope.arduinoMainBloqs && $scope.arduinoMainBloqs.varsBloq;
+            var setupBloq = $scope.arduinoMainBloqs && $scope.arduinoMainBloqs.setupBloq;
+            var loopBloq = $scope.arduinoMainBloqs && $scope.arduinoMainBloqs.loopBloq;
+            
+            if (varsBloq && setupBloq && loopBloq) {
+                try {
+                    project.software = {
+                        vars: varsBloq.getBloqsStructure(),
+                        setup: setupBloq.getBloqsStructure(),
+                        loop: loopBloq.getBloqsStructure()
+                    };
+                } catch (e) {
+                    console.warn('Error getting software structure:', e.message);
+                }
             }
             project.hardware = $scope.getHardwareSchema();
-            $scope.project.code = arduinoGeneration.getCode({
-                varsBloq: $scope.arduinoMainBloqs.varsBloq.getBloqsStructure(true),
-                setupBloq: $scope.arduinoMainBloqs.setupBloq.getBloqsStructure(true),
-                loopBloq: $scope.arduinoMainBloqs.loopBloq.getBloqsStructure(true)
-            }, project.hardware);
+            
+            if (varsBloq && setupBloq && loopBloq) {
+                try {
+                    $scope.project.code = arduinoGeneration.getCode({
+                        varsBloq: varsBloq.getBloqsStructure(true),
+                        setupBloq: setupBloq.getBloqsStructure(true),
+                        loopBloq: loopBloq.getBloqsStructure(true)
+                    }, project.hardware);
+                } catch (e) {
+                    console.warn('Error generating code:', e.message);
+                }
+            }
 
             project.code = $scope.project.code;
 

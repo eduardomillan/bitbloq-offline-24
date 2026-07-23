@@ -13,7 +13,11 @@ angular.module('bitbloqOffline')
 
         $scope.init = function() {
             console.log('init');
-            bloqs.removeAllBloqs();
+            try {
+                bloqs.removeAllBloqs();
+            } catch (e) {
+                console.warn('Error removing bloqs:', e.message);
+            }
             $scope.arduinoMainBloqs.varsBloq = bloqs.buildBloqWithContent($scope.project.software.vars, $scope.componentsArray, bloqsSchemas, $scope.$field);
             $scope.arduinoMainBloqs.setupBloq = bloqs.buildBloqWithContent($scope.project.software.setup, $scope.componentsArray, bloqsSchemas);
             $scope.arduinoMainBloqs.loopBloq = bloqs.buildBloqWithContent($scope.project.software.loop, $scope.componentsArray, bloqsSchemas);
@@ -34,6 +38,7 @@ angular.module('bitbloqOffline')
                 bloqs.translateBloqs(key.language);
             });
             $scope.updateBloqs();
+            $scope.initializingBloqs = false;
         };
 
         $scope.onFieldKeyUp = function(event) {

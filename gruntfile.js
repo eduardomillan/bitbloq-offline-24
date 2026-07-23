@@ -190,6 +190,14 @@ module.exports = function(grunt) {
                     src: ['**'],
                     dest: 'dist/BitbloqOfflineLinuxSlim/zowi_samples/'
                 }]
+            },
+            windowsArduinoScripts: {
+                files: [{
+                    expand: true,
+                    cwd: 'scripts',
+                    src: ['install-arduino-cli.ps1', 'install-arduino-cli.cmd'],
+                    dest: 'dist/BitbloqOfflineWin/scripts/'
+                }]
             }
         },
         clean: {
@@ -379,6 +387,7 @@ module.exports = function(grunt) {
                     'copy:prebuiltWindows',
                     'copy:windows',
                     'copy:zowiSamplesWin',
+                    'copy:windowsArduinoScripts',
                     'shell:target'
                 ]);
                 break;

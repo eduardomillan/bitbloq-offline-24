@@ -534,6 +534,11 @@
                 components: [],
                 connections: []
             };
+
+            if (!containerDefault) {
+                return schema;
+            }
+
             var endpointsRef = {};
 
             function _setParameters(ep) {

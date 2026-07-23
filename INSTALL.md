@@ -144,11 +144,19 @@ Tested on **Windows 10** (also works on Windows 7 and newer, 32-bit or 64-bit).
 
 - installs Bitbloq in `C:\Program Files\BitbloqOffline`,
 - creates **Start Menu** and **Desktop** shortcuts,
-- adds an **Uninstall** entry in the Start Menu and in *Programs and Features*.
+- adds an **Uninstall** entry in the Start Menu and in *Programs and Features*,
+- optionally installs arduino-cli and required libraries (see section 3.3).
+
+During installation, you can choose between:
+- **Full installation**: Includes setup scripts and optionally runs arduino-cli
+  installation automatically
+- **Minimal installation**: Only installs Bitbloq; arduino-cli must be installed
+  separately
 
 **Option B — Portable zip.** Download `bitbloq-offline-windows-x.y.zip`,
 unzip it anywhere (no administrator rights needed) and double-click
-`Bitbloq.exe`.
+`Bitbloq.exe`. The `scripts/` folder contains the arduino-cli setup scripts
+that you can run manually.
 
 In both cases, on first launch Windows may show a SmartScreen / "unknown
 publisher" warning — choose **More info → Run anyway** (the app is not
@@ -160,17 +168,51 @@ Bitbloq Offline compiles and uploads by itself using **arduino-cli**; without it
 compilation fails with a "command not found"-type error. Full details are in
 section 4, but the short version for Windows is:
 
+**Option A — Automated installation (recommended).** Use the provided setup
+script that installs arduino-cli, the AVR core, and the Servo library
+automatically:
+
+1. **From the installer:** If you used the Bitbloq Offline installer with the
+   "Full installation" option, you'll find a shortcut in the Start Menu called
+   "Setup Arduino CLI". Run it and follow the prompts.
+
+2. **From the source/repository:** If you downloaded the source code or portable
+   version, run the setup script from the `scripts/` folder:
+   ```powershell
+   .\scripts\install-arduino-cli.cmd
+   ```
+   Or directly the PowerShell script:
+   ```powershell
+   .\scripts\install-arduino-cli.ps1
+   ```
+
+The script will:
+- Download and install arduino-cli to `%LOCALAPPDATA%\arduino-cli`
+- Add it to your user PATH
+- Install the Arduino AVR core
+- Install the Servo library (required by Bitbloq)
+
+After running the script, restart your terminal for PATH changes to take effect.
+
+**Option B — Manual installation.** If you prefer to install manually or the
+script doesn't work for your system:
+
 1. Download `arduino-cli` for Windows from the
    [arduino-cli releases](https://github.com/arduino/arduino-cli/releases).
 2. Put `arduino-cli.exe` in a folder that is on your `PATH` (or add its folder to
    the `PATH`). Alternatively, set the `ARDUINO_CLI` environment variable to the
    absolute path of `arduino-cli.exe` before launching Bitbloq.
 3. Install the AVR core and verify:
-   ```
-   arduino-cli core install arduino:avr
-   arduino-cli version
-   arduino-cli board list
-   ```
+    ```
+    arduino-cli core install arduino:avr
+    arduino-cli version
+    arduino-cli board list
+    ```
+4. Install the Servo library (required by Bitbloq's Zowi and Oscillator
+   libraries, not bundled with the AVR core):
+    ```
+    arduino-cli lib install Servo
+    ```
 
 ### 3.4 Board drivers
 
@@ -212,10 +254,16 @@ required.**
   curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
   # or via the packaged release from GitHub, then put it on your PATH
   arduino-cli core install arduino:avr
+  arduino-cli lib install Servo
   ```
-- **Windows:** download `arduino-cli` from the
+- **Windows:** Use the automated setup script (see section 3.3) or download
+  `arduino-cli` from the
   [arduino-cli releases](https://github.com/arduino/arduino-cli/releases) and put
-  `arduino-cli.exe` on your `PATH`; then run `arduino-cli core install arduino:avr`.
+  `arduino-cli.exe` on your `PATH`; then run:
+  ```
+  arduino-cli core install arduino:avr
+  arduino-cli lib install Servo
+  ```
 
 Verify it works:
 
@@ -226,9 +274,48 @@ arduino-cli board list
 
 The Bitbloq Arduino libraries (for Zowi, etc.) are bundled inside the app under
 `resources/app/res/libs/v1_1_3` and passed to arduino-cli automatically, so
-`#include <BitbloqZowi.h>` and friends compile out of the box.
+`#include <BitbloqZowi.h>` and friends compile out of the box. The only external
+library dependency is **Servo** (required by BitbloqOscillator, BitbloqZowi and
+BitbloqEvolution), which must be installed separately as shown above.
 
-### 4.2 Using a custom arduino-cli binary
+### 4.2 Automated Windows installation script
+
+For Windows users, Bitbloq Offline provides an automated installation script that
+handles the entire arduino-cli setup process. The script is available in two
+formats:
+
+- **PowerShell script** (`scripts/install-arduino-cli.ps1`): Full-featured script
+  with progress reporting and verification
+- **Batch wrapper** (`scripts/install-arduino-cli.cmd`): Simple wrapper that
+  calls the PowerShell script
+
+**Usage:**
+
+```powershell
+# Interactive mode (shows prompts and verification)
+.\scripts\install-arduino-cli.cmd
+
+# Silent mode (for automated deployments)
+.\scripts\install-arduino-cli.ps1 -Silent
+
+# Custom installation directory
+.\scripts\install-arduino-cli.ps1 -InstallDir "C:\Custom\Path"
+```
+
+**What the script does:**
+
+1. Checks if arduino-cli is already installed
+2. Downloads the latest version from GitHub releases
+3. Extracts to `%LOCALAPPDATA%\arduino-cli` (no admin rights required)
+4. Adds the installation directory to your user PATH
+5. Installs the Arduino AVR core
+6. Installs the Servo library
+7. Verifies the installation
+
+**Note:** After running the script, restart your terminal or log out and back in
+for PATH changes to take effect.
+
+### 4.3 Using a custom arduino-cli binary
 
 If `arduino-cli` is not on the `PATH`, set the `ARDUINO_CLI` environment variable
 to its absolute path before launching Bitbloq Offline:
@@ -257,9 +344,12 @@ If compilation/upload fails, check the following:
    the command is not found, install it (section 4.1) or set `ARDUINO_CLI`.
 2. **Is the AVR core installed?** `arduino-cli core list` should show
    `arduino:avr`. If not, `arduino-cli core install arduino:avr`.
-3. **Firewall.** Local loopback connections to `127.0.0.1:9877` must be allowed
+3. **Is the Servo library installed?** Compilation errors like
+   `fatal error: Servo.h: No such file or directory` mean the Servo library is
+   missing. Install it with `arduino-cli lib install Servo`.
+4. **Firewall.** Local loopback connections to `127.0.0.1:9877` must be allowed
    (they are, by default).
-4. **Board not detected?** That is a *serial port* permission problem:
+5. **Board not detected?** That is a *serial port* permission problem:
     - Linux: add your user to `dialout` (see §2.5).
     - Windows: install the board's USB-serial driver (see §3.4).
 
@@ -273,6 +363,7 @@ If compilation/upload fails, check the following:
 | Compile fails / "command not found" | arduino-cli missing or not on PATH | install arduino-cli; see §4.1; or set `ARDUINO_CLI` |
 | Port 9877 closed | local compiler service not running | it is started by the app; if blocked, check firewall for loopback |
 | "arduino:avr not found" | AVR core not installed | `arduino-cli core install arduino:avr` |
+| "Servo.h: No such file or directory" | Servo library not installed | `arduino-cli lib install Servo` |
 | Board not listed | no serial permission | Linux: add user to `dialout`; Windows: install drivers |
 | Upload fails / board unrecognized | wrong board selected or driver missing | select correct board in Bitbloq; install drivers |
 
