@@ -40,11 +40,16 @@ offline, air-gapped deployments.
 | Platform            | Architectures        | Notes                                              |
 |---------------------|----------------------|----------------------------------------------------|
 | Linux (64-bit)      | x86_64               | Tested on Ubuntu 22.04 / Lliurex 23-25.            |
-| Windows             | 32-bit and 64-bit    | ARM edition of Windows is **not** supported.       |
+| Windows             | 32-bit and 64-bit    | ARM edition of Windows is **not** supported. Automated setup scripts available. |
 | macOS               | 64-bit (Intel)       |                                                    |
 
 **Linux 32-bit builds have been removed** (see `CHANGELOG.md`). Only 64-bit
 Linux is produced.
+
+**Windows installation:** The Windows installer includes automated setup scripts
+that install arduino-cli, the AVR core, and the Servo library. See
+[Quick start](#quick-start-run-from-source) and [`INSTALL.md`](INSTALL.md) for
+details.
 
 ### Supported hardware
 
@@ -87,12 +92,21 @@ Requirements:
   and `bower` dependencies are not compatible with newer Node majors).
 - **Electron 4.x** (installed locally as a dev dependency).
 - **arduino-cli** (on the `PATH`) with the `arduino:avr` core installed
-  (`arduino-cli core install arduino:avr`). This is the compilation backend used
+  (`arduino-cli core install arduino:avr`) and the **Servo library**
+  (`arduino-cli lib install Servo`). These are the compilation backend used
   by Bitbloq Offline since v2.0.0.
 - On Linux, the system libraries pulled in by `bower install` / build
   (e.g. `libusb`, `pango`). Board USB drivers are not bundled: on Linux they are
   handled by the kernel/udev, and on Windows via Windows Update / arduino-cli or
   a manual install (see `INSTALL.md`).
+
+**Windows users:** Automated installation scripts are provided in `scripts/`:
+```powershell
+# Run the setup script to install arduino-cli, AVR core, and Servo library
+.\scripts\install-arduino-cli.cmd
+```
+The script handles the entire setup process. See [`INSTALL.md`](INSTALL.md) for
+details.
 
 ```bash
 # 1. Clone
@@ -189,11 +203,21 @@ The Bitbloq libraries under `res/libs/v1_1_3` are passed via `--libraries`, so
 sketches using `#include <BitbloqZowi.h>` (and friends) compile out of the box.
 
 **User requirement:** `arduino-cli` must be installed and on the `PATH` of the
-user running Bitbloq Offline, with the AVR core present:
+user running Bitbloq Offline, with the AVR core and the Servo library present:
 
 ```bash
 arduino-cli core install arduino:avr
+arduino-cli lib install Servo
 ```
+
+The **Servo library** is required by Bitbloq's Zowi and Oscillator libraries
+(BitbloqOscillator, BitbloqZowi, BitbloqEvolution) but is not bundled with the
+`arduino:avr` core.
+
+**Windows users:** Automated installation scripts are available in `scripts/`
+that handle the entire setup (arduino-cli, AVR core, Servo library). Run
+`.\scripts\install-arduino-cli.cmd` or see [`INSTALL.md`](INSTALL.md) for
+details.
 
 To use a non-default `arduino-cli` binary, set the `ARDUINO_CLI` environment
 variable before launching Bitbloq Offline. See
@@ -349,6 +373,9 @@ tasks                # Custom grunt tasks
   is installed and on the `PATH` of the user running Bitbloq Offline, and that
   the AVR core is present (`arduino-cli core install arduino:avr`). To point at a
   custom binary set `ARDUINO_CLI=/ruta/a/arduino-cli` before launching.
+- **"Servo.h: No such file or directory":** the Servo library is not installed.
+  Run `arduino-cli lib install Servo`. Windows users can run the automated setup
+  script (`scripts/install-arduino-cli.cmd`) which installs it automatically.
 - **Board not found on upload:** check that the board is connected and that the
   user has permission to access the serial port (e.g. add the user to the
   `dialout` group on Linux). Bitbloq detects ports via `arduino-cli board list`.

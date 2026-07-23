@@ -5,7 +5,51 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-Current version: **2.0.4**
+Current version: **2.0.5**
+
+## [2.0.5] - 2026-07-23
+
+### Added
+- **Automated arduino-cli installation scripts for Windows.** Added
+  `scripts/install-arduino-cli.ps1` (PowerShell) and `scripts/install-arduino-cli.cmd`
+  (batch wrapper) that automate the entire arduino-cli setup process on Windows:
+  download from GitHub releases, installation to `%LOCALAPPDATA%\arduino-cli`,
+  PATH configuration, AVR core installation, and Servo library installation.
+  Scripts support interactive and silent modes, custom installation paths, and
+  provide verification of the installation.
+- **NSIS installer component selection.** The Windows installer now offers two
+  installation types: "Full installation" (includes setup scripts and optionally
+  runs arduino-cli installation automatically) and "Minimal installation" (only
+  Bitbloq, arduino-cli must be installed separately). A "Setup Arduino CLI"
+  shortcut is added to the Start Menu for running the setup later.
+- **Build system integration.** The `build:windows` grunt task now copies the
+  installation scripts to `dist/BitbloqOfflineWin/scripts/` so they are included
+  in the Windows distribution.
+
+### Fixed
+- **Windows path resolution in common.js.** Replaced the fragile `lastIndexOf('/')`
+  logic with `process.cwd()` to correctly resolve the application root path on
+  Windows. The previous code failed because Windows paths use backslashes, causing
+  `lastIndexOf('/')` to return -1 and breaking file loading (bloqsmap.json, hw.json,
+  config.json, etc.).
+- **Hardware tab initialization errors.** Added null checks and try-catch blocks
+  in `hw2Bloqs.js`, `bloqsProject.js`, and `softwareTab.js` to prevent errors
+  during initialization when `containerDefault` is not yet set or when bloqs are
+  being removed while events are firing. Added `initializingBloqs` flag to prevent
+  `onBloqsChanged` from running during initialization.
+- **Servo library dependency documented.** The Servo library is required by
+  BitbloqOscillator, BitbloqZowi, and BitbloqEvolution but is not bundled with
+  the `arduino:avr` core. Added documentation in INSTALL.md and troubleshooting
+  entries for the "Servo.h: No such file or directory" compilation error.
+
+### Changed
+- **INSTALL.md updated.** Added detailed instructions for Windows installation:
+  automated setup script (Option A) and manual installation (Option B). Documented
+  the Servo library requirement in multiple sections (3.3, 4.1, 5, 6). Added
+  troubleshooting table entry for missing Servo library.
+- **README.md updated.** Mentioned Windows as a fully supported platform with
+  automated setup scripts. Updated the "Quick start" section to reference the
+  installation scripts and the Servo library requirement.
 
 ## [2.0.4] - 2026-07-21
 
