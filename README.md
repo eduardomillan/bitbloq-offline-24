@@ -7,7 +7,7 @@ maker boards and robots (Zowi, mBot, Makeblock, BQ ZUM, eBotics, and many more).
 It bundles the **Bitbloq editor** (Angular + Blockly-based "bloqs" blocks)
 and compiles/flashes programs to the physical boards over USB by itself, using
 **arduino-cli** as its compilation backend (no separate Web2Board install needed
-since v2.0.0 — see [`MIGRATE_ARDUINO_CLI.md`](MIGRATE_ARDUINO_CLI.md)).
+since v2.0.0 — see [`MIGRATE_ARDUINO_CLI.md`](docs/project/MIGRATE_ARDUINO_CLI.md)).
 
 This repository is a maintained fork (originally from bq) adapted for modern
 Linux distributions (Ubuntu 22.04 / Lliurex 23-25 and similar) and for
@@ -55,7 +55,7 @@ among others:
 - Freaduino UNO, BQ ZUM, BQ ZUM Box
 - Makeblock: mBot, mCore, Me Auriga, Me Orion, mRanger, Elecfreak kits
 - eBotics 4in1, FreaksCar, Ranger kits, Arduino starter kits
-- Robots: Zowi, and many PrintBots
+- Robots: Zowi, Otto and many PrintBots
 
 Need a board or robot that is not listed? Contributions that add correct board
 definitions are welcome (see [Developer notes](#developer-notes)).
@@ -148,7 +148,7 @@ Each build writes to `dist/BitbloqOffline{OS}/`, ready to run or package.
 
 > **Self-contained since v2.0.0.** Bitbloq Offline compiles and uploads by
 > itself via arduino-cli. The separate Web2Board project is no longer required
-> (see [`MIGRATE_ARDUINO_CLI.md`](MIGRATE_ARDUINO_CLI.md)).
+> (see [`MIGRATE_ARDUINO_CLI.md`](docs/project/MIGRATE_ARDUINO_CLI.md)).
 
 > **Electron binary is generated automatically.** The `build` task copies the
 > Electron executable from the local `node_modules/electron/dist` into the
@@ -197,7 +197,7 @@ arduino-cli core install arduino:avr
 
 To use a non-default `arduino-cli` binary, set the `ARDUINO_CLI` environment
 variable before launching Bitbloq Offline. See
-[`MIGRATE_ARDUINO_CLI.md`](MIGRATE_ARDUINO_CLI.md) for the full architecture and
+[`MIGRATE_ARDUINO_CLI.md`](docs/project/MIGRATE_ARDUINO_CLI.md) for the full architecture and
 migration rationale.
 
 ---
@@ -328,7 +328,7 @@ tasks                # Custom grunt tasks
 - **SVG icons:** `grunt svgstore` builds a sprite from `app/images/icons`.
 - **Compilation backend:** since v2.0.0 the app uses arduino-cli via
   `localCompilerServer.js` (started from `main.js`). Board→FQBN mapping and
-  library paths live there; see [`MIGRATE_ARDUINO_CLI.md`](MIGRATE_ARDUINO_CLI.md).
+  library paths live there; see [`MIGRATE_ARDUINO_CLI.md`](docs/project/MIGRATE_ARDUINO_CLI.md).
 - **Contributing:** pull requests that add board/robot definitions or fix
   platform issues are welcome. Please run `grunt jshint` before submitting.
 - **Versioning:** this project follows [Semantic Versioning](https://semver.org/)

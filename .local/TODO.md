@@ -13,6 +13,11 @@
 - [ ] Implement 'View > lotter'
 - [ ] Validate the existence of arduino-cli installed, if not warn the user and avoid compiling or uploading code to boards
 
+## Documentation
+
+- [ ] Fix the link to docs/project/MIGRATE_ARDUINO_CLI.md in README.md
+
+
 ## SUPER enhancement
 
 - [ ] Implement the bootloader logic used in the ZowiDesktop and ZowiAppReborn projects, avoiding dependance on `arduino-cli`
